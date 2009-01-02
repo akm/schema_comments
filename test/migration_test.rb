@@ -6,6 +6,7 @@ MIGRATIONS_ROOT = File.join(File.dirname(__FILE__), 'migrations')
 class MigrationTest < Test::Unit::TestCase
 
   class Product < ActiveRecord::Base; end
+  class ProductName < ActiveRecord::Base; end
 
   IGNORED_TABLES = %w(schema_migrations)
   
@@ -42,6 +43,20 @@ class MigrationTest < Test::Unit::TestCase
     ActiveRecord::Migrator.down(migration_path, 0)
     assert_equal 0, SchemaComments::SchemaComment.count
     
+    ActiveRecord::Migrator.up(migration_path, 1)
+    ActiveRecord::Migrator.up(migration_path, 2)
+    assert_equal 2, ActiveRecord::Migrator.current_version
+    
+    assert_equal '商品', ProductName.table_comment
+    {
+      'product_type_cd' => '種別コード', 
+      "price" => "価格",
+      "name" => "商品名",
+      "created_at" => "登録日時",
+      "updated_at" => "更新日時"
+    }.each do |col_name, comment|
+      assert_equal comment, ProductName.columns.detect{|c| c.name == col_name}.comment
+    end
   end
   
 end
