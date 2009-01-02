@@ -38,6 +38,10 @@ class MigrationTest < Test::Unit::TestCase
     }.each do |col_name, comment|
       assert_equal comment, Product.columns.detect{|c| c.name == col_name}.comment
     end
+    
+    ActiveRecord::Migrator.down(migration_path, 0)
+    assert_equal 0, SchemaComments::SchemaComment.count
+    
   end
   
 end

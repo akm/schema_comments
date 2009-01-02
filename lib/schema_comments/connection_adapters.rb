@@ -43,6 +43,7 @@ module SchemaComments
       def self.included(mod)
         mod.module_eval do 
           alias_method_chain :create_table, :schema_comments
+          alias_method_chain :drop_table, :schema_comments
           alias_method_chain :add_column_options!, :schema_comments
         end
       end
@@ -58,6 +59,14 @@ module SchemaComments
         table_def.columns.each do |col|
           column_comment(table_name, col.name, col.comment) unless col.comment.blank?
         end
+      end
+      
+      
+      # See also TableDefinition#column for details on how to create columns.
+      def drop_table_with_schema_comments(table_name, options = {}, &block)
+        puts "drop_table_with_schema_comments"
+        drop_table_without_schema_comments(table_name, options)
+        delete_schema_comments_by_table(table_name)
       end
       
       
@@ -119,6 +128,10 @@ module SchemaComments
         else
           SchemaComment.table_comment(table_name)
         end
+      end
+      
+      def delete_schema_comments_by_table(table_name)
+        SchemaComment.delete_by_table(table_name)
       end
     end
   end

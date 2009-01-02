@@ -36,6 +36,11 @@ module SchemaComments
         r.save!
       end
       
+      def delete_by_table(table_name)
+        return unless table_exists?
+        self.destroy_all(:table_name => table_name)
+      end
+      
       def create_table
         connection.create_table "schema_comments" do |t|
           t.string "table_name", :null => false
