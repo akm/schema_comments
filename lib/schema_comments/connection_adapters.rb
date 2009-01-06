@@ -1,29 +1,15 @@
 # -*- coding: utf-8 -*-
 module SchemaComments
   module ConnectionAdapters
-    # Add a @comment attribute to columns
+
     module Column
       attr_accessor :comment
     end
     
-    # Sneak the comment in through the add_column_options! method when create_table is called with a block
     module ColumnDefinition
-      # def self.included(mod)
-      #   mod.module_eval do 
-      #     alias_method_chain(:add_column_options!, :schema_comments)
-      #   end
-      # end
-      
       attr_accessor :comment
-      
-      # private
-      # def add_column_options_with_schema_comments!(sql, options)
-      #   # add_column_options_without_schema_comments!(sql, options.merge(:comment => comment))
-      #   add_column_options_without_schema_comments!(sql, options)
-      # end
     end
     
-    # Pass the comment through the TableDefinition
     module TableDefinition
       def self.included(mod)
         mod.module_eval do 
@@ -92,6 +78,7 @@ module SchemaComments
           alias_method_chain :rename_table, :schema_comments
           alias_method_chain :remove_column, :schema_comments
           alias_method_chain :add_column, :schema_comments
+          alias_method_chain :change_column, :schema_comments
         end
       end
       
@@ -110,7 +97,7 @@ module SchemaComments
       
       def drop_table_with_schema_comments(table_name, options = {}, &block)
         result = drop_table_without_schema_comments(table_name, options)
-        delete_schema_comments(table_name) unless @in_remove_column
+        delete_schema_comments(table_name) unless @ignore_drop_table
         result
       end
       
@@ -130,13 +117,13 @@ module SchemaComments
         # 6. DROP TABLE "altered_xxxxxx"
         # 
         # このdrop tableの際に、schema_commentsを変更しないようにフラグを立てています。
-        @in_remove_column = true
+        @ignore_drop_table = true
         remove_column_without_schema_comments(table_name, *column_names)
         column_names.each do |column_name|
           delete_schema_comments(table_name, column_name)
         end
       ensure
-        @in_remove_column = false
+        @ignore_drop_table = false
       end
       
       def add_column_with_schema_comments(table_name, column_name, type, options = {})
@@ -144,6 +131,16 @@ module SchemaComments
         result = add_column_without_schema_comments(table_name, column_name, type, options)
         column_comment(table_name, column_name, comment) if comment
         result
+      end
+      
+      def change_column_with_schema_comments(table_name, column_name, type, options = {})
+        comment = options.delete(:comment)
+        @ignore_drop_table = true
+        result = change_column_without_schema_comments(table_name, column_name, type, options)
+        column_comment(table_name, column_name, comment) if comment
+        result
+      ensure
+        @ignore_drop_table = false
       end
     end
   end
