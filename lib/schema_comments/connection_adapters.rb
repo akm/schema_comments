@@ -48,10 +48,9 @@ module SchemaComments
         end
       end
       
-      # See also TableDefinition#column for details on how to create columns.
       def create_table_with_schema_comments(table_name, options = {}, &block)
         table_def = nil
-        create_table_without_schema_comments(table_name, options) do |t|
+        result = create_table_without_schema_comments(table_name, options) do |t|
           table_def = t
           yield(t)
         end
@@ -59,15 +58,16 @@ module SchemaComments
         table_def.columns.each do |col|
           column_comment(table_name, col.name, col.comment) unless col.comment.blank?
         end
+        result
       end
       
       
-      # See also TableDefinition#column for details on how to create columns.
       def drop_table_with_schema_comments(table_name, options = {}, &block)
-        puts "drop_table_with_schema_comments"
-        drop_table_without_schema_comments(table_name, options)
+        result = drop_table_without_schema_comments(table_name, options)
         delete_schema_comments_by_table(table_name)
+        result
       end
+
       
       
       def columns(table_name, name = nil)#:nodoc:
@@ -133,6 +133,25 @@ module SchemaComments
       def delete_schema_comments_by_table(table_name)
         SchemaComment.delete_by_table(table_name)
       end
+      
+      def update_table_name(table_name, new_name)
+        SchemaComment.update_table_name(table_name, new_name)
+      end
+    end
+    
+    module ConcreteAdapter
+      def self.included(mod)
+        mod.module_eval do 
+          alias_method_chain :rename_table, :schema_comments
+        end
+      end
+      
+      def rename_table_with_schema_comments(table_name, new_name)
+        result = rename_table_without_schema_comments(table_name, new_name)
+        update_table_name(table_name, new_name)
+        result
+      end
+      
     end
   end
 end

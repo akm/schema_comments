@@ -41,6 +41,11 @@ module SchemaComments
         self.destroy_all(:table_name => table_name)
       end
       
+      def update_table_name(table_name, new_name)
+        update_all(["table_name = ?", new_name], ["table_name = ?", table_name])
+      end
+      
+      
       def create_table
         connection.create_table "schema_comments" do |t|
           t.string "table_name", :null => false
