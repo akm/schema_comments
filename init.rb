@@ -34,10 +34,14 @@ unless ActiveRecord::SchemaDumper.ancestors.include?(SchemaComments::SchemaDumpe
 end
 
 
- # %w(Mysql PostgreSQL SQLite3 SQLite Firebird DB2 Oracle Sybase Openbase Frontbase)
- %w(Mysql PostgreSQL SQLite3 SQLite).each do |adapter|
-   require "active_record/connection_adapters/#{adapter.downcase}_adapter"
-   ('ActiveRecord::ConnectionAdapters::' << "#{adapter}Adapter").constantize.module_eval do 
-     include SchemaComments::ConnectionAdapters::ConcreteAdapter
+# %w(Mysql PostgreSQL SQLite3 SQLite Firebird DB2 Oracle Sybase Openbase Frontbase)
+%w(Mysql PostgreSQL SQLite3 SQLite).each do |adapter|
+  begin
+    require("active_record/connection_adapters/#{adapter.downcase}_adapter")
+    adapter_class = ('ActiveRecord::ConnectionAdapters::' << "#{adapter}Adapter").constantize
+    adapter_class.module_eval do
+      include SchemaComments::ConnectionAdapters::ConcreteAdapter
+    end
+  rescue Exception => e
   end
 end
