@@ -73,6 +73,7 @@ module SchemaComments
     module ConcreteAdapter
       def self.included(mod)
         mod.module_eval do 
+          alias_method_chain :columns, :schema_comments
           alias_method_chain :create_table, :schema_comments
           alias_method_chain :drop_table, :schema_comments
           alias_method_chain :rename_table, :schema_comments
@@ -80,6 +81,15 @@ module SchemaComments
           alias_method_chain :add_column, :schema_comments
           alias_method_chain :change_column, :schema_comments
         end
+      end
+      
+      def columns_with_schema_comments(table_name, name = nil, &block)
+        result = columns_without_schema_comments(table_name, name, &block)
+        column_comment_hash = column_comments(table_name)
+        result.each do |column|
+          column.comment = column_comment_hash[column.name]
+        end
+        result
       end
       
       def create_table_with_schema_comments(table_name, options = {}, &block)
