@@ -79,6 +79,15 @@ class MigrationTest < Test::Unit::TestCase
     ActiveRecord::Migrator.down(migration_path, 3)
     assert_equal 3, ActiveRecord::Migrator.current_version
     assert_equal 6, SchemaComments::SchemaComment.count
+
+    ActiveRecord::Migrator.up(migration_path, 5)
+    assert_equal 5, ActiveRecord::Migrator.current_version
+    assert_equal '商品名', Product.columns.detect{|c| c.name == 'name'}.comment
+
+    ActiveRecord::Migrator.up(migration_path, 6)
+    assert_equal 6, ActiveRecord::Migrator.current_version
+    Product.reset_column_comments
+    assert_equal '名称', Product.columns.detect{|c| c.name == 'name'}.comment
   end
   
 end

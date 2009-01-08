@@ -12,7 +12,7 @@ module SchemaComments
       def table_comment
         @table_comment ||= connection.table_comment(table_name)
       end
-
+      
       def columns_with_schema_comments
         result = columns_without_schema_comments
         unless @column_comments_loaded
@@ -24,6 +24,15 @@ module SchemaComments
         end
         result
       end
+      
+      def reset_column_comments
+        @column_comments_loaded = false
+      end
+      
+      def reset_table_comments
+        @table_comment = nil
+      end
     end
+    
   end
 end
