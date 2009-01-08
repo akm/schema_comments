@@ -23,28 +23,28 @@ module SchemaComments
       def save_table_comment(table_name, comment)
         create_table unless table_exists?
         r = self.find(:first, :conditions => {:table_name => table_name}) || 
-          self.new(:table_name => table_name)
+          self.new(:table_name => table_name.to_s)
         r.descriptions = comment
         r.save!
       end
       
       def save_column_comment(table_name, column_name, comment)
         create_table unless table_exists?
-        r = self.find(:first, :conditions => {:table_name => table_name, :column_name => column_name}) || 
-          self.new(:table_name => table_name, :column_name => column_name)
+        r = self.find(:first, :conditions => {:table_name => table_name.to_s, :column_name => column_name.to_s}) || 
+          self.new(:table_name => table_name.to_s, :column_name => column_name.to_s)
         r.descriptions = comment
         r.save!
       end
       
       def destroy_of(table_name, column_name)
         return unless table_exists?
-        options = {:table_name => table_name}
-        options[:column_name] = column_name if column_name
+        options = {:table_name => table_name.to_s}
+        options[:column_name] = column_name.to_s if column_name
         self.destroy_all(options)
       end
       
       def update_table_name(table_name, new_name)
-        update_all(["table_name = ?", new_name], ["table_name = ?", table_name])
+        update_all(["table_name = ?", new_name], ["table_name = ?", table_name.to_s])
       end
       
       
