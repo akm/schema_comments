@@ -27,6 +27,13 @@ unless ActiveRecord::ConnectionAdapters::Column.ancestors.include?(SchemaComment
   end
 end
 
+unless ActiveRecord::SchemaDumper.ancestors.include?(SchemaComments::SchemaDumper)
+  class ActiveRecord::SchemaDumper
+    include SchemaComments::SchemaDumper
+  end
+end
+
+
  # %w(Mysql PostgreSQL SQLite3 SQLite Firebird DB2 Oracle Sybase Openbase Frontbase)
  %w(Mysql PostgreSQL SQLite3 SQLite).each do |adapter|
    require "active_record/connection_adapters/#{adapter.downcase}_adapter"

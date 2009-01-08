@@ -1,7 +1,29 @@
 module SchemaComments
   module SchemaDumper
+    def self.included(mod)
+#       mod.extend(ClassMethods)
+#       mod.instance_eval do 
+#         alias :ignore_tables_without_schema_comments :ignore_tables
+#         alias :ignore_tables :ignore_tables_with_schema_comments 
+#       end
+      mod.module_eval do 
+        alias_method_chain :table, :schema_comments
+      end
+    end
+    
+    IGNORED_TABLE = 'schema_comments'
+    
+#     module ClassMethods
+#       def ignore_tables_with_schema_comments
+#         result = ignore_tables_without_schema_comments
+#         result << IGNORED_TABLE unless result.include?(IGNORED_TABLE)
+#         result
+#       end
+#     end
+    
     private
     def table_with_schema_comments(table, stream)
+      return if IGNORED_TABLE == table.downcase
       columns = @connection.columns(table)
       begin
         tbl = StringIO.new
@@ -37,7 +59,7 @@ module SchemaComments
           spec[:scale]     = column.scale.inspect if !column.scale.nil?
           spec[:null]      = 'false' if !column.null
           spec[:default]   = default_string(column.default) if !column.default.nil?
-          spec[:comment]   = column.comment.inspect unless column.comment.nil?
+          spec[:comment]   = (column.comment || '').inspect
           (spec.keys - [:name, :type]).each{ |k| spec[k].insert(0, "#{k.inspect} => ")}
           spec
         end.compact
@@ -81,7 +103,6 @@ module SchemaComments
       
       stream
     end
-    alias_method_chain :table, :schema_comments
     
   end
 end
