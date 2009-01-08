@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 module SchemaComments
   module ConnectionAdapters
     # Add a @comment attribute to columns
@@ -40,62 +41,6 @@ module SchemaComments
     end
     
     module Adapter
-      def self.included(mod)
-        mod.module_eval do 
-          alias_method_chain :create_table, :schema_comments
-          alias_method_chain :drop_table, :schema_comments
-          alias_method_chain :add_column_options!, :schema_comments
-        end
-      end
-      
-      def create_table_with_schema_comments(table_name, options = {}, &block)
-        table_def = nil
-        result = create_table_without_schema_comments(table_name, options) do |t|
-          table_def = t
-          yield(t)
-        end
-        table_comment(table_name, options[:comment]) unless options[:comment].blank?
-        table_def.columns.each do |col|
-          column_comment(table_name, col.name, col.comment) unless col.comment.blank?
-        end
-        result
-      end
-      
-      
-      def drop_table_with_schema_comments(table_name, options = {}, &block)
-        result = drop_table_without_schema_comments(table_name, options)
-        delete_schema_comments_by_table(table_name)
-        result
-      end
-
-      
-      
-      def columns(table_name, name = nil)#:nodoc:
-        sql = "SHOW FULL FIELDS FROM #{table_name}"
-        columns = []
-        execute(sql, name).each { |field| columns << MysqlColumn.new(field[0], field[5], field[1], field[3] == "YES", field[8]) }
-        columns
-      end
-      
-      # Add an optional :comment to the options passed to change_column
-      def add_column_options_with_schema_comments!(sql, options) #:nodoc:
-        add_column_options_without_schema_comments!(sql, options)
-        sql << " COMMENT #{quote(options[:comment])}" if options[:comment]
-        #STDERR << "Column with options: #{sql}\n"
-        sql
-      end
-      
-      # Make sure we don't lose the comment when changing the name
-      def rename_column(table_name, column_name, new_column_name, options = {}) #:nodoc:
-        column_info = select_one("SHOW FULL FIELDS FROM #{table_name} LIKE '#{column_name}'")
-        current_type = column_info["Type"]
-        options[:comment] ||= column_info["Comment"]
-        sql = "ALTER TABLE #{table_name} CHANGE #{column_name} #{new_column_name} #{current_type}"
-        sql << " COMMENT #{quote(options[:comment])}" unless options[:comment].blank?
-        execute sql
-      end
-      
-      # Allow column comments to be explicitly set
       def column_comment(table_name, column_name, comment = nil) #:nodoc:
         if comment
           SchemaComment.save_column_comment(table_name, column_name, comment)
@@ -130,11 +75,11 @@ module SchemaComments
         end
       end
       
-      def delete_schema_comments_by_table(table_name)
-        SchemaComment.delete_by_table(table_name)
+      def delete_schema_comments(table_name, column_name = nil)
+        SchemaComment.destroy_of(table_name, column_name)
       end
       
-      def update_table_name(table_name, new_name)
+      def update_schema_comments_table_name(table_name, new_name)
         SchemaComment.update_table_name(table_name, new_name)
       end
     end
@@ -142,16 +87,64 @@ module SchemaComments
     module ConcreteAdapter
       def self.included(mod)
         mod.module_eval do 
+          alias_method_chain :create_table, :schema_comments
+          alias_method_chain :drop_table, :schema_comments
           alias_method_chain :rename_table, :schema_comments
+          alias_method_chain :remove_column, :schema_comments
+          alias_method_chain :add_column, :schema_comments
         end
+      end
+      
+      def create_table_with_schema_comments(table_name, options = {}, &block)
+        table_def = nil
+        result = create_table_without_schema_comments(table_name, options) do |t|
+          table_def = t
+          yield(t)
+        end
+        table_comment(table_name, options[:comment]) unless options[:comment].blank?
+        table_def.columns.each do |col|
+          column_comment(table_name, col.name, col.comment) unless col.comment.blank?
+        end
+        result
+      end
+      
+      def drop_table_with_schema_comments(table_name, options = {}, &block)
+        result = drop_table_without_schema_comments(table_name, options)
+        delete_schema_comments(table_name) unless @in_remove_column
+        result
       end
       
       def rename_table_with_schema_comments(table_name, new_name)
         result = rename_table_without_schema_comments(table_name, new_name)
-        update_table_name(table_name, new_name)
+        update_schema_comments_table_name(table_name, new_name)
         result
       end
       
+      def remove_column_with_schema_comments(table_name, *column_names)
+        # sqlite3ではremove_columnがないので、以下のフローでスキーマ更新します。
+        # 1. CREATE TEMPORARY TABLE "altered_xxxxxx" (・・・)
+        # 2. PRAGMA index_list("xxxxxx")
+        # 3. DROP TABLE "xxxxxx"
+        # 4. CREATE TABLE "xxxxxx"
+        # 5. PRAGMA index_list("altered_xxxxxx")
+        # 6. DROP TABLE "altered_xxxxxx"
+        # 
+        # このdrop tableの際に、schema_commentsを変更しないようにフラグを立てています。
+        @in_remove_column = true
+        remove_column_without_schema_comments(table_name, *column_names)
+        column_names.each do |column_name|
+          delete_schema_comments(table_name, column_name)
+        end
+      ensure
+        @in_remove_column = false
+      end
+      
+      def add_column_with_schema_comments(table_name, column_name, type, options = {})
+        comment = options.delete(:comment)
+        result = add_column_without_schema_comments(table_name, column_name, type, options)
+        column_comment(table_name, column_name, comment) if comment
+        result
+      end
     end
   end
 end

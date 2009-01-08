@@ -36,9 +36,11 @@ module SchemaComments
         r.save!
       end
       
-      def delete_by_table(table_name)
+      def destroy_of(table_name, column_name)
         return unless table_exists?
-        self.destroy_all(:table_name => table_name)
+        options = {:table_name => table_name}
+        options[:column_name] = column_name if column_name
+        self.destroy_all(options)
       end
       
       def update_table_name(table_name, new_name)

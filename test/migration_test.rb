@@ -57,6 +57,28 @@ class MigrationTest < Test::Unit::TestCase
     }.each do |col_name, comment|
       assert_equal comment, ProductName.columns.detect{|c| c.name == col_name}.comment
     end
+    
+    ActiveRecord::Migrator.down(migration_path, 1)
+    assert_equal 1, ActiveRecord::Migrator.current_version
+    
+    assert_equal '商品', Product.table_comment
+    {
+      'product_type_cd' => '種別コード', 
+      "price" => "価格",
+      "name" => "商品名",
+      "created_at" => "登録日時",
+      "updated_at" => "更新日時"
+    }.each do |col_name, comment|
+      assert_equal comment, Product.columns.detect{|c| c.name == col_name}.comment
+    end
+    
+    ActiveRecord::Migrator.up(migration_path, 4)
+    assert_equal 4, ActiveRecord::Migrator.current_version
+    assert_equal 5, SchemaComments::SchemaComment.count
+    
+    ActiveRecord::Migrator.down(migration_path, 3)
+    assert_equal 3, ActiveRecord::Migrator.current_version
+    assert_equal 6, SchemaComments::SchemaComment.count
   end
   
 end
