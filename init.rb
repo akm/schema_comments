@@ -47,5 +47,4 @@ unless ENV['SCHEMA_COMMENTS_DISABLED']
     rescue Exception => e
     end
   end
-
 end
