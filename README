@@ -1,29 +1,13 @@
-ColumnComments v. 1.3
-=====================
+SchemaComments 
+==========
 
-Changes to version 1.3:
- - Fixed that the latest edge rails (R5601) broke the MysqlColumn initialize method.
+Introduction goes here.
 
-Use "rake annotate_models" to add comments (using the database definition) to the head of each AR model in your application.  Note that if you want to combine these auto-generated comments with your own hand-made ones, you
-should put your comments *before* the "Schema as of ..." line or your comments will be destroyed.
 
-In migration files, use the :comment option when creating a column to add a comment to the column, or use the #column_comment method to set the comment explicitly (e.g. if the column already exists and you just want to add a comment to it.)
+Example
+=======
 
-Example migration:
+Example goes here.
 
-  def self.up
-    create_table "users" do |t|
-      t.column "first_name", :string, :comment => "The member's given name."
-    end
 
-    column_comment "tags", "id", "The unique ID of any tag in the system."
-  end
-
-You can also assign multiple comments at the same time:
-  column_comments({
-    :users => {:first_name => "User's given name", :last_name => "Family name"},
-    :tags  => {:id => "Tag IDentifier"}})
-
-Author: Duane Johnson, duane.johnson@gmail.com
-Website: http://blog.inquirylabs.com
-Note: A substantial portion of this plugin is based on Dave Thomas's AnnotateModels plugin.
+Copyright (c) 2008 Takeshi AKIMA, released under the MIT license
