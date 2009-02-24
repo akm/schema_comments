@@ -94,11 +94,7 @@ namespace :i18n do
     end
     
     desc "Export i18n attributes resources from schema_comments"
-<<<<<<< HEAD:tasks/schema_comments.rake
     task :export_attributes => :"i18n:schema_comments:load_all_models" do
-=======
-    task :export_models => :"i18n:schema_comments:load_all_models" do
->>>>>>> 1ccba24891dca5c8a8dfdeb93544d0c61b468e54:tasks/schema_comments.rake
       obj = {I18n.locale => {'activerecord' => {'attributes' => ActiveRecord::Base.export_i18n_attributes}}}
       puts YAML.dump(obj)
     end
