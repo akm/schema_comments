@@ -16,6 +16,8 @@ module SchemaComments
       def columns_with_schema_comments
         result = columns_without_schema_comments
         unless @column_comments_loaded
+          puts "columns_with_schema_comments\n  " << caller.join("\n  ")
+          
           column_comment_hash = connection.column_comments(table_name)
           result.each do |column|
             column.comment = column_comment_hash[column.name]
@@ -48,7 +50,7 @@ module SchemaComments
         end
       end
       
-      def export_i18n_attributes
+      def export_i18n_attributes(connection = ActiveRecord::Base.connection)
         subclasses = ActiveRecord::Base.send(:subclasses).select do |klass|
           (klass != SchemaComments::SchemaComment) and
             klass.respond_to?(:table_exists?) and klass.table_exists?
