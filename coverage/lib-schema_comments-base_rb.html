@@ -156,7 +156,7 @@
       C0 code coverage information
     </h3>
     <p>
-      Generated on Thu Jun 18 08:16:18 +0900 2009 with 
+      Generated on Fri Jun 19 00:50:32 +0900 2009 with 
       <a href='http://eigenclass.org/hiki/rcov'>
         rcov 0.8.1.2
       </a>
@@ -174,8 +174,8 @@
     <td class='heading'> Total coverage </td> <td class='heading'> Code coverage
     </td> </tr> </thead> <tbody> <tr class='light'> <td> <a
     href='lib-schema_comments-base_rb.html'> lib/schema_comments/base.rb </a>
-    </td> <td class='lines_total'> <tt> 74 </tt> </td> <td class='lines_code'>
-    <tt> 64 </tt> </td> <td> <table cellspacing='0' align='right'
+    </td> <td class='lines_total'> <tt> 72 </tt> </td> <td class='lines_code'>
+    <tt> 63 </tt> </td> <td> <table cellspacing='0' align='right'
     cellpadding='0'> <tr> <td> <tt class='coverage_total'> 100.0% </tt> &nbsp;
     </td> <td> <table class='percent_graph' cellspacing='0' cellpadding='0'
     width='100'> <tr> <td class='covered' width='100' /> <td class='uncovered'
@@ -205,73 +205,70 @@
     class="marked0"><a name="line17"></a>17 result =
     columns_without_schema_comments </span><span class="marked1"><a
     name="line18"></a>18 unless @column_comments_loaded </span><span
-    class="marked0"><a name="line19"></a>19 puts
-    &quot;columns_with_schema_comments\n &quot; &lt;&lt; caller.join(&quot;\n
-    &quot;) </span><span class="inferred1"><a name="line20"></a>20 </span><span
-    class="marked0"><a name="line21"></a>21 column_comment_hash =
+    class="marked0"><a name="line19"></a>19 column_comment_hash =
     connection.column_comments(table_name) </span><span class="marked1"><a
-    name="line22"></a>22 result.each do |column| </span><span class="marked0"><a
-    name="line23"></a>23 column.comment = column_comment_hash[column.name]
+    name="line20"></a>20 result.each do |column| </span><span class="marked0"><a
+    name="line21"></a>21 column.comment = column_comment_hash[column.name.to_s]
+    </span><span class="inferred1"><a name="line22"></a>22 end </span><span
+    class="marked0"><a name="line23"></a>23 @column_comments_loaded = true
     </span><span class="inferred1"><a name="line24"></a>24 end </span><span
-    class="marked0"><a name="line25"></a>25 @column_comments_loaded = true
-    </span><span class="inferred1"><a name="line26"></a>26 end </span><span
-    class="marked0"><a name="line27"></a>27 result </span><span
-    class="inferred1"><a name="line28"></a>28 end </span><span
-    class="inferred0"><a name="line29"></a>29 </span><span class="marked1"><a
-    name="line30"></a>30 def reset_column_comments </span><span
-    class="marked0"><a name="line31"></a>31 @column_comments_loaded = false
-    </span><span class="inferred1"><a name="line32"></a>32 end </span><span
-    class="inferred0"><a name="line33"></a>33 </span><span class="marked1"><a
-    name="line34"></a>34 def reset_table_comments </span><span
-    class="marked0"><a name="line35"></a>35 @table_comment = nil </span><span
-    class="inferred1"><a name="line36"></a>36 end </span><span
-    class="inferred0"><a name="line37"></a>37 </span><span class="marked1"><a
-    name="line38"></a>38 attr_accessor_with_default
+    class="marked0"><a name="line25"></a>25 result </span><span
+    class="inferred1"><a name="line26"></a>26 end </span><span
+    class="inferred0"><a name="line27"></a>27 </span><span class="marked1"><a
+    name="line28"></a>28 def reset_column_comments </span><span
+    class="marked0"><a name="line29"></a>29 @column_comments_loaded = false
+    </span><span class="inferred1"><a name="line30"></a>30 end </span><span
+    class="inferred0"><a name="line31"></a>31 </span><span class="marked1"><a
+    name="line32"></a>32 def reset_table_comments </span><span
+    class="marked0"><a name="line33"></a>33 @table_comment = nil </span><span
+    class="inferred1"><a name="line34"></a>34 end </span><span
+    class="inferred0"><a name="line35"></a>35 </span><span class="marked1"><a
+    name="line36"></a>36 attr_accessor_with_default
     :ignore_pattern_to_export_i18n, /\[.*\]/ </span><span class="inferred0"><a
-    name="line39"></a>39 </span><span class="marked1"><a name="line40"></a>40
-    def export_i18n_models </span><span class="marked0"><a name="line41"></a>41
+    name="line37"></a>37 </span><span class="marked1"><a name="line38"></a>38
+    def export_i18n_models </span><span class="marked0"><a name="line39"></a>39
     subclasses = ActiveRecord::Base.send(:subclasses).select do |klass|
-    </span><span class="marked1"><a name="line42"></a>42 (klass !=
+    </span><span class="marked1"><a name="line40"></a>40 (klass !=
     SchemaComments::SchemaComment) and </span><span class="marked0"><a
-    name="line43"></a>43 klass.respond_to?(:table_exists?) and
-    klass.table_exists? </span><span class="inferred1"><a name="line44"></a>44
-    end </span><span class="marked0"><a name="line45"></a>45
+    name="line41"></a>41 klass.respond_to?(:table_exists?) and
+    klass.table_exists? </span><span class="inferred1"><a name="line42"></a>42
+    end </span><span class="marked0"><a name="line43"></a>43
     subclasses.inject({}) do |d, m| </span><span class="marked1"><a
-    name="line46"></a>46 comment = m.table_comment </span><span
-    class="marked0"><a name="line47"></a>47
+    name="line44"></a>44 comment = m.table_comment </span><span
+    class="marked0"><a name="line45"></a>45
     comment.gsub!(ignore_pattern_to_export_i18n, '') if
     ignore_pattern_to_export_i18n </span><span class="marked1"><a
-    name="line48"></a>48 d[m.name.underscore] = comment </span><span
-    class="marked0"><a name="line49"></a>49 d </span><span class="inferred1"><a
-    name="line50"></a>50 end </span><span class="inferred0"><a
-    name="line51"></a>51 end </span><span class="inferred1"><a
-    name="line52"></a>52 </span><span class="marked0"><a name="line53"></a>53
+    name="line46"></a>46 d[m.name.underscore] = comment </span><span
+    class="marked0"><a name="line47"></a>47 d </span><span class="inferred1"><a
+    name="line48"></a>48 end </span><span class="inferred0"><a
+    name="line49"></a>49 end </span><span class="inferred1"><a
+    name="line50"></a>50 </span><span class="marked0"><a name="line51"></a>51
     def export_i18n_attributes(connection = ActiveRecord::Base.connection)
-    </span><span class="marked1"><a name="line54"></a>54 subclasses =
+    </span><span class="marked1"><a name="line52"></a>52 subclasses =
     ActiveRecord::Base.send(:subclasses).select do |klass| </span><span
-    class="marked0"><a name="line55"></a>55 (klass !=
+    class="marked0"><a name="line53"></a>53 (klass !=
     SchemaComments::SchemaComment) and </span><span class="marked1"><a
-    name="line56"></a>56 klass.respond_to?(:table_exists?) and
-    klass.table_exists? </span><span class="inferred0"><a name="line57"></a>57
-    end </span><span class="marked1"><a name="line58"></a>58
+    name="line54"></a>54 klass.respond_to?(:table_exists?) and
+    klass.table_exists? </span><span class="inferred0"><a name="line55"></a>55
+    end </span><span class="marked1"><a name="line56"></a>56
     subclasses.inject({}) do |d, m| </span><span class="marked0"><a
-    name="line59"></a>59 attrs = {} </span><span class="marked1"><a
-    name="line60"></a>60 m.columns.each do |col| </span><span class="marked0"><a
-    name="line61"></a>61 next if col.name == 'id' </span><span
-    class="marked1"><a name="line62"></a>62 comment = (col.comment || '').dup
-    </span><span class="marked0"><a name="line63"></a>63
+    name="line57"></a>57 attrs = {} </span><span class="marked1"><a
+    name="line58"></a>58 m.columns.each do |col| </span><span class="marked0"><a
+    name="line59"></a>59 next if col.name == 'id' </span><span
+    class="marked1"><a name="line60"></a>60 comment = (col.comment || '').dup
+    </span><span class="marked0"><a name="line61"></a>61
     comment.gsub!(ignore_pattern_to_export_i18n, '') if
     ignore_pattern_to_export_i18n </span><span class="marked1"><a
-    name="line64"></a>64 attrs[col.name] = comment </span><span
-    class="inferred0"><a name="line65"></a>65 end </span><span
-    class="marked1"><a name="line66"></a>66 d[m.name.underscore] = attrs
-    </span><span class="marked0"><a name="line67"></a>67 d </span><span
-    class="inferred1"><a name="line68"></a>68 end </span><span
-    class="inferred0"><a name="line69"></a>69 end </span><span
-    class="inferred1"><a name="line70"></a>70 </span><span class="inferred0"><a
-    name="line71"></a>71 end </span><span class="inferred1"><a
-    name="line72"></a>72 </span><span class="inferred0"><a name="line73"></a>73
-    end </span><span class="inferred1"><a name="line74"></a>74 end </span></pre>
+    name="line62"></a>62 attrs[col.name] = comment </span><span
+    class="inferred0"><a name="line63"></a>63 end </span><span
+    class="marked1"><a name="line64"></a>64 d[m.name.underscore] = attrs
+    </span><span class="marked0"><a name="line65"></a>65 d </span><span
+    class="inferred1"><a name="line66"></a>66 end </span><span
+    class="inferred0"><a name="line67"></a>67 end </span><span
+    class="inferred1"><a name="line68"></a>68 </span><span class="inferred0"><a
+    name="line69"></a>69 end </span><span class="inferred1"><a
+    name="line70"></a>70 </span><span class="inferred0"><a name="line71"></a>71
+    end </span><span class="inferred1"><a name="line72"></a>72 end </span></pre>
     <hr />
     <p> Generated using the <a href='http://eigenclass.org/hiki.rb?rcov'> rcov
     code coverage analysis tool for Ruby </a> version 0.8.1.2. </p>
