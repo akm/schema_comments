@@ -16,11 +16,9 @@ module SchemaComments
       def columns_with_schema_comments
         result = columns_without_schema_comments
         unless @column_comments_loaded
-          puts "columns_with_schema_comments\n  " << caller.join("\n  ")
-          
           column_comment_hash = connection.column_comments(table_name)
           result.each do |column|
-            column.comment = column_comment_hash[column.name]
+            column.comment = column_comment_hash[column.name.to_s]
           end
           @column_comments_loaded = true
         end

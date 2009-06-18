@@ -8,6 +8,8 @@ describe SchemaComments::Base do
   IGNORED_TABLES = %w(schema_migrations)
   
   before(:each) do
+    SchemaComments.yaml_path = File.expand_path(File.join(File.dirname(__FILE__), 'schema_comments.yml'))
+
     (ActiveRecord::Base.connection.tables - IGNORED_TABLES).each do |t|
       ActiveRecord::Base.connection.drop_table(t) rescue nil
     end

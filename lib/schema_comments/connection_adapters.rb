@@ -19,7 +19,6 @@ module SchemaComments
       attr_accessor :comment
 
       def column_with_schema_comments(name, type, options = {})
-        puts("column_with_schema_comments(#{name.inspect}, #{type.inspect}, #{options.inspect}")
         column_without_schema_comments(name, type, options)
         column = self[name]
         column.comment = options[:comment]
