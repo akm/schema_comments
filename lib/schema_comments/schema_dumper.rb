@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 module SchemaComments
   module SchemaDumper
     def self.included(mod)
@@ -24,6 +25,32 @@ module SchemaComments
     private
     def table_with_schema_comments(table, stream)
       return if IGNORED_TABLE == table.downcase
+      # MySQLは、ビューもテーブルとして扱うので、一個一個チェックします。
+      config = ActiveRecord::Base.configurations[RAILS_ENV]
+      if config['adapter'] == "mysql"
+        match_count = @connection.select_value(
+          "select count(*) from information_schema.TABLES where TABLE_TYPE = 'VIEW' AND TABLE_SCHEMA = '%s' AND TABLE_NAME = '%s'" % [
+            config["database"], table])
+        if match_count.to_i > 0
+          ddl = @connection.select_value("show create view #{table}")
+          ddl.gsub!(/AS select/, "AS \n select\n")
+          ddl.gsub!(/( AS \`.+?\`\,)/){ "#{$1}\n" }
+          ddl.gsub!(/ from /i         , "\n from \n")
+          ddl.gsub!(/ where /i        , "\n where \n")
+          ddl.gsub!(/ order by /i     , "\n order by \n")
+          ddl.gsub!(/ having /i       , "\n having \n")
+          ddl.gsub!(/ union /i        , "\n union \n")
+          ddl.gsub!(/ and /i          , "\n and ")
+          ddl.gsub!(/ or /i           , "\n or ")
+          ddl.gsub!(/inner join/i     , "\n inner join")
+          ddl.gsub!(/left join/i      , "\n left join")
+          ddl.gsub!(/left outer join/i, "\n left outer join")
+          stream.print("  ActiveRecord::Base.connection.execute(<<-EOS)\n")
+          stream.print(ddl.split(/\n/).map{|line| '    ' << line.strip}.join("\n"))
+          stream.print("\n  EOS\n")
+          return
+        end
+      end
       columns = @connection.columns(table)
       begin
         tbl = StringIO.new
