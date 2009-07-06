@@ -54,6 +54,7 @@ module SchemaComments
       
       def table_comment(table_name, comment = nil) #:nodoc:
         if comment
+          comment = (comment[:comment] || comment['comment']) if comment.is_a?(Hash)
           SchemaComment.save_table_comment(table_name, comment)
           return comment
         else
