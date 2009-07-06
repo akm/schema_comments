@@ -8,6 +8,7 @@ module SchemaComments
 #         alias :ignore_tables :ignore_tables_with_schema_comments 
 #       end
       mod.module_eval do 
+        alias_method_chain :tables, :schema_comments
         alias_method_chain :table, :schema_comments
       end
     end
@@ -23,6 +24,15 @@ module SchemaComments
 #     end
     
     private
+    def tables_with_schema_comments(stream)
+      tables_without_schema_comments(stream)
+      config = ActiveRecord::Base.configurations[RAILS_ENV]
+      if config['adapter'] == "mysql"
+        # ビューはtableの後に実行するようにしないと rake db:schema:load で失敗します。
+        mysql_views(stream)
+      end
+    end
+
     def table_with_schema_comments(table, stream)
       return if IGNORED_TABLE == table.downcase
       # MySQLは、ビューもテーブルとして扱うので、一個一個チェックします。
@@ -31,25 +41,7 @@ module SchemaComments
         match_count = @connection.select_value(
           "select count(*) from information_schema.TABLES where TABLE_TYPE = 'VIEW' AND TABLE_SCHEMA = '%s' AND TABLE_NAME = '%s'" % [
             config["database"], table])
-        if match_count.to_i > 0
-          ddl = @connection.select_value("show create view #{table}")
-          ddl.gsub!(/AS select/, "AS \n select\n")
-          ddl.gsub!(/( AS \`.+?\`\,)/){ "#{$1}\n" }
-          ddl.gsub!(/ from /i         , "\n from \n")
-          ddl.gsub!(/ where /i        , "\n where \n")
-          ddl.gsub!(/ order by /i     , "\n order by \n")
-          ddl.gsub!(/ having /i       , "\n having \n")
-          ddl.gsub!(/ union /i        , "\n union \n")
-          ddl.gsub!(/ and /i          , "\n and ")
-          ddl.gsub!(/ or /i           , "\n or ")
-          ddl.gsub!(/inner join/i     , "\n inner join")
-          ddl.gsub!(/left join/i      , "\n left join")
-          ddl.gsub!(/left outer join/i, "\n left outer join")
-          stream.print("  ActiveRecord::Base.connection.execute(<<-EOS)\n")
-          stream.print(ddl.split(/\n/).map{|line| '    ' << line.strip}.join("\n"))
-          stream.print("\n  EOS\n")
-          return
-        end
+        return if match_count.to_i > 0
       end
       columns = @connection.columns(table)
       begin
@@ -129,6 +121,35 @@ module SchemaComments
       end
       
       stream
+    end
+
+    def mysql_views(stream)
+      config = ActiveRecord::Base.configurations[RAILS_ENV]
+      view_names = @connection.select_values(
+        "select TABLE_NAME from information_schema.TABLES where TABLE_TYPE = 'VIEW' AND TABLE_SCHEMA = '%s'" % config["database"])
+      view_names.each do |view_name|
+        mysql_view(view_name, stream)
+      end
+    end
+    
+    def mysql_view(view_name, stream)
+      ddl = @connection.select_value("show create view #{view_name}")
+      ddl.gsub!(/^CREATE .+? VIEW /i, "CREATE OR REPLACE VIEW ")
+      ddl.gsub!(/AS select/, "AS \n select\n")
+      ddl.gsub!(/( AS \`.+?\`\,)/){ "#{$1}\n" }
+      ddl.gsub!(/ from /i         , "\n from \n")
+      ddl.gsub!(/ where /i        , "\n where \n")
+      ddl.gsub!(/ order by /i     , "\n order by \n")
+      ddl.gsub!(/ having /i       , "\n having \n")
+      ddl.gsub!(/ union /i        , "\n union \n")
+      ddl.gsub!(/ and /i          , "\n and ")
+      ddl.gsub!(/ or /i           , "\n or ")
+      ddl.gsub!(/inner join/i     , "\n inner join")
+      ddl.gsub!(/left join/i      , "\n left join")
+      ddl.gsub!(/left outer join/i, "\n left outer join")
+      stream.print("  ActiveRecord::Base.connection.execute(<<-EOS)\n")
+      stream.print(ddl.split(/\n/).map{|line| '    ' << line.strip}.join("\n"))
+      stream.print("\n  EOS\n")
     end
     
   end
