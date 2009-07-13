@@ -85,9 +85,9 @@ module SchemaComments
       end
       
       def yaml_access(&block)
-        db = YAML::Store.new(SchemaComments.yaml_path)
+        db = SortedStore.new(SchemaComments.yaml_path)
         result = nil
-        t = Time.now.to_f
+        # t = Time.now.to_f
         db.transaction do
           db[TABLE_KEY] ||= {}
           db[COLUMN_KEY] ||= {}
@@ -98,5 +98,78 @@ module SchemaComments
       end
 
     end
+
+    class SortedStore < YAML::Store
+      module ColumnNamedHash
+        def each
+          @column_names.each do |column_name|
+            yield(column_name, self[column_name])
+          end
+        end
+      end
+
+      def dump(table)
+        root = nil
+        StringIO.open do |io|
+          YAML.dump(@table, io)
+          io.rewind
+          root = YAML.load(io)
+        end
+
+        table_comments = root['table_comments']
+        column_comments = root['column_comments']
+        # 大元は
+        # table_comments:
+        #   ...
+        # column_comments:
+        #   ...
+        # その他
+        #   ...
+        # の順番です。
+        root.instance_eval do
+          def each
+            yield('table_comments', self['table_comments'])
+            yield('column_comments', self['column_comments'])
+            (self.keys - ['table_comments', 'column_comments']).each do |key|
+              yield(key, self[key])
+            end
+          end
+        end
+        # table_comments はテーブル名のアルファベット順
+        table_names = ActiveRecord::Base.connection.tables.sort - ['schema_migrations']
+        table_comments.instance_variable_set(:@table_names, table_names)
+        table_comments.instance_eval do
+          def each
+            @table_names.each do |key|
+              yield(key, self[key])
+            end
+          end
+        end
+        # column_comments もテーブル名のアルファベット順
+        column_comments.instance_variable_set(:@table_names, table_names)
+        column_comments.instance_eval do
+          def each
+            @table_names.each do |key|
+              yield(key, self[key])
+            end
+          end
+        end
+        # column_comments の各値はテーブルのカラム順
+        column_comments.each do |table_name, column_hash|
+          column_names = nil
+          begin
+            columns = ActiveRecord::Base.connection.columns_without_schema_comments(table_name, "#{table_name.classify} Columns")
+            column_names = columns.map(&:name)
+          rescue ActiveRecord::ActiveRecordError
+            column_names = column_hash.keys.sort
+          end
+          column_names.delete('id')
+          column_hash.instance_variable_set(:@column_names, column_names)
+          column_hash.extend(ColumnNamedHash)
+        end
+        root.to_yaml(@opt)
+      end
+    end
+
   end
 end

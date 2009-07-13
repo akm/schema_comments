@@ -7,6 +7,7 @@ describe ActiveRecord::SchemaDumper do
 
   before(:each) do
     SchemaComments.yaml_path = File.expand_path(File.join(File.dirname(__FILE__), 'schema_comments.yml'))
+    FileUtils.rm(SchemaComments.yaml_path, :verbose => true) if File.exist?(SchemaComments.yaml_path)
     
     (ActiveRecord::Base.connection.tables - IGNORED_TABLES).each do |t|
       ActiveRecord::Base.connection.drop_table(t) rescue nil
