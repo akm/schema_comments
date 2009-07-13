@@ -156,7 +156,7 @@
       C0 code coverage information
     </h3>
     <p>
-      Generated on Fri Jun 19 00:50:32 +0900 2009 with 
+      Generated on Mon Jul 13 10:52:19 +0900 2009 with 
       <a href='http://eigenclass.org/hiki/rcov'>
         rcov 0.8.1.2
       </a>
@@ -175,151 +175,61 @@
     </td> </tr> </thead> <tbody> <tr class='light'> <td> <a
     href='lib-schema_comments-schema_dumper_rb.html'>
     lib/schema_comments/schema_dumper.rb </a> </td> <td class='lines_total'>
-    <tt> 108 </tt> </td> <td class='lines_code'> <tt> 71 </tt> </td> <td> <table
-    cellspacing='0' align='right' cellpadding='0'> <tr> <td> <tt
-    class='coverage_total'> 88.9% </tt> &nbsp; </td> <td> <table
+    <tt> 159 </tt> </td> <td class='lines_code'> <tt> 115 </tt> </td> <td>
+    <table cellspacing='0' align='right' cellpadding='0'> <tr> <td> <tt
+    class='coverage_total'> 69.2% </tt> &nbsp; </td> <td> <table
     class='percent_graph' cellspacing='0' cellpadding='0' width='100'> <tr> <td
-    class='covered' width='89' /> <td class='uncovered' width='11' /> </tr>
+    class='covered' width='69' /> <td class='uncovered' width='31' /> </tr>
     </table> </td> </tr> </table> </td> <td> <table cellspacing='0'
-    align='right' cellpadding='0'> <tr> <td> <tt class='coverage_code'> 83.1%
+    align='right' cellpadding='0'> <tr> <td> <tt class='coverage_code'> 59.1%
     </tt> &nbsp; </td> <td> <table class='percent_graph' cellspacing='0'
-    cellpadding='0' width='100'> <tr> <td class='covered' width='83' /> <td
-    class='uncovered' width='17' /> </tr> </table> </td> </tr> </table> </td>
-    </tr> </tbody> </table><pre><span class="marked0"><a name="line1"></a> 1
-    module SchemaComments </span><span class="marked1"><a name="line2"></a> 2
-    module SchemaDumper </span><span class="marked0"><a name="line3"></a> 3 def
-    self.included(mod) </span><span class="inferred1"><a name="line4"></a> 4 #
-    mod.extend(ClassMethods) </span><span class="inferred0"><a name="line5"></a>
-    5 # mod.instance_eval do </span><span class="inferred1"><a name="line6"></a>
-    6 # alias :ignore_tables_without_schema_comments :ignore_tables </span><span
-    class="inferred0"><a name="line7"></a> 7 # alias :ignore_tables
-    :ignore_tables_with_schema_comments </span><span class="inferred1"><a
-    name="line8"></a> 8 # end </span><span class="marked0"><a name="line9"></a>
-    9 mod.module_eval do </span><span class="marked1"><a name="line10"></a> 10
-    alias_method_chain :table, :schema_comments </span><span
-    class="inferred0"><a name="line11"></a> 11 end </span><span
-    class="inferred1"><a name="line12"></a> 12 end </span><span
-    class="inferred0"><a name="line13"></a> 13 </span><span class="marked1"><a
-    name="line14"></a> 14 IGNORED_TABLE = 'schema_comments' </span><span
-    class="inferred0"><a name="line15"></a> 15 </span><span class="inferred1"><a
-    name="line16"></a> 16 # module ClassMethods </span><span
-    class="inferred0"><a name="line17"></a> 17 # def
+    cellpadding='0' width='100'> <tr> <td class='covered' width='59' /> <td
+    class='uncovered' width='41' /> </tr> </table> </td> </tr> </table> </td>
+    </tr> </tbody> </table><pre><span class="inferred0"><a name="line1"></a> 1 #
+    -*- coding: utf-8 -*- </span><span class="marked1"><a name="line2"></a> 2
+    module SchemaComments </span><span class="marked0"><a name="line3"></a> 3
+    module SchemaDumper </span><span class="marked1"><a name="line4"></a> 4 def
+    self.included(mod) </span><span class="inferred0"><a name="line5"></a> 5 #
+    mod.extend(ClassMethods) </span><span class="inferred1"><a name="line6"></a>
+    6 # mod.instance_eval do </span><span class="inferred0"><a name="line7"></a>
+    7 # alias :ignore_tables_without_schema_comments :ignore_tables </span><span
+    class="inferred1"><a name="line8"></a> 8 # alias :ignore_tables
+    :ignore_tables_with_schema_comments </span><span class="inferred0"><a
+    name="line9"></a> 9 # end </span><span class="marked1"><a name="line10"></a>
+    10 mod.module_eval do </span><span class="marked0"><a name="line11"></a> 11
+    alias_method_chain :tables, :schema_comments </span><span class="marked1"><a
+    name="line12"></a> 12 alias_method_chain :table, :schema_comments
+    </span><span class="inferred0"><a name="line13"></a> 13 end </span><span
+    class="inferred1"><a name="line14"></a> 14 end </span><span
+    class="inferred0"><a name="line15"></a> 15 </span><span class="marked1"><a
+    name="line16"></a> 16 IGNORED_TABLE = 'schema_comments' </span><span
+    class="inferred0"><a name="line17"></a> 17 </span><span class="inferred1"><a
+    name="line18"></a> 18 # module ClassMethods </span><span
+    class="inferred0"><a name="line19"></a> 19 # def
     ignore_tables_with_schema_comments </span><span class="inferred1"><a
-    name="line18"></a> 18 # result = ignore_tables_without_schema_comments
-    </span><span class="inferred0"><a name="line19"></a> 19 # result &lt;&lt;
+    name="line20"></a> 20 # result = ignore_tables_without_schema_comments
+    </span><span class="inferred0"><a name="line21"></a> 21 # result &lt;&lt;
     IGNORED_TABLE unless result.include?(IGNORED_TABLE) </span><span
-    class="inferred1"><a name="line20"></a> 20 # result </span><span
-    class="inferred0"><a name="line21"></a> 21 # end </span><span
-    class="inferred1"><a name="line22"></a> 22 # end </span><span
-    class="inferred0"><a name="line23"></a> 23 </span><span class="marked1"><a
-    name="line24"></a> 24 private </span><span class="marked0"><a
-    name="line25"></a> 25 def table_with_schema_comments(table, stream)
-    </span><span class="marked1"><a name="line26"></a> 26 return if
-    IGNORED_TABLE == table.downcase </span><span class="marked0"><a
-    name="line27"></a> 27 columns = @connection.columns(table) </span><span
-    class="marked1"><a name="line28"></a> 28 begin </span><span
-    class="marked0"><a name="line29"></a> 29 tbl = StringIO.new </span><span
-    class="inferred1"><a name="line30"></a> 30 </span><span class="marked0"><a
-    name="line31"></a> 31 if @connection.respond_to?(:pk_and_sequence_for)
-    </span><span class="uncovered1"><a name="line32"></a> 32 pk, pk_seq =
-    @connection.pk_and_sequence_for(table) </span><span class="uncovered0"><a
-    name="line33"></a> 33 end </span><span class="marked1"><a name="line34"></a>
-    34 pk ||= 'id' </span><span class="inferred0"><a name="line35"></a> 35
-    </span><span class="marked1"><a name="line36"></a> 36 tbl.print &quot;
-    create_table #{table.inspect}&quot; </span><span class="marked0"><a
-    name="line37"></a> 37 if columns.detect { |c| c.name == pk } </span><span
-    class="marked1"><a name="line38"></a> 38 if pk != 'id' </span><span
-    class="uncovered0"><a name="line39"></a> 39 tbl.print %Q(, :primary_key
-    =&gt; &quot;#{pk}&quot;) </span><span class="uncovered1"><a
-    name="line40"></a> 40 end </span><span class="uncovered0"><a
-    name="line41"></a> 41 else </span><span class="uncovered1"><a
-    name="line42"></a> 42 tbl.print &quot;, :id =&gt; false&quot; </span><span
-    class="uncovered0"><a name="line43"></a> 43 end </span><span
-    class="marked1"><a name="line44"></a> 44 tbl.print &quot;, :force =&gt;
-    true&quot; </span><span class="inferred0"><a name="line45"></a> 45
-    </span><span class="marked1"><a name="line46"></a> 46 table_comment =
-    @connection.table_comment(table) </span><span class="marked0"><a
-    name="line47"></a> 47 tbl.print &quot;, :comment =&gt;
-    '#{table_comment}'&quot; unless table_comment.blank? </span><span
-    class="inferred1"><a name="line48"></a> 48 </span><span class="marked0"><a
-    name="line49"></a> 49 tbl.puts &quot; do |t|&quot; </span><span
-    class="inferred1"><a name="line50"></a> 50 </span><span class="marked0"><a
-    name="line51"></a> 51 column_specs = columns.map do |column| </span><span
-    class="marked1"><a name="line52"></a> 52 raise StandardError, &quot;Unknown
-    type '#{column.sql_type}' for column '#{column.name}'&quot; if
-    @types[column.type].nil? </span><span class="marked0"><a name="line53"></a>
-    53 next if column.name == pk </span><span class="marked1"><a
-    name="line54"></a> 54 spec = {} </span><span class="marked0"><a
-    name="line55"></a> 55 spec[:name] = column.name.inspect </span><span
-    class="marked1"><a name="line56"></a> 56 spec[:type] = column.type.to_s
-    </span><span class="marked0"><a name="line57"></a> 57 spec[:limit] =
-    column.limit.inspect if column.limit != @types[column.type][:limit]
-    &amp;&amp; column.type != :decimal </span><span class="marked1"><a
-    name="line58"></a> 58 spec[:precision] = column.precision.inspect if
-    !column.precision.nil? </span><span class="marked0"><a name="line59"></a> 59
-    spec[:scale] = column.scale.inspect if !column.scale.nil? </span><span
-    class="marked1"><a name="line60"></a> 60 spec[:null] = 'false' if
-    !column.null </span><span class="marked0"><a name="line61"></a> 61
-    spec[:default] = default_string(column.default) if !column.default.nil?
-    </span><span class="marked1"><a name="line62"></a> 62 spec[:comment] =
-    (column.comment || '').inspect </span><span class="marked0"><a
-    name="line63"></a> 63 (spec.keys - [:name, :type]).each{ |k|
-    spec[k].insert(0, &quot;#{k.inspect} =&gt; &quot;)} </span><span
-    class="marked1"><a name="line64"></a> 64 spec </span><span
-    class="inferred0"><a name="line65"></a> 65 end.compact </span><span
-    class="inferred1"><a name="line66"></a> 66 </span><span class="inferred0"><a
-    name="line67"></a> 67 # find all migration keys used in this table
-    </span><span class="marked1"><a name="line68"></a> 68 keys = [:name, :limit,
-    :precision, :scale, :default, :null, :comment] &amp;
-    column_specs.map(&amp;:keys).flatten </span><span class="inferred0"><a
-    name="line69"></a> 69 </span><span class="inferred1"><a name="line70"></a>
-    70 # figure out the lengths for each column based on above keys </span><span
-    class="marked0"><a name="line71"></a> 71 lengths = keys.map{ |key|
-    column_specs.map{ |spec| spec[key] ? spec[key].length + 2 : 0 }.max }
-    </span><span class="inferred1"><a name="line72"></a> 72 </span><span
-    class="inferred0"><a name="line73"></a> 73 # the string we're going to
-    sprintf our values against, with standardized column widths </span><span
-    class="marked1"><a name="line74"></a> 74 format_string = lengths.map{ |len|
-    &quot;%-#{len}s&quot; } </span><span class="inferred0"><a name="line75"></a>
-    75 </span><span class="inferred1"><a name="line76"></a> 76 # find the max
-    length for the 'type' column, which is special </span><span
-    class="marked0"><a name="line77"></a> 77 type_length = column_specs.map{
-    |column| column[:type].length }.max </span><span class="inferred1"><a
-    name="line78"></a> 78 </span><span class="inferred0"><a name="line79"></a>
-    79 # add column type definition to our format string </span><span
-    class="marked1"><a name="line80"></a> 80 format_string.unshift &quot;
-    t.%-#{type_length}s &quot; </span><span class="inferred0"><a
-    name="line81"></a> 81 </span><span class="marked1"><a name="line82"></a> 82
-    format_string *= '' </span><span class="inferred0"><a name="line83"></a> 83
-    </span><span class="marked1"><a name="line84"></a> 84 column_specs.each do
-    |colspec| </span><span class="marked0"><a name="line85"></a> 85 values =
-    keys.zip(lengths).map{ |key, len| colspec.key?(key) ? colspec[key] + &quot;,
-    &quot; : &quot; &quot; * len } </span><span class="marked1"><a
-    name="line86"></a> 86 values.unshift colspec[:type] </span><span
-    class="marked0"><a name="line87"></a> 87 tbl.print((format_string %
-    values).gsub(/,\s*$/, '')) </span><span class="marked1"><a
-    name="line88"></a> 88 tbl.puts </span><span class="inferred0"><a
-    name="line89"></a> 89 end </span><span class="inferred1"><a
-    name="line90"></a> 90 </span><span class="marked0"><a name="line91"></a> 91
-    tbl.puts &quot; end&quot; </span><span class="marked1"><a name="line92"></a>
-    92 tbl.puts </span><span class="inferred0"><a name="line93"></a> 93
-    </span><span class="marked1"><a name="line94"></a> 94 indexes(table, tbl)
-    </span><span class="inferred0"><a name="line95"></a> 95 </span><span
-    class="marked1"><a name="line96"></a> 96 tbl.rewind </span><span
-    class="marked0"><a name="line97"></a> 97 stream.print tbl.read </span><span
-    class="uncovered1"><a name="line98"></a> 98 rescue =&gt; e </span><span
-    class="uncovered0"><a name="line99"></a> 99 stream.puts &quot;# Could not
-    dump table #{table.inspect} because of following #{e.class}&quot;
-    </span><span class="uncovered1"><a name="line100"></a>100 stream.puts
-    &quot;# #{e.message}&quot; </span><span class="uncovered0"><a
-    name="line101"></a>101 stream.puts </span><span class="uncovered1"><a
-    name="line102"></a>102 end </span><span class="inferred0"><a
-    name="line103"></a>103 </span><span class="marked1"><a
-    name="line104"></a>104 stream </span><span class="inferred0"><a
-    name="line105"></a>105 end </span><span class="inferred1"><a
-    name="line106"></a>106 </span><span class="inferred0"><a
-    name="line107"></a>107 end </span><span class="inferred1"><a
-    name="line108"></a>108 end </span></pre>
+    class="inferred1"><a name="line22"></a> 22 # result </span><span
+    class="inferred0"><a name="line23"></a> 23 # end </span><span
+    class="inferred1"><a name="line24"></a> 24 # end </span><span
+    class="inferred0"><a name="line25"></a> 25 </span><span class="marked1"><a
+    name="line26"></a> 26 private </span><span class="marked0"><a
+    name="line27"></a> 27 def tables_with_schema_comments(stream) </span><span
+    class="marked1"><a name="line28"></a> 28
+    tables_without_schema_comments(stream) </span><span class="marked0"><a
+    name="line29"></a> 29 if adapter_name == &quot;mysql&quot; </span><span
+    class="uncovered1"><a name="line30"></a> 30 #
+    ビューはtableの後に実行するようにしないと rake
+    db:schema:load で失敗します。 </span><span class="uncovered0"><a
+    name="line31"></a> 31 mysql_views(stream) </span><span class="uncovered1"><a
+    name="line32"></a> 32 end </span><span class="uncovered0"><a
+    name="line33"></a> 33 end </span><span class="inferred1"><a
+    name="line34"></a> 34 </span><span class="marked0"><a name="line35"></a> 35
+    def table_with_schema_comments(table, stream) </span><span
+    class="marked1"><a name="line36"></a> 36 return if IGNORED_TABLE ==
+    table.downcase </span><span class="inferred0"><a name="line37"></a> 37 #
+    MySQLは、ビューもテーブルとして扱うので、一個一個チェックします。 </span><span class="marked1"><a name="line38"></a> 38 if adapter_name == 'mysql' </span><span class="uncovered0"><a name="line39"></a> 39 match_count = @connection.select_value( </span><span class="uncovered1"><a name="line40"></a> 40 &quot;select count(*) from information_schema.TABLES where TABLE_TYPE = 'VIEW' AND TABLE_SCHEMA = '%s' AND TABLE_NAME = '%s'&quot; % [ </span><span class="uncovered0"><a name="line41"></a> 41 config[&quot;database&quot;], table]) </span><span class="uncovered1"><a name="line42"></a> 42 return if match_count.to_i &gt; 0 </span><span class="uncovered0"><a name="line43"></a> 43 end </span><span class="marked1"><a name="line44"></a> 44 columns = @connection.columns(table) </span><span class="marked0"><a name="line45"></a> 45 begin </span><span class="marked1"><a name="line46"></a> 46 tbl = StringIO.new </span><span class="inferred0"><a name="line47"></a> 47 </span><span class="marked1"><a name="line48"></a> 48 if @connection.respond_to?(:pk_and_sequence_for) </span><span class="uncovered0"><a name="line49"></a> 49 pk, pk_seq = @connection.pk_and_sequence_for(table) </span><span class="uncovered1"><a name="line50"></a> 50 end </span><span class="marked0"><a name="line51"></a> 51 pk ||= 'id' </span><span class="inferred1"><a name="line52"></a> 52 </span><span class="marked0"><a name="line53"></a> 53 tbl.print &quot; create_table #{table.inspect}&quot; </span><span class="marked1"><a name="line54"></a> 54 if columns.detect { |c| c.name == pk } </span><span class="marked0"><a name="line55"></a> 55 if pk != 'id' </span><span class="uncovered1"><a name="line56"></a> 56 tbl.print %Q(, :primary_key =&gt; &quot;#{pk}&quot;) </span><span class="uncovered0"><a name="line57"></a> 57 end </span><span class="uncovered1"><a name="line58"></a> 58 else </span><span class="uncovered0"><a name="line59"></a> 59 tbl.print &quot;, :id =&gt; false&quot; </span><span class="uncovered1"><a name="line60"></a> 60 end </span><span class="marked0"><a name="line61"></a> 61 tbl.print &quot;, :force =&gt; true&quot; </span><span class="inferred1"><a name="line62"></a> 62 </span><span class="marked0"><a name="line63"></a> 63 table_comment = @connection.table_comment(table) </span><span class="marked1"><a name="line64"></a> 64 tbl.print &quot;, :comment =&gt; '#{table_comment}'&quot; unless table_comment.blank? </span><span class="inferred0"><a name="line65"></a> 65 </span><span class="marked1"><a name="line66"></a> 66 tbl.puts &quot; do |t|&quot; </span><span class="inferred0"><a name="line67"></a> 67 </span><span class="marked1"><a name="line68"></a> 68 column_specs = columns.map do |column| </span><span class="marked0"><a name="line69"></a> 69 raise StandardError, &quot;Unknown type '#{column.sql_type}' for column '#{column.name}'&quot; if @types[column.type].nil? </span><span class="marked1"><a name="line70"></a> 70 next if column.name == pk </span><span class="marked0"><a name="line71"></a> 71 spec = {} </span><span class="marked1"><a name="line72"></a> 72 spec[:name] = column.name.inspect </span><span class="marked0"><a name="line73"></a> 73 spec[:type] = column.type.to_s </span><span class="marked1"><a name="line74"></a> 74 spec[:limit] = column.limit.inspect if column.limit != @types[column.type][:limit] &amp;&amp; column.type != :decimal </span><span class="marked0"><a name="line75"></a> 75 spec[:precision] = column.precision.inspect if !column.precision.nil? </span><span class="marked1"><a name="line76"></a> 76 spec[:scale] = column.scale.inspect if !column.scale.nil? </span><span class="marked0"><a name="line77"></a> 77 spec[:null] = 'false' if !column.null </span><span class="marked1"><a name="line78"></a> 78 spec[:default] = default_string(column.default) if !column.default.nil? </span><span class="marked0"><a name="line79"></a> 79 spec[:comment] = (column.comment || '').inspect </span><span class="marked1"><a name="line80"></a> 80 (spec.keys - [:name, :type]).each{ |k| spec[k].insert(0, &quot;#{k.inspect} =&gt; &quot;)} </span><span class="marked0"><a name="line81"></a> 81 spec </span><span class="inferred1"><a name="line82"></a> 82 end.compact </span><span class="inferred0"><a name="line83"></a> 83 </span><span class="inferred1"><a name="line84"></a> 84 # find all migration keys used in this table </span><span class="marked0"><a name="line85"></a> 85 keys = [:name, :limit, :precision, :scale, :default, :null, :comment] &amp; column_specs.map(&amp;:keys).flatten </span><span class="inferred1"><a name="line86"></a> 86 </span><span class="inferred0"><a name="line87"></a> 87 # figure out the lengths for each column based on above keys </span><span class="marked1"><a name="line88"></a> 88 lengths = keys.map{ |key| column_specs.map{ |spec| spec[key] ? spec[key].length + 2 : 0 }.max } </span><span class="inferred0"><a name="line89"></a> 89 </span><span class="inferred1"><a name="line90"></a> 90 # the string we're going to sprintf our values against, with standardized column widths </span><span class="marked0"><a name="line91"></a> 91 format_string = lengths.map{ |len| &quot;%-#{len}s&quot; } </span><span class="inferred1"><a name="line92"></a> 92 </span><span class="inferred0"><a name="line93"></a> 93 # find the max length for the 'type' column, which is special </span><span class="marked1"><a name="line94"></a> 94 type_length = column_specs.map{ |column| column[:type].length }.max </span><span class="inferred0"><a name="line95"></a> 95 </span><span class="inferred1"><a name="line96"></a> 96 # add column type definition to our format string </span><span class="marked0"><a name="line97"></a> 97 format_string.unshift &quot; t.%-#{type_length}s &quot; </span><span class="inferred1"><a name="line98"></a> 98 </span><span class="marked0"><a name="line99"></a> 99 format_string *= '' </span><span class="inferred1"><a name="line100"></a>100 </span><span class="marked0"><a name="line101"></a>101 column_specs.each do |colspec| </span><span class="marked1"><a name="line102"></a>102 values = keys.zip(lengths).map{ |key, len| colspec.key?(key) ? colspec[key] + &quot;, &quot; : &quot; &quot; * len } </span><span class="marked0"><a name="line103"></a>103 values.unshift colspec[:type] </span><span class="marked1"><a name="line104"></a>104 tbl.print((format_string % values).gsub(/,\s*$/, '')) </span><span class="marked0"><a name="line105"></a>105 tbl.puts </span><span class="inferred1"><a name="line106"></a>106 end </span><span class="inferred0"><a name="line107"></a>107 </span><span class="marked1"><a name="line108"></a>108 tbl.puts &quot; end&quot; </span><span class="marked0"><a name="line109"></a>109 tbl.puts </span><span class="inferred1"><a name="line110"></a>110 </span><span class="marked0"><a name="line111"></a>111 indexes(table, tbl) </span><span class="inferred1"><a name="line112"></a>112 </span><span class="marked0"><a name="line113"></a>113 tbl.rewind </span><span class="marked1"><a name="line114"></a>114 stream.print tbl.read </span><span class="uncovered0"><a name="line115"></a>115 rescue =&gt; e </span><span class="uncovered1"><a name="line116"></a>116 stream.puts &quot;# Could not dump table #{table.inspect} because of following #{e.class}&quot; </span><span class="uncovered0"><a name="line117"></a>117 stream.puts &quot;# #{e.message}&quot; </span><span class="uncovered1"><a name="line118"></a>118 stream.puts </span><span class="uncovered0"><a name="line119"></a>119 end </span><span class="inferred1"><a name="line120"></a>120 </span><span class="marked0"><a name="line121"></a>121 stream </span><span class="inferred1"><a name="line122"></a>122 end </span><span class="inferred0"><a name="line123"></a>123 </span><span class="marked1"><a name="line124"></a>124 def adapter_name </span><span class="marked0"><a name="line125"></a>125 config = ActiveRecord::Base.configurations[RAILS_ENV] </span><span class="marked1"><a name="line126"></a>126 config ? config['adapter'] : ActiveRecord::Base.connection.adapter_name </span><span class="inferred0"><a name="line127"></a>127 end </span><span class="inferred1"><a name="line128"></a>128 </span><span class="marked0"><a name="line129"></a>129 def mysql_views(stream) </span><span class="uncovered1"><a name="line130"></a>130 config = ActiveRecord::Base.configurations[RAILS_ENV] </span><span class="uncovered0"><a name="line131"></a>131 view_names = @connection.select_values( </span><span class="uncovered1"><a name="line132"></a>132 &quot;select TABLE_NAME from information_schema.TABLES where TABLE_TYPE = 'VIEW' AND TABLE_SCHEMA = '%s'&quot; % config[&quot;database&quot;]) </span><span class="uncovered0"><a name="line133"></a>133 view_names.each do |view_name| </span><span class="uncovered1"><a name="line134"></a>134 mysql_view(view_name, stream) </span><span class="uncovered0"><a name="line135"></a>135 end </span><span class="uncovered1"><a name="line136"></a>136 end </span><span class="inferred0"><a name="line137"></a>137 </span><span class="marked1"><a name="line138"></a>138 def mysql_view(view_name, stream) </span><span class="uncovered0"><a name="line139"></a>139 ddl = @connection.select_value(&quot;show create view #{view_name}&quot;) </span><span class="uncovered1"><a name="line140"></a>140 ddl.gsub!(/^CREATE .+? VIEW /i, &quot;CREATE OR REPLACE VIEW &quot;) </span><span class="uncovered0"><a name="line141"></a>141 ddl.gsub!(/AS select/, &quot;AS \n select\n&quot;) </span><span class="uncovered1"><a name="line142"></a>142 ddl.gsub!(/( AS \`.+?\`\,)/){ &quot;#{$1}\n&quot; } </span><span class="uncovered0"><a name="line143"></a>143 ddl.gsub!(/ from /i , &quot;\n from \n&quot;) </span><span class="uncovered1"><a name="line144"></a>144 ddl.gsub!(/ where /i , &quot;\n where \n&quot;) </span><span class="uncovered0"><a name="line145"></a>145 ddl.gsub!(/ order by /i , &quot;\n order by \n&quot;) </span><span class="uncovered1"><a name="line146"></a>146 ddl.gsub!(/ having /i , &quot;\n having \n&quot;) </span><span class="uncovered0"><a name="line147"></a>147 ddl.gsub!(/ union /i , &quot;\n union \n&quot;) </span><span class="uncovered1"><a name="line148"></a>148 ddl.gsub!(/ and /i , &quot;\n and &quot;) </span><span class="uncovered0"><a name="line149"></a>149 ddl.gsub!(/ or /i , &quot;\n or &quot;) </span><span class="uncovered1"><a name="line150"></a>150 ddl.gsub!(/inner join/i , &quot;\n inner join&quot;) </span><span class="uncovered0"><a name="line151"></a>151 ddl.gsub!(/left join/i , &quot;\n left join&quot;) </span><span class="uncovered1"><a name="line152"></a>152 ddl.gsub!(/left outer join/i, &quot;\n left outer join&quot;) </span><span class="uncovered0"><a name="line153"></a>153 stream.print(&quot; ActiveRecord::Base.connection.execute(&lt;&lt;-EOS)\n&quot;) </span><span class="uncovered1"><a name="line154"></a>154 stream.print(ddl.split(/\n/).map{|line| ' ' &lt;&lt; line.strip}.join(&quot;\n&quot;)) </span><span class="uncovered0"><a name="line155"></a>155 stream.print(&quot;\n EOS\n&quot;) </span><span class="uncovered1"><a name="line156"></a>156 end </span><span class="uncovered0"><a name="line157"></a>157 </span><span class="uncovered1"><a name="line158"></a>158 end </span><span class="uncovered0"><a name="line159"></a>159 end </span></pre>
     <hr />
     <p> Generated using the <a href='http://eigenclass.org/hiki.rb?rcov'> rcov
     code coverage analysis tool for Ruby </a> version 0.8.1.2. </p>

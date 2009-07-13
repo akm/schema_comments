@@ -15,7 +15,8 @@ module SchemaComments
     class << self
       def table_comment(table_name)
         if yaml_exist?
-          return yaml_access{|db| db[TABLE_KEY][table_name.to_s]}
+          @table_names ||= yaml_access{|db| db[TABLE_KEY]}.dup
+          return @table_names[table_name.to_s]
         end
         return nil unless table_exists?
         connection.select_value(sanitize_conditions("select descriptions from schema_comments where table_name = '%s' and column_name is null" % table_name))
@@ -23,10 +24,9 @@ module SchemaComments
       
       def column_comment(table_name, column_name)
         if yaml_exist?
-          return yaml_access do |db|
-            table_hash = db[COLUMN_KEY][table_name.to_s]
-            table_hash ? table_hash[column_name.to_s] : nil
-          end
+          @column_names ||= yaml_access{|db| db[COLUMN_KEY] }.dup
+          column_hash = @column_names[table_name.to_s] || {}
+          return column_hash[column_name.to_s]
         end
         return nil unless table_exists?
         connection.select_value(sanitize_conditions("select descriptions from schema_comments where table_name = '%s' and column_name = '%s'" % [table_name, column_name]))
@@ -35,10 +35,8 @@ module SchemaComments
       def column_comments(table_name)
         if yaml_exist?
           result = nil
-          yaml_access do |db|
-            table_hash = db[COLUMN_KEY][table_name.to_s]
-            result = Hash[table_hash] if table_hash
-          end
+          @column_names ||= yaml_access{|db| db[COLUMN_KEY] }.dup
+          result = @column_names[table_name.to_s]
           return result || {}
         end
         return {} unless table_exists?
@@ -50,6 +48,7 @@ module SchemaComments
         yaml_access do |db|
           db[TABLE_KEY][table_name.to_s] = comment
         end
+        @table_names = nil
       end
       
       def save_column_comment(table_name, column_name, comment)
@@ -57,6 +56,7 @@ module SchemaComments
           db[COLUMN_KEY][table_name.to_s] ||= {}
           db[COLUMN_KEY][table_name.to_s][column_name.to_s] = comment
         end
+        @column_names = nil
       end
       
       def destroy_of(table_name, column_name)
@@ -64,6 +64,7 @@ module SchemaComments
           column_hash = db[COLUMN_KEY][table_name.to_s]
           column_hash.delete(column_name) if column_hash
         end
+        @column_names = nil
       end
       
       def update_table_name(table_name, new_name)
@@ -73,6 +74,8 @@ module SchemaComments
             db[COLUMN_KEY][new_name.to_s] = db[COLUMN_KEY].delete(table_name.to_s)
           end
         end
+        @table_names = nil
+        @column_names = nil
       end
       
       private
@@ -84,11 +87,13 @@ module SchemaComments
       def yaml_access(&block)
         db = YAML::Store.new(SchemaComments.yaml_path)
         result = nil
+        t = Time.now.to_f
         db.transaction do
           db[TABLE_KEY] ||= {}
           db[COLUMN_KEY] ||= {}
           result = yield(db) if block_given?
         end
+        # puts("SchemaComment#yaml_access %fms from %s" % [Time.now.to_f - t, caller[1].gsub(/^.+:in /, '')])
         result
       end
 

@@ -156,7 +156,7 @@
       C0 code coverage information
     </h3>
     <p>
-      Generated on Fri Jun 19 00:50:32 +0900 2009 with 
+      Generated on Mon Jul 13 10:52:19 +0900 2009 with 
       <a href='http://eigenclass.org/hiki/rcov'>
         rcov 0.8.1.2
       </a>
@@ -175,7 +175,7 @@
     </td> </tr> </thead> <tbody> <tr class='light'> <td> <a
     href='lib-schema_comments-connection_adapters_rb.html'>
     lib/schema_comments/connection_adapters.rb </a> </td> <td
-    class='lines_total'> <tt> 157 </tt> </td> <td class='lines_code'> <tt> 126
+    class='lines_total'> <tt> 158 </tt> </td> <td class='lines_code'> <tt> 127
     </tt> </td> <td> <table cellspacing='0' align='right' cellpadding='0'> <tr>
     <td> <tt class='coverage_total'> 94.3% </tt> &nbsp; </td> <td> <table
     class='percent_graph' cellspacing='0' cellpadding='0' width='100'> <tr> <td
@@ -248,90 +248,92 @@
     class="inferred1"><a name="line54"></a> 54 </span><span class="marked0"><a
     name="line55"></a> 55 def table_comment(table_name, comment = nil) #:nodoc:
     </span><span class="marked1"><a name="line56"></a> 56 if comment
-    </span><span class="marked0"><a name="line57"></a> 57
+    </span><span class="marked0"><a name="line57"></a> 57 comment =
+    (comment[:comment] || comment['comment']) if comment.is_a?(Hash)
+    </span><span class="marked1"><a name="line58"></a> 58
     SchemaComment.save_table_comment(table_name, comment) </span><span
-    class="marked1"><a name="line58"></a> 58 return comment </span><span
-    class="inferred0"><a name="line59"></a> 59 else </span><span
-    class="marked1"><a name="line60"></a> 60
-    SchemaComment.table_comment(table_name) </span><span class="inferred0"><a
-    name="line61"></a> 61 end </span><span class="inferred1"><a
+    class="marked0"><a name="line59"></a> 59 return comment </span><span
+    class="inferred1"><a name="line60"></a> 60 else </span><span
+    class="marked0"><a name="line61"></a> 61
+    SchemaComment.table_comment(table_name) </span><span class="inferred1"><a
     name="line62"></a> 62 end </span><span class="inferred0"><a
-    name="line63"></a> 63 </span><span class="marked1"><a name="line64"></a> 64
+    name="line63"></a> 63 end </span><span class="inferred1"><a
+    name="line64"></a> 64 </span><span class="marked0"><a name="line65"></a> 65
     def delete_schema_comments(table_name, column_name = nil) </span><span
-    class="marked0"><a name="line65"></a> 65
+    class="marked1"><a name="line66"></a> 66
     SchemaComment.destroy_of(table_name, column_name) </span><span
-    class="inferred1"><a name="line66"></a> 66 end </span><span
-    class="inferred0"><a name="line67"></a> 67 </span><span class="marked1"><a
-    name="line68"></a> 68 def update_schema_comments_table_name(table_name,
-    new_name) </span><span class="marked0"><a name="line69"></a> 69
+    class="inferred0"><a name="line67"></a> 67 end </span><span
+    class="inferred1"><a name="line68"></a> 68 </span><span class="marked0"><a
+    name="line69"></a> 69 def update_schema_comments_table_name(table_name,
+    new_name) </span><span class="marked1"><a name="line70"></a> 70
     SchemaComment.update_table_name(table_name, new_name) </span><span
-    class="inferred1"><a name="line70"></a> 70 end </span><span
     class="inferred0"><a name="line71"></a> 71 end </span><span
-    class="inferred1"><a name="line72"></a> 72 </span><span class="marked0"><a
-    name="line73"></a> 73 module ConcreteAdapter </span><span class="marked1"><a
-    name="line74"></a> 74 def self.included(mod) </span><span class="marked0"><a
-    name="line75"></a> 75 mod.module_eval do </span><span class="marked1"><a
-    name="line76"></a> 76 alias_method_chain :columns, :schema_comments
-    </span><span class="marked0"><a name="line77"></a> 77 alias_method_chain
-    :create_table, :schema_comments </span><span class="marked1"><a
-    name="line78"></a> 78 alias_method_chain :drop_table, :schema_comments
-    </span><span class="marked0"><a name="line79"></a> 79 alias_method_chain
-    :rename_table, :schema_comments </span><span class="marked1"><a
-    name="line80"></a> 80 alias_method_chain :remove_column, :schema_comments
-    </span><span class="marked0"><a name="line81"></a> 81 alias_method_chain
-    :add_column, :schema_comments </span><span class="marked1"><a
-    name="line82"></a> 82 alias_method_chain :change_column, :schema_comments
-    </span><span class="inferred0"><a name="line83"></a> 83 end </span><span
-    class="inferred1"><a name="line84"></a> 84 end </span><span
-    class="inferred0"><a name="line85"></a> 85 </span><span class="marked1"><a
-    name="line86"></a> 86 def columns_with_schema_comments(table_name, name =
-    nil, &amp;block) </span><span class="marked0"><a name="line87"></a> 87
+    class="inferred1"><a name="line72"></a> 72 end </span><span
+    class="inferred0"><a name="line73"></a> 73 </span><span class="marked1"><a
+    name="line74"></a> 74 module ConcreteAdapter </span><span class="marked0"><a
+    name="line75"></a> 75 def self.included(mod) </span><span class="marked1"><a
+    name="line76"></a> 76 mod.module_eval do </span><span class="marked0"><a
+    name="line77"></a> 77 alias_method_chain :columns, :schema_comments
+    </span><span class="marked1"><a name="line78"></a> 78 alias_method_chain
+    :create_table, :schema_comments </span><span class="marked0"><a
+    name="line79"></a> 79 alias_method_chain :drop_table, :schema_comments
+    </span><span class="marked1"><a name="line80"></a> 80 alias_method_chain
+    :rename_table, :schema_comments </span><span class="marked0"><a
+    name="line81"></a> 81 alias_method_chain :remove_column, :schema_comments
+    </span><span class="marked1"><a name="line82"></a> 82 alias_method_chain
+    :add_column, :schema_comments </span><span class="marked0"><a
+    name="line83"></a> 83 alias_method_chain :change_column, :schema_comments
+    </span><span class="inferred1"><a name="line84"></a> 84 end </span><span
+    class="inferred0"><a name="line85"></a> 85 end </span><span
+    class="inferred1"><a name="line86"></a> 86 </span><span class="marked0"><a
+    name="line87"></a> 87 def columns_with_schema_comments(table_name, name =
+    nil, &amp;block) </span><span class="marked1"><a name="line88"></a> 88
     result = columns_without_schema_comments(table_name, name, &amp;block)
-    </span><span class="marked1"><a name="line88"></a> 88 column_comment_hash =
-    column_comments(table_name) </span><span class="marked0"><a
-    name="line89"></a> 89 result.each do |column| </span><span
-    class="marked1"><a name="line90"></a> 90 column.comment =
-    column_comment_hash[column.name] </span><span class="inferred0"><a
-    name="line91"></a> 91 end </span><span class="marked1"><a name="line92"></a>
-    92 result </span><span class="inferred0"><a name="line93"></a> 93 end
-    </span><span class="inferred1"><a name="line94"></a> 94 </span><span
-    class="marked0"><a name="line95"></a> 95 def
+    </span><span class="marked0"><a name="line89"></a> 89 column_comment_hash =
+    column_comments(table_name) </span><span class="marked1"><a
+    name="line90"></a> 90 result.each do |column| </span><span
+    class="marked0"><a name="line91"></a> 91 column.comment =
+    column_comment_hash[column.name] </span><span class="inferred1"><a
+    name="line92"></a> 92 end </span><span class="marked0"><a name="line93"></a>
+    93 result </span><span class="inferred1"><a name="line94"></a> 94 end
+    </span><span class="inferred0"><a name="line95"></a> 95 </span><span
+    class="marked1"><a name="line96"></a> 96 def
     create_table_with_schema_comments(table_name, options = {}, &amp;block)
-    </span><span class="marked1"><a name="line96"></a> 96 table_def = nil
-    </span><span class="marked0"><a name="line97"></a> 97 result =
+    </span><span class="marked0"><a name="line97"></a> 97 table_def = nil
+    </span><span class="marked1"><a name="line98"></a> 98 result =
     create_table_without_schema_comments(table_name, options) do |t|
-    </span><span class="marked1"><a name="line98"></a> 98 table_def = t
-    </span><span class="marked0"><a name="line99"></a> 99 yield(t) </span><span
-    class="inferred1"><a name="line100"></a>100 end </span><span
-    class="marked0"><a name="line101"></a>101 table_comment(table_name,
+    </span><span class="marked0"><a name="line99"></a> 99 table_def = t
+    </span><span class="marked1"><a name="line100"></a>100 yield(t) </span><span
+    class="inferred0"><a name="line101"></a>101 end </span><span
+    class="marked1"><a name="line102"></a>102 table_comment(table_name,
     options[:comment]) unless options[:comment].blank? </span><span
-    class="marked1"><a name="line102"></a>102 table_def.columns.each do |col|
-    </span><span class="marked0"><a name="line103"></a>103
+    class="marked0"><a name="line103"></a>103 table_def.columns.each do |col|
+    </span><span class="marked1"><a name="line104"></a>104
     column_comment(table_name, col.name, col.comment) unless col.comment.blank?
-    </span><span class="inferred1"><a name="line104"></a>104 end </span><span
-    class="marked0"><a name="line105"></a>105 result </span><span
-    class="inferred1"><a name="line106"></a>106 end </span><span
-    class="inferred0"><a name="line107"></a>107 </span><span class="marked1"><a
-    name="line108"></a>108 def drop_table_with_schema_comments(table_name,
-    options = {}, &amp;block) </span><span class="marked0"><a
-    name="line109"></a>109 result =
+    </span><span class="inferred0"><a name="line105"></a>105 end </span><span
+    class="marked1"><a name="line106"></a>106 result </span><span
+    class="inferred0"><a name="line107"></a>107 end </span><span
+    class="inferred1"><a name="line108"></a>108 </span><span class="marked0"><a
+    name="line109"></a>109 def drop_table_with_schema_comments(table_name,
+    options = {}, &amp;block) </span><span class="marked1"><a
+    name="line110"></a>110 result =
     drop_table_without_schema_comments(table_name, options) </span><span
-    class="marked1"><a name="line110"></a>110 delete_schema_comments(table_name)
-    unless @ignore_drop_table </span><span class="marked0"><a
-    name="line111"></a>111 result </span><span class="inferred1"><a
-    name="line112"></a>112 end </span><span class="inferred0"><a
-    name="line113"></a>113 </span><span class="marked1"><a
-    name="line114"></a>114 def rename_table_with_schema_comments(table_name,
-    new_name) </span><span class="marked0"><a name="line115"></a>115 result =
+    class="marked0"><a name="line111"></a>111 delete_schema_comments(table_name)
+    unless @ignore_drop_table </span><span class="marked1"><a
+    name="line112"></a>112 result </span><span class="inferred0"><a
+    name="line113"></a>113 end </span><span class="inferred1"><a
+    name="line114"></a>114 </span><span class="marked0"><a
+    name="line115"></a>115 def rename_table_with_schema_comments(table_name,
+    new_name) </span><span class="marked1"><a name="line116"></a>116 result =
     rename_table_without_schema_comments(table_name, new_name) </span><span
-    class="marked1"><a name="line116"></a>116
+    class="marked0"><a name="line117"></a>117
     update_schema_comments_table_name(table_name, new_name) </span><span
-    class="marked0"><a name="line117"></a>117 result </span><span
-    class="inferred1"><a name="line118"></a>118 end </span><span
-    class="inferred0"><a name="line119"></a>119 </span><span class="marked1"><a
-    name="line120"></a>120 def remove_column_with_schema_comments(table_name,
-    *column_names) </span><span class="inferred0"><a name="line121"></a>121 #
-    sqlite3ではremove_columnがないので、以下のフローでスキーマ更新します。 </span><span class="inferred1"><a name="line122"></a>122 # 1. CREATE TEMPORARY TABLE &quot;altered_xxxxxx&quot; (・・・) </span><span class="inferred0"><a name="line123"></a>123 # 2. PRAGMA index_list(&quot;xxxxxx&quot;) </span><span class="inferred1"><a name="line124"></a>124 # 3. DROP TABLE &quot;xxxxxx&quot; </span><span class="inferred0"><a name="line125"></a>125 # 4. CREATE TABLE &quot;xxxxxx&quot; </span><span class="inferred1"><a name="line126"></a>126 # 5. PRAGMA index_list(&quot;altered_xxxxxx&quot;) </span><span class="inferred0"><a name="line127"></a>127 # 6. DROP TABLE &quot;altered_xxxxxx&quot; </span><span class="inferred1"><a name="line128"></a>128 # </span><span class="inferred0"><a name="line129"></a>129 # このdrop tableの際に、schema_commentsを変更しないようにフラグを立てています。 </span><span class="marked1"><a name="line130"></a>130 @ignore_drop_table = true </span><span class="marked0"><a name="line131"></a>131 remove_column_without_schema_comments(table_name, *column_names) </span><span class="marked1"><a name="line132"></a>132 column_names.each do |column_name| </span><span class="marked0"><a name="line133"></a>133 delete_schema_comments(table_name, column_name) </span><span class="inferred1"><a name="line134"></a>134 end </span><span class="inferred0"><a name="line135"></a>135 ensure </span><span class="marked1"><a name="line136"></a>136 @ignore_drop_table = false </span><span class="inferred0"><a name="line137"></a>137 end </span><span class="inferred1"><a name="line138"></a>138 </span><span class="marked0"><a name="line139"></a>139 def add_column_with_schema_comments(table_name, column_name, type, options = {}) </span><span class="marked1"><a name="line140"></a>140 comment = options.delete(:comment) </span><span class="marked0"><a name="line141"></a>141 result = add_column_without_schema_comments(table_name, column_name, type, options) </span><span class="marked1"><a name="line142"></a>142 column_comment(table_name, column_name, comment) if comment </span><span class="marked0"><a name="line143"></a>143 result </span><span class="inferred1"><a name="line144"></a>144 end </span><span class="inferred0"><a name="line145"></a>145 </span><span class="marked1"><a name="line146"></a>146 def change_column_with_schema_comments(table_name, column_name, type, options = {}) </span><span class="marked0"><a name="line147"></a>147 comment = options.delete(:comment) </span><span class="marked1"><a name="line148"></a>148 @ignore_drop_table = true </span><span class="marked0"><a name="line149"></a>149 result = change_column_without_schema_comments(table_name, column_name, type, options) </span><span class="marked1"><a name="line150"></a>150 column_comment(table_name, column_name, comment) if comment </span><span class="marked0"><a name="line151"></a>151 result </span><span class="inferred1"><a name="line152"></a>152 ensure </span><span class="marked0"><a name="line153"></a>153 @ignore_drop_table = false </span><span class="inferred1"><a name="line154"></a>154 end </span><span class="inferred0"><a name="line155"></a>155 end </span><span class="inferred1"><a name="line156"></a>156 end </span><span class="inferred0"><a name="line157"></a>157 end </span></pre>
+    class="marked1"><a name="line118"></a>118 result </span><span
+    class="inferred0"><a name="line119"></a>119 end </span><span
+    class="inferred1"><a name="line120"></a>120 </span><span class="marked0"><a
+    name="line121"></a>121 def remove_column_with_schema_comments(table_name,
+    *column_names) </span><span class="inferred1"><a name="line122"></a>122 #
+    sqlite3ではremove_columnがないので、以下のフローでスキーマ更新します。 </span><span class="inferred0"><a name="line123"></a>123 # 1. CREATE TEMPORARY TABLE &quot;altered_xxxxxx&quot; (・・・) </span><span class="inferred1"><a name="line124"></a>124 # 2. PRAGMA index_list(&quot;xxxxxx&quot;) </span><span class="inferred0"><a name="line125"></a>125 # 3. DROP TABLE &quot;xxxxxx&quot; </span><span class="inferred1"><a name="line126"></a>126 # 4. CREATE TABLE &quot;xxxxxx&quot; </span><span class="inferred0"><a name="line127"></a>127 # 5. PRAGMA index_list(&quot;altered_xxxxxx&quot;) </span><span class="inferred1"><a name="line128"></a>128 # 6. DROP TABLE &quot;altered_xxxxxx&quot; </span><span class="inferred0"><a name="line129"></a>129 # </span><span class="inferred1"><a name="line130"></a>130 # このdrop tableの際に、schema_commentsを変更しないようにフラグを立てています。 </span><span class="marked0"><a name="line131"></a>131 @ignore_drop_table = true </span><span class="marked1"><a name="line132"></a>132 remove_column_without_schema_comments(table_name, *column_names) </span><span class="marked0"><a name="line133"></a>133 column_names.each do |column_name| </span><span class="marked1"><a name="line134"></a>134 delete_schema_comments(table_name, column_name) </span><span class="inferred0"><a name="line135"></a>135 end </span><span class="inferred1"><a name="line136"></a>136 ensure </span><span class="marked0"><a name="line137"></a>137 @ignore_drop_table = false </span><span class="inferred1"><a name="line138"></a>138 end </span><span class="inferred0"><a name="line139"></a>139 </span><span class="marked1"><a name="line140"></a>140 def add_column_with_schema_comments(table_name, column_name, type, options = {}) </span><span class="marked0"><a name="line141"></a>141 comment = options.delete(:comment) </span><span class="marked1"><a name="line142"></a>142 result = add_column_without_schema_comments(table_name, column_name, type, options) </span><span class="marked0"><a name="line143"></a>143 column_comment(table_name, column_name, comment) if comment </span><span class="marked1"><a name="line144"></a>144 result </span><span class="inferred0"><a name="line145"></a>145 end </span><span class="inferred1"><a name="line146"></a>146 </span><span class="marked0"><a name="line147"></a>147 def change_column_with_schema_comments(table_name, column_name, type, options = {}) </span><span class="marked1"><a name="line148"></a>148 comment = options.delete(:comment) </span><span class="marked0"><a name="line149"></a>149 @ignore_drop_table = true </span><span class="marked1"><a name="line150"></a>150 result = change_column_without_schema_comments(table_name, column_name, type, options) </span><span class="marked0"><a name="line151"></a>151 column_comment(table_name, column_name, comment) if comment </span><span class="marked1"><a name="line152"></a>152 result </span><span class="inferred0"><a name="line153"></a>153 ensure </span><span class="marked1"><a name="line154"></a>154 @ignore_drop_table = false </span><span class="inferred0"><a name="line155"></a>155 end </span><span class="inferred1"><a name="line156"></a>156 end </span><span class="inferred0"><a name="line157"></a>157 end </span><span class="inferred1"><a name="line158"></a>158 end </span></pre>
     <hr />
     <p> Generated using the <a href='http://eigenclass.org/hiki.rb?rcov'> rcov
     code coverage analysis tool for Ruby </a> version 0.8.1.2. </p>

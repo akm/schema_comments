@@ -26,8 +26,7 @@ module SchemaComments
     private
     def tables_with_schema_comments(stream)
       tables_without_schema_comments(stream)
-      config = ActiveRecord::Base.configurations[RAILS_ENV]
-      if config['adapter'] == "mysql"
+      if adapter_name == "mysql"
         # ビューはtableの後に実行するようにしないと rake db:schema:load で失敗します。
         mysql_views(stream)
       end
@@ -36,8 +35,7 @@ module SchemaComments
     def table_with_schema_comments(table, stream)
       return if IGNORED_TABLE == table.downcase
       # MySQLは、ビューもテーブルとして扱うので、一個一個チェックします。
-      config = ActiveRecord::Base.configurations[RAILS_ENV]
-      if config['adapter'] == "mysql"
+      if adapter_name == 'mysql'
         match_count = @connection.select_value(
           "select count(*) from information_schema.TABLES where TABLE_TYPE = 'VIEW' AND TABLE_SCHEMA = '%s' AND TABLE_NAME = '%s'" % [
             config["database"], table])
@@ -121,6 +119,11 @@ module SchemaComments
       end
       
       stream
+    end
+
+    def adapter_name
+      config = ActiveRecord::Base.configurations[RAILS_ENV]
+      config ? config['adapter'] : ActiveRecord::Base.connection.adapter_name
     end
 
     def mysql_views(stream)
