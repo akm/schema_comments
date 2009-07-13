@@ -41,6 +41,20 @@ columns, create_table, drop_table, rename_table
 remove_column, add_column, change_column
 
 
+== コメントはどこに保存されるのか ==
+db/schema_comments.yml にYAML形式で保存されます。
+あまり推奨しませんが、もしマイグレーションにコメントを記述するのを忘れてしまった場合、db/schema_comments.yml
+を直接編集した後、rake db:schema:dumpやマイグレーションを実行すると、db/schema.rbのコメントに反映されます。
+
+
+== MySQLのビュー ==
+MySQLのビューを使用した場合、元々MySQLではSHOW TABLES でビューも表示してしまうため、
+ビューはテーブルとしてSchemaDumperに認識され、development環境ではMySQLのビューとして作成されているのに、
+test環境ではテーブルとして作成されてしまい、テストが正しく動かないことがあります。
+これを避けるため、schema_commentsでは、db/schema.rbを出力する際、テーブルに関する記述の後に、CREATE VIEWを行う記述を追加します。
+
+
+
 
 
 Copyright (c) 2008 Takeshi AKIMA, released under the MIT license
