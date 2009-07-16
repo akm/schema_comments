@@ -78,6 +78,19 @@ module SchemaComments
         @column_names = nil
       end
       
+      def update_column_name(table_name, column_name, new_name)
+        if yaml_exist?
+          yaml_access do |db|
+            table_cols = db[COLUMN_KEY][table_name.to_s]
+            if table_cols
+              table_cols[new_name.to_s] = table_cols.delete(column_name.to_s)
+            end
+          end
+        end
+        @table_names = nil
+        @column_names = nil
+      end
+      
       private
       
       def yaml_exist?

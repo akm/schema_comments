@@ -69,6 +69,10 @@ module SchemaComments
       def update_schema_comments_table_name(table_name, new_name)
         SchemaComment.update_table_name(table_name, new_name)
       end
+      
+      def update_schema_comments_column_name(table_name, column_name, new_name)
+        SchemaComment.update_column_name(table_name, column_name, new_name)
+      end
     end
     
     module ConcreteAdapter
@@ -81,6 +85,7 @@ module SchemaComments
           alias_method_chain :remove_column, :schema_comments
           alias_method_chain :add_column, :schema_comments
           alias_method_chain :change_column, :schema_comments
+          alias_method_chain :rename_column, :schema_comments
         end
       end
       
@@ -153,6 +158,13 @@ module SchemaComments
       ensure
         @ignore_drop_table = false
       end
+
+      def rename_column_with_schema_comments(table_name, column_name, new_column_name)
+        result = rename_column_without_schema_comments(table_name, column_name, new_column_name)
+        comment = update_schema_comments_column_name(table_name, column_name, new_column_name)
+        result
+      end
+
     end
   end
 end
