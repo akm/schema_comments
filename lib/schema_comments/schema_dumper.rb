@@ -36,6 +36,7 @@ module SchemaComments
       return if IGNORED_TABLE == table.downcase
       # MySQLは、ビューもテーブルとして扱うので、一個一個チェックします。
       if adapter_name == 'mysql'
+        config = ActiveRecord::Base.configurations[RAILS_ENV]
         match_count = @connection.select_value(
           "select count(*) from information_schema.TABLES where TABLE_TYPE = 'VIEW' AND TABLE_SCHEMA = '%s' AND TABLE_NAME = '%s'" % [
             config["database"], table])
