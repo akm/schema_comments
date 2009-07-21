@@ -10,4 +10,7 @@ module SchemaComments
 
   mattr_accessor :yaml_path
   self.yaml_path = DEFAULT_YAML_PATH
+
+  mattr_accessor :quiet
+  
 end

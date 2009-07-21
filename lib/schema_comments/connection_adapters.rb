@@ -29,7 +29,7 @@ module SchemaComments
     module Adapter
       def column_comment(table_name, column_name, comment = nil) #:nodoc:
         if comment
-          SchemaComment.save_column_comment(table_name, column_name, comment)
+          SchemaComment.save_column_comment(table_name, column_name, comment) unless SchemaComments.quiet
           return comment
         else
           SchemaComment.column_comment(table_name, column_name)
@@ -44,7 +44,7 @@ module SchemaComments
         if contents.is_a?(Hash)
           contents.each_pair do |table, cols|
             cols.each_pair do |col, comment|
-              column_comment(table, col, comment)
+              column_comment(table, col, comment) unless SchemaComments.quiet
             end
           end
         else
@@ -55,7 +55,7 @@ module SchemaComments
       def table_comment(table_name, comment = nil) #:nodoc:
         if comment
           comment = (comment[:comment] || comment['comment']) if comment.is_a?(Hash)
-          SchemaComment.save_table_comment(table_name, comment)
+          SchemaComment.save_table_comment(table_name, comment) unless SchemaComments.quiet
           return comment
         else
           SchemaComment.table_comment(table_name)
@@ -63,15 +63,15 @@ module SchemaComments
       end
       
       def delete_schema_comments(table_name, column_name = nil)
-        SchemaComment.destroy_of(table_name, column_name)
+        SchemaComment.destroy_of(table_name, column_name) unless SchemaComments.quiet
       end
       
       def update_schema_comments_table_name(table_name, new_name)
-        SchemaComment.update_table_name(table_name, new_name)
+        SchemaComment.update_table_name(table_name, new_name) unless SchemaComments.quiet
       end
       
       def update_schema_comments_column_name(table_name, column_name, new_name)
-        SchemaComment.update_column_name(table_name, column_name, new_name)
+        SchemaComment.update_column_name(table_name, column_name, new_name) unless SchemaComments.quiet
       end
     end
     
