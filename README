@@ -79,7 +79,7 @@ annotate_modelsは、達人プログラマーのDave Thomasさんが公開して
 http://repo.pragprog.com/svn/Public/plugins/annotate_models/
 
 本プラグインでは、それを更に拡張したDave Boltonさんのプラグイン(
-http://github.com/rotuka/annotate_models)をベースに拡張を加えています。
+http://github.com/rotuka/annotate_models )をベースに拡張を加えています。
 
 
 Copyright (c) 2008 Takeshi AKIMA, released under the Ruby License
