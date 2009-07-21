@@ -156,7 +156,7 @@
       C0 code coverage information
     </h3>
     <p>
-      Generated on Tue Jul 21 14:58:11 +0900 2009 with 
+      Generated on Tue Jul 21 18:54:41 +0900 2009 with 
       <a href='http://eigenclass.org/hiki/rcov'>
         rcov 0.8.1.2
       </a>
@@ -173,30 +173,39 @@
     class='heading'> Total lines </td> <td class='heading'> Lines of code </td>
     <td class='heading'> Total coverage </td> <td class='heading'> Code coverage
     </td> </tr> </thead> <tbody> <tr class='light'> <td> <a href='init_rb.html'>
-    init.rb </a> </td> <td class='lines_total'> <tt> 50 </tt> </td> <td
-    class='lines_code'> <tt> 39 </tt> </td> <td> <table cellspacing='0'
-    align='right' cellpadding='0'> <tr> <td> <tt class='coverage_total'> 92.0%
+    init.rb </a> </td> <td class='lines_total'> <tt> 33 </tt> </td> <td
+    class='lines_code'> <tt> 27 </tt> </td> <td> <table cellspacing='0'
+    align='right' cellpadding='0'> <tr> <td> <tt class='coverage_total'> 87.9%
     </tt> &nbsp; </td> <td> <table class='percent_graph' cellspacing='0'
-    cellpadding='0' width='100'> <tr> <td class='covered' width='92' /> <td
-    class='uncovered' width='8' /> </tr> </table> </td> </tr> </table> </td>
+    cellpadding='0' width='100'> <tr> <td class='covered' width='88' /> <td
+    class='uncovered' width='12' /> </tr> </table> </td> </tr> </table> </td>
     <td> <table cellspacing='0' align='right' cellpadding='0'> <tr> <td> <tt
-    class='coverage_code'> 89.7% </tt> &nbsp; </td> <td> <table
+    class='coverage_code'> 85.2% </tt> &nbsp; </td> <td> <table
     class='percent_graph' cellspacing='0' cellpadding='0' width='100'> <tr> <td
-    class='covered' width='90' /> <td class='uncovered' width='10' /> </tr>
+    class='covered' width='85' /> <td class='uncovered' width='15' /> </tr>
     </table> </td> </tr> </table> </td> </tr> </tbody> </table><pre><span
     class="marked1"><a name="line1"></a> 1 unless
     ENV['SCHEMA_COMMENTS_DISABLED'] </span><span class="inferred0"><a
     name="line2"></a> 2 </span><span class="marked1"><a name="line3"></a> 3
     require 'schema_comments' </span><span class="inferred0"><a
     name="line4"></a> 4 </span><span class="marked1"><a name="line5"></a> 5
-    unless ActiveRecord::Base.ancestors.include?(SchemaComments::Base)
-    </span><span class="marked0"><a name="line6"></a> 6 class ActiveRecord::Base
-    </span><span class="marked1"><a name="line7"></a> 7 include
-    SchemaComments::Base </span><span class="inferred0"><a name="line8"></a> 8
-    end </span><span class="inferred1"><a name="line9"></a> 9 end </span><span
-    class="inferred0"><a name="line10"></a>10 </span><span class="marked1"><a
-    name="line11"></a>11 unless
-    ActiveRecord::ConnectionAdapters::Column.ancestors.include?(SchemaComments::ConnectionAdapters::Column) </span><span class="marked0"><a name="line12"></a>12 module ActiveRecord::ConnectionAdapters </span><span class="marked1"><a name="line13"></a>13 class Column </span><span class="marked0"><a name="line14"></a>14 include SchemaComments::ConnectionAdapters::Column </span><span class="inferred1"><a name="line15"></a>15 end </span><span class="inferred0"><a name="line16"></a>16 </span><span class="marked1"><a name="line17"></a>17 class ColumnDefinition </span><span class="marked0"><a name="line18"></a>18 include SchemaComments::ConnectionAdapters::ColumnDefinition </span><span class="inferred1"><a name="line19"></a>19 end </span><span class="inferred0"><a name="line20"></a>20 </span><span class="marked1"><a name="line21"></a>21 class TableDefinition </span><span class="marked0"><a name="line22"></a>22 include SchemaComments::ConnectionAdapters::TableDefinition </span><span class="inferred1"><a name="line23"></a>23 end </span><span class="inferred0"><a name="line24"></a>24 </span><span class="marked1"><a name="line25"></a>25 class AbstractAdapter </span><span class="marked0"><a name="line26"></a>26 include SchemaComments::ConnectionAdapters::Adapter </span><span class="inferred1"><a name="line27"></a>27 end </span><span class="inferred0"><a name="line28"></a>28 </span><span class="inferred1"><a name="line29"></a>29 end </span><span class="inferred0"><a name="line30"></a>30 end </span><span class="inferred1"><a name="line31"></a>31 </span><span class="marked0"><a name="line32"></a>32 unless ActiveRecord::SchemaDumper.ancestors.include?(SchemaComments::SchemaDumper) </span><span class="marked1"><a name="line33"></a>33 class ActiveRecord::SchemaDumper </span><span class="marked0"><a name="line34"></a>34 include SchemaComments::SchemaDumper </span><span class="inferred1"><a name="line35"></a>35 end </span><span class="inferred0"><a name="line36"></a>36 end </span><span class="inferred1"><a name="line37"></a>37 </span><span class="inferred0"><a name="line38"></a>38 </span><span class="inferred1"><a name="line39"></a>39 # %w(Mysql PostgreSQL SQLite3 SQLite Firebird DB2 Oracle Sybase Openbase Frontbase) </span><span class="marked0"><a name="line40"></a>40 %w(Mysql PostgreSQL SQLite3 SQLite).each do |adapter| </span><span class="marked1"><a name="line41"></a>41 begin </span><span class="marked0"><a name="line42"></a>42 require(&quot;active_record/connection_adapters/#{adapter.downcase}_adapter&quot;) </span><span class="marked1"><a name="line43"></a>43 adapter_class = ('ActiveRecord::ConnectionAdapters::' &lt;&lt; &quot;#{adapter}Adapter&quot;).constantize </span><span class="marked0"><a name="line44"></a>44 adapter_class.module_eval do </span><span class="marked1"><a name="line45"></a>45 include SchemaComments::ConnectionAdapters::ConcreteAdapter </span><span class="inferred0"><a name="line46"></a>46 end </span><span class="uncovered1"><a name="line47"></a>47 rescue Exception =&gt; e </span><span class="uncovered0"><a name="line48"></a>48 end </span><span class="uncovered1"><a name="line49"></a>49 end </span><span class="uncovered0"><a name="line50"></a>50 end </span></pre>
+    base_names = %w(Base Migration Migrator Schema SchemaDumper) + </span><span
+    class="marked0"><a name="line6"></a> 6 %w(Column ColumnDefinition
+    TableDefinition).map{|name| &quot;ConnectionAdapters::#{name}&quot;}
+    </span><span class="inferred1"><a name="line7"></a> 7 </span><span
+    class="marked0"><a name="line8"></a> 8 base_names.each do |base_name|
+    </span><span class="marked1"><a name="line9"></a> 9 ar_class =
+    &quot;ActiveRecord::#{base_name}&quot;.constantize </span><span
+    class="marked0"><a name="line10"></a>10 sc_class =
+    &quot;SchemaComments::#{base_name}&quot;.constantize </span><span
+    class="marked1"><a name="line11"></a>11 unless
+    ar_class.ancestors.include?(sc_class) </span><span class="marked0"><a
+    name="line12"></a>12 ar_class.__send__(:include, sc_class) </span><span
+    class="inferred1"><a name="line13"></a>13 end </span><span
+    class="inferred0"><a name="line14"></a>14 end </span><span
+    class="inferred1"><a name="line15"></a>15 </span><span class="marked0"><a
+    name="line16"></a>16 unless
+    ActiveRecord::ConnectionAdapters::AbstractAdapter.ancestors.include?(SchemaComments::ConnectionAdapters::Adapter) </span><span class="marked1"><a name="line17"></a>17 class ActiveRecord::ConnectionAdapters::AbstractAdapter </span><span class="marked0"><a name="line18"></a>18 include SchemaComments::ConnectionAdapters::Adapter </span><span class="inferred1"><a name="line19"></a>19 end </span><span class="inferred0"><a name="line20"></a>20 end </span><span class="inferred1"><a name="line21"></a>21 </span><span class="inferred0"><a name="line22"></a>22 # %w(Mysql PostgreSQL SQLite3 SQLite Firebird DB2 Oracle Sybase Openbase Frontbase) </span><span class="marked1"><a name="line23"></a>23 %w(Mysql PostgreSQL SQLite3 SQLite).each do |adapter| </span><span class="marked0"><a name="line24"></a>24 begin </span><span class="marked1"><a name="line25"></a>25 require(&quot;active_record/connection_adapters/#{adapter.downcase}_adapter&quot;) </span><span class="marked0"><a name="line26"></a>26 adapter_class = ('ActiveRecord::ConnectionAdapters::' &lt;&lt; &quot;#{adapter}Adapter&quot;).constantize </span><span class="marked1"><a name="line27"></a>27 adapter_class.module_eval do </span><span class="marked0"><a name="line28"></a>28 include SchemaComments::ConnectionAdapters::ConcreteAdapter </span><span class="inferred1"><a name="line29"></a>29 end </span><span class="uncovered0"><a name="line30"></a>30 rescue Exception =&gt; e </span><span class="uncovered1"><a name="line31"></a>31 end </span><span class="uncovered0"><a name="line32"></a>32 end </span><span class="uncovered1"><a name="line33"></a>33 end </span></pre>
     <hr />
     <p> Generated using the <a href='http://eigenclass.org/hiki.rb?rcov'> rcov
     code coverage analysis tool for Ruby </a> version 0.8.1.2. </p>
