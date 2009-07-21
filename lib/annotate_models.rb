@@ -70,7 +70,7 @@ module AnnotateModels
     else
       col_type << "(#{col.limit})" if col.limit
     end
-    sprintf("#  %-#{max_size}.#{max_size}s:%-15.15s %s", col.name, col_type, attrs.join(", ")).rstrip
+    sprintf("#  %-#{max_size}s:%-15s %s", col.name, col_type, attrs.join(", ")).rstrip
   end
 
   def self.append_comments(col_and_lines)
