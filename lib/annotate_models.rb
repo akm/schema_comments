@@ -1,7 +1,8 @@
 
 # fork from
 # http://github.com/rotuka/annotate_models/blob/d2afee82020dbc592b147d92f9beeadbf665a9e0/lib/annotate_models.rb
-require "config/environment"
+
+require "config/environment" if File.exist?("config/environment")
  
 MODEL_DIR         = File.join(RAILS_ROOT, "app/models" )
 UNIT_TEST_DIR     = File.join(RAILS_ROOT, "test/unit"  )
