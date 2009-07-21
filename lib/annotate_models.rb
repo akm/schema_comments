@@ -38,16 +38,16 @@ module AnnotateModels
     table_info = "# Table name: #{klass.table_name}\n#\n"
     max_size = klass.column_names.collect{|name| name.size}.max + 1
  
-    # columns = klass.columns
+    columns = klass.columns
 
     cols = if SORT_COLUMNS
-        pk    = klass.columns.find_all { |col| col.name == klass.primary_key }.flatten
-        assoc = klass.columns.find_all { |col| col.name.match(/_id$/) }.sort_by(&:name)
-        dates = klass.columns.find_all { |col| col.name.match(/_on$/) }.sort_by(&:name)
-        times = klass.columns.find_all { |col| col.name.match(/_at$/) }.sort_by(&:name)
-        pk + assoc + (klass.columns - pk - assoc - times - dates).compact.sort_by(&:name) + dates + times
+        pk    = columns.find_all { |col| col.name == klass.primary_key }.flatten
+        assoc = columns.find_all { |col| col.name.match(/_id$/) }.sort_by(&:name)
+        dates = columns.find_all { |col| col.name.match(/_on$/) }.sort_by(&:name)
+        times = columns.find_all { |col| col.name.match(/_at$/) }.sort_by(&:name)
+        pk + assoc + (columns - pk - assoc - times - dates).compact.sort_by(&:name) + dates + times
       else
-        klass.columns
+        columns
       end
  
     cols_text = cols.map{|col| annotate_column(col, klass, max_size)}.join("\n")
