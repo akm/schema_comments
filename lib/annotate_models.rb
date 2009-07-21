@@ -35,7 +35,9 @@ module AnnotateModels
   # each column. The line contains the column name,
   # the type (and length), and any optional attributes
   def self.get_schema_info(klass, header)
-    table_info = "# Table name: #{klass.table_name}\n#\n"
+    table_info = "# Table name: #{klass.table_name}"
+    table_info << " # #{klass.table_comment}" unless klass.table_comment.blank?
+    table_info << "\n#\n"
     max_size = klass.column_names.collect{|name| name.size}.max + 1
  
     columns = klass.columns
@@ -50,8 +52,9 @@ module AnnotateModels
         columns
       end
  
-    cols_text = cols.map{|col| annotate_column(col, klass, max_size)}.join("\n")
- 
+    col_lines = append_comments(cols.map{|col| [col, annotate_column(col, klass, max_size)]})
+    cols_text = col_lines.join("\n")
+    
     "# #{header}\n#\n" + table_info + cols_text
   end
  
@@ -68,6 +71,17 @@ module AnnotateModels
         col_type << "(#{col.limit})" if col.limit
       end
       sprintf("#  %-#{max_size}.#{max_size}s:%-15.15s %s", col.name, col_type, attrs.join(", ")).rstrip
+  end
+
+  def self.append_comments(col_and_lines)
+    max_length = col_and_lines.map{|(col, line)| line.length}.max
+    col_and_lines.map do |(col, line)|
+      if col.comment.blank?
+        line
+      else
+        "%-#{max_length}s # %s" % [line, col.comment]
+      end
+    end
   end
  
   # Add a schema block to a file. If the file already contains

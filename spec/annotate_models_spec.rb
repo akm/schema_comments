@@ -22,12 +22,12 @@ describe AnnotateModels do
     ActiveRecord::Schema.define(:version => nil) do
       drop_table("books") rescue nil
 
-      create_table "books", :force => true do |t|
-        t.string   "title", :limit => 100, :null => false
-        t.integer  "size", :null => false, :default => 1
-        t.decimal  "price", :precision => 17, :scale => 14, :default => 0.0, :null => false
-        t.datetime "created_at"
-        t.datetime "updated_at"
+      create_table "books", :force => true, :comment => '書籍' do |t|
+        t.string   "title", :limit => 100, :null => false, :comment => 'タイトル'
+        t.integer  "size", :null => false, :default => 1, :comment => '判型'
+        t.decimal  "price", :precision => 17, :scale => 14, :default => 0.0, :null => false, :comment => '価格'
+        t.datetime "created_at", :comment => '登録日時'
+        t.datetime "updated_at", :comment => '更新日時'
       end
     end
 
@@ -37,14 +37,14 @@ describe AnnotateModels do
 
     AnnotateModels.get_schema_info(Book, 'HEADER1').should == %{# HEADER1
 #
-# Table name: books
+# Table name: books # 書籍
 #
 #  id         :integer         not null, primary key
-#  title      :string(100)     not null
-#  size       :integer         not null, default(1)
-#  price      :decimal(17, 14) not null, default(0.0)
-#  created_at :datetime
-#  updated_at :datetime}
+#  title      :string(100)     not null               # タイトル
+#  size       :integer         not null, default(1)   # 判型
+#  price      :decimal(17, 14) not null, default(0.0) # 価格
+#  created_at :datetime                               # 登録日時
+#  updated_at :datetime                               # 更新日時}
   end
   
   
