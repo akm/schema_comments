@@ -101,7 +101,7 @@ module SchemaComments
         else
           db = SortedStore.new(SchemaComments.yaml_path)
           result = nil
-          t = Time.now.to_f
+          # t = Time.now.to_f
           db.transaction do
             @yaml_transaction = db
             begin
@@ -112,7 +112,7 @@ module SchemaComments
               @yaml_transaction = nil
             end
           end
-          puts("SchemaComment#yaml_access %fms from %s" % [Time.now.to_f - t, caller[0].gsub(/^.+:in /, '')])
+          # puts("SchemaComment#yaml_access %fms from %s" % [Time.now.to_f - t, caller[0].gsub(/^.+:in /, '')])
           result
         end
       end
