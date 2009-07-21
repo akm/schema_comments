@@ -3,6 +3,9 @@ module SchemaComments
   
   autoload :Base, 'schema_comments/base'
   autoload :ConnectionAdapters, 'schema_comments/connection_adapters'
+  autoload :Migration, 'schema_comments/migration'
+  autoload :Migrator, 'schema_comments/migrator'
+  autoload :Schema, 'schema_comments/schema'
   autoload :SchemaComment, 'schema_comments/schema_comment'
   autoload :SchemaDumper, 'schema_comments/schema_dumper'
 

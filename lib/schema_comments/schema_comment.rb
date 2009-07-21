@@ -91,23 +91,30 @@ module SchemaComments
         @column_names = nil
       end
       
-      private
-      
       def yaml_exist?
         File.exist?(SchemaComments.yaml_path)
       end
       
       def yaml_access(&block)
-        db = SortedStore.new(SchemaComments.yaml_path)
-        result = nil
-        # t = Time.now.to_f
-        db.transaction do
-          db[TABLE_KEY] ||= {}
-          db[COLUMN_KEY] ||= {}
-          result = yield(db) if block_given?
+        if @yaml_transaction
+          yield(@yaml_transaction) if block_given?
+        else
+          db = SortedStore.new(SchemaComments.yaml_path)
+          result = nil
+          t = Time.now.to_f
+          db.transaction do
+            @yaml_transaction = db
+            begin
+              db[TABLE_KEY] ||= {}
+              db[COLUMN_KEY] ||= {}
+              result = yield(db) if block_given?
+            ensure
+              @yaml_transaction = nil
+            end
+          end
+          puts("SchemaComment#yaml_access %fms from %s" % [Time.now.to_f - t, caller[0].gsub(/^.+:in /, '')])
+          result
         end
-        # puts("SchemaComment#yaml_access %fms from %s" % [Time.now.to_f - t, caller[1].gsub(/^.+:in /, '')])
-        result
       end
 
     end

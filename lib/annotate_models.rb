@@ -9,13 +9,45 @@ UNIT_TEST_DIR     = File.join(RAILS_ROOT, "test/unit"  )
 SPEC_MODEL_DIR    = File.join(RAILS_ROOT, "spec/models")
 FIXTURES_DIR      = File.join(RAILS_ROOT, "test/fixtures")
 SPEC_FIXTURES_DIR = File.join(RAILS_ROOT, "spec/fixtures")
-SORT_COLUMNS      = ENV['SORT'] =~ /yes/i
 
 module AnnotateModels
   
-  PREFIX = "== Schema Info"
-  SEP_LINES = "\n\n"
-  
+  PREFIX_AT_BOTTOM = "== Schema Info"
+  SUFFIX_AT_BOTTOM = ""
+  PREFIX_ON_TOP = "== Schema Info =="
+  SUFFIX_ON_TOP = "=================\n# "
+
+  # ENV options
+  {:position => 'top', :model_dir => MODEL_DIR}.each do |name, default_value|
+    mattr_accessor name.to_sym
+    self.send("#{name}=", ENV[name.to_s.upcase] || default_value)
+  end
+
+  def self.models
+    (ENV['MODELS'] || '').split(',')
+  end
+
+  def self.sort_columns
+    ENV['SORT'] =~ /yes|on|true/i
+  end
+
+  def self.output_prefix
+    bottom? ? PREFIX_AT_BOTTOM : PREFIX_ON_TOP
+  end
+
+  def self.output_suffix
+    bottom? ? SUFFIX_AT_BOTTOM : SUFFIX_ON_TOP
+  end
+
+  def self.bottom?
+    self.position =~ /bottom/i
+  end
+
+  def self.separate?
+    ENV['SEPARATE'] =~ /yes|on|true/i
+  end
+
+
   # Simple quoting for the default column value
   def self.quote(value)
     case value
@@ -34,7 +66,7 @@ module AnnotateModels
   # to create a comment block containing a line for
   # each column. The line contains the column name,
   # the type (and length), and any optional attributes
-  def self.get_schema_info(klass, header)
+  def self.get_schema_info(klass)
     table_info = "# Table name: #{klass.table_name}"
     table_info << " # #{klass.table_comment}" unless klass.table_comment.blank?
     table_info << "\n#\n"
@@ -42,7 +74,7 @@ module AnnotateModels
     
     columns = klass.columns
 
-    cols = if SORT_COLUMNS
+    cols = if self.sort_columns
              pk    = columns.find_all { |col| col.name == klass.primary_key }.flatten
              assoc = columns.find_all { |col| col.name.match(/_id$/) }.sort_by(&:name)
              dates = columns.find_all { |col| col.name.match(/_on$/) }.sort_by(&:name)
@@ -55,7 +87,12 @@ module AnnotateModels
     col_lines = append_comments(cols.map{|col| [col, annotate_column(col, klass, max_size)]})
     cols_text = col_lines.join("\n")
     
-    "# #{header}\n#\n" + table_info + cols_text
+    result = "# #{self.output_prefix}\n# \n# Schema version: #{get_schema_version}\n#\n"
+    result << table_info
+    result << cols_text
+    result << "\n# \n# #{self.output_suffix}" unless self.output_suffix.blank?
+    result << "\n"
+    result
   end
   
   def self.annotate_column(col, klass, max_size)
@@ -88,38 +125,46 @@ module AnnotateModels
   # a schema info block (a comment starting
   # with "Schema as of ..."), remove it first.
   # Mod to write to the end of the file
-  
   def self.annotate_one_file(file_name, info_block)
     if File.exist?(file_name)
       content = File.read(file_name)
       
+      encoding_comment = content.scan(/^\#\s*-\*-(.+?)-\*-/).flatten.first
+      content.sub!(/^\#\s*-\*-(.+?)-\*-/, '')
+
       # Remove old schema info
-      content.sub!(/(\n)*^# #{PREFIX}.*?\n(#.*\n)*#.*(\n)*/, '')
+      content.sub!(/(\n)*^# #{PREFIX_ON_TOP}.*?\n(#.*\n)*# #{SUFFIX_ON_TOP}/, '')
+      content.sub!(/(\n)*^# #{PREFIX_AT_BOTTOM}.*?\n(#.*\n)*#.*(\n)*/, '')
+      content.sub!(/^[\n\s]*/, '')
       
       # Write it back
       File.open(file_name, "w") do |f|
-        if ENV['POSITION'] == 'top'
-          f.print info_block + SEP_LINES + content
+        f.print "# -*- #{encoding_comment.strip} -*-\n\n" unless encoding_comment.blank?
+        if self.bottom?
+          f.print content
+          f.print "\n\n"
+          f.print info_block
         else
-          f.print content + SEP_LINES + info_block
+          f.print info_block
+          f.print "\n" if self.separate?
+          f.print content
         end
       end
     end
   end
+
   
   # Given the name of an ActiveRecord class, create a schema
   # info block (basically a comment containing information
   # on the columns and their types) and put it at the front
-  # of the model and fixture source files.
-  
-  def self.annotate(klass, header)
-    info = get_schema_info(klass, header)
+  # of the model and fixture source files.  
+  def self.annotate(klass)
+    info = get_schema_info(klass)
     model_name = klass.name.underscore
     fixtures_name = "#{klass.table_name}.yml"
-    model_dir = ENV['MODEL_DIR'] ? ENV['MODEL_DIR'] : MODEL_DIR
     
     [
-      File.join(model_dir,          "#{model_name}.rb"),      # model
+      File.join(self.model_dir,     "#{model_name}.rb"),      # model
       File.join(UNIT_TEST_DIR,      "#{model_name}_test.rb"), # test
       File.join(FIXTURES_DIR,       fixtures_name),           # fixture
       File.join(SPEC_MODEL_DIR,     "#{model_name}_spec.rb"), # spec
@@ -135,15 +180,17 @@ module AnnotateModels
   # Otherwise we take all the model files in the
   # app/models directory.
   def self.get_model_names
-    models = ENV['MODELS'] ? ENV['MODELS'].split(',') : []
-    model_dir = ENV['MODEL_DIR'] ? ENV['MODEL_DIR'] : MODEL_DIR
-    
-    if models.empty?
-      Dir.chdir(model_dir) do
-        models = Dir["**/*.rb"]
+    result = nil
+    if self.models.empty?
+      Dir.chdir(self.model_dir) do
+        result = Dir["**/*.rb"].map do |filename| 
+          filename.sub(/\.rb$/, '').camelize
+        end
       end
+    else
+      result = self.models.dup
     end
-    models
+    result 
   end
   
   # We're passed a name of things that might be
@@ -151,16 +198,13 @@ module AnnotateModels
   # if its a subclass of ActiveRecord::Base,
   # then pas it to the associated block
   def self.do_annotations
-    header = PREFIX.dup
-    header << get_schema_version
-    
-    annotated = self.get_model_names.inject([]) do |list, m|
-      class_name = m.sub(/\.rb$/, '').camelize
+    annotated = self.get_model_names.inject([]) do |list, class_name|
       begin
-        klass = class_name.split('::').inject(Object){ |klass,part| klass.const_get(part) }
+        # klass = class_name.split('::').inject(Object){ |klass,part| klass.const_get(part) }
+        klass = class_name.constantize
         if klass < ActiveRecord::Base && !klass.abstract_class?
           list << class_name
-          self.annotate(klass, header)
+          self.annotate(klass)
         end
       rescue Exception => e
         puts "Unable to annotate #{class_name}: #{e.message}"
@@ -171,7 +215,10 @@ module AnnotateModels
   end
   
   def self.get_schema_version
-    version = ActiveRecord::Migrator.current_version rescue 0
-    version > 0 ? "\n# Schema version: #{version}" : ''
+    unless @schema_version
+      version = ActiveRecord::Migrator.current_version rescue 0
+      @schema_version = version > 0 ? version : ''
+    end
+    @schema_version
   end
 end

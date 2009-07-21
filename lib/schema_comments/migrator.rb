@@ -1,5 +1,5 @@
 module SchemaComments
-  module Migration
+  module Migrator
     def self.included(mod)
       mod.extend(ClassMethods)
       mod.instance_eval do

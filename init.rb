@@ -2,39 +2,22 @@ unless ENV['SCHEMA_COMMENTS_DISABLED']
 
   require 'schema_comments'
 
-  unless ActiveRecord::Base.ancestors.include?(SchemaComments::Base)
-    class ActiveRecord::Base
-      include SchemaComments::Base
+  base_names = %w(Base Migration Migrator Schema SchemaDumper) +
+    %w(Column ColumnDefinition TableDefinition).map{|name| "ConnectionAdapters::#{name}"}
+
+  base_names.each do |base_name|
+    ar_class = "ActiveRecord::#{base_name}".constantize
+    sc_class = "SchemaComments::#{base_name}".constantize
+    unless ar_class.ancestors.include?(sc_class)
+      ar_class.__send__(:include, sc_class)
     end
   end
 
-  unless ActiveRecord::ConnectionAdapters::Column.ancestors.include?(SchemaComments::ConnectionAdapters::Column)
-    module ActiveRecord::ConnectionAdapters
-      class Column
-        include SchemaComments::ConnectionAdapters::Column
-      end
-
-      class ColumnDefinition
-        include SchemaComments::ConnectionAdapters::ColumnDefinition
-      end
-
-      class TableDefinition
-        include SchemaComments::ConnectionAdapters::TableDefinition
-      end
-
-      class AbstractAdapter
-        include SchemaComments::ConnectionAdapters::Adapter
-      end
-
+  unless ActiveRecord::ConnectionAdapters::AbstractAdapter.ancestors.include?(SchemaComments::ConnectionAdapters::Adapter)
+    class ActiveRecord::ConnectionAdapters::AbstractAdapter
+      include SchemaComments::ConnectionAdapters::Adapter
     end
   end
-
-  unless ActiveRecord::SchemaDumper.ancestors.include?(SchemaComments::SchemaDumper)
-    class ActiveRecord::SchemaDumper
-      include SchemaComments::SchemaDumper
-    end
-  end
-
 
   # %w(Mysql PostgreSQL SQLite3 SQLite Firebird DB2 Oracle Sybase Openbase Frontbase)
   %w(Mysql PostgreSQL SQLite3 SQLite).each do |adapter|
