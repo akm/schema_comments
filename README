@@ -54,7 +54,32 @@ test環境ではテーブルとして作成されてしまい、テストが正�
 これを避けるため、schema_commentsでは、db/schema.rbを出力する際、テーブルに関する記述の後に、CREATE VIEWを行う記述を追加します。
 
 
+== annotate_models ==
+rake db:annotate で以下のようなコメントを、モデル、テスト、フィクスチャといったモデルに関係の強いファイルの
+先頭に追加します。
+  # == Schema Info ==
+  # 
+  # Schema version: 20090721185959
+  #
+  # Table name: books # 書籍
+  #
+  #  id         :integer         not null, primary key
+  #  title      :string(100)     not null               # タイトル
+  #  size       :integer         not null, default(1)   # 判型
+  #  price      :decimal(17, 14) not null, default(0.0) # 価格
+  #  created_at :datetime                               # 登録日時
+  #  updated_at :datetime                               # 更新日時
+  # 
+  # =================
+  # 
 
+また、rake db:updateで、rake db:migrateとrake db:annotateを実行します。
+
+annotate_modelsは、達人プログラマーのDave Thomasさんが公開しているプラグインです。
+http://repo.pragprog.com/svn/Public/plugins/annotate_models/
+
+本プラグインでは、それを更に拡張したDave Boltonさんのプラグイン(
+http://github.com/rotuka/annotate_models)をベースに拡張を加えています。
 
 
 Copyright (c) 2008 Takeshi AKIMA, released under the MIT license
