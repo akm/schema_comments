@@ -40,9 +40,9 @@ describe AnnotateModels do
 # Table name: books
 #
 #  id         :integer         not null, primary key
-#  name       :string(100)     not null
-#  price      :decimal(17, 14) not null, default(0.0)
+#  title      :string(100)     not null
 #  size       :integer         not null, default(1)
+#  price      :decimal(17, 14) not null, default(0.0)
 #  created_at :datetime
 #  updated_at :datetime}
   end
