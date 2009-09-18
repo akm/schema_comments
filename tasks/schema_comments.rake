@@ -71,7 +71,7 @@ end
 
 class ActiveRecord::Base
   class << self
-    attr_accessor_with_default :ignore_pattern_to_export_i18n, /\(.*\)/
+    attr_accessor_with_default :ignore_pattern_to_export_i18n, /\(\(.*\)\)/
     
     def export_i18n_models
       subclasses = ActiveRecord::Base.send(:subclasses).select do |klass|
@@ -79,9 +79,10 @@ class ActiveRecord::Base
           klass.respond_to?(:table_exists?) and klass.table_exists?
       end
       result = subclasses.inject({}) do |d, m|
-        comment = m.table_comment
-        comment.gsub!(ignore_pattern_to_export_i18n, '') if ignore_pattern_to_export_i18n
-        d[m.name.underscore] = comment
+        if comment = m.table_comment
+          comment.gsub!(ignore_pattern_to_export_i18n, '') if ignore_pattern_to_export_i18n
+          d[m.name.underscore] = comment
+        end
         d
       end
 			result.instance_eval do
@@ -154,16 +155,41 @@ namespace :i18n do
       end
     end
     
-    desc "Export i18n model resources from schema_comments"
+    desc "Export i18n model resources from schema_comments. you can set locale with environment variable LOCALE"
     task :export_models => :"i18n:schema_comments:load_all_models" do
-      obj = {I18n.locale => {'activerecord' => {'models' => ActiveRecord::Base.export_i18n_models}}}
+      locale = (ENV['LOCALE'] || I18n.locale).to_s
+      obj = {locale => {'activerecord' => {'models' => ActiveRecord::Base.export_i18n_models}}}
       puts YAML.dump(obj)
     end
     
-    desc "Export i18n attributes resources from schema_comments"
+    desc "Export i18n attributes resources from schema_comments. you can set locale with environment variable LOCALE"
     task :export_attributes => :"i18n:schema_comments:load_all_models" do
-      obj = {I18n.locale => {'activerecord' => {'attributes' => ActiveRecord::Base.export_i18n_attributes}}}
+      locale = (ENV['LOCALE'] || I18n.locale).to_s
+      obj = {locale => {'activerecord' => {'attributes' => ActiveRecord::Base.export_i18n_attributes}}}
       puts YAML.dump(obj)
+    end
+    
+    desc "update i18n YAML. you can set locale with environment variable LOCALE"
+    task :update_config_locale => :"i18n:schema_comments:load_all_models" do
+      require 'yaml/store'
+      locale = (ENV['LOCALE'] || I18n.locale).to_s
+      path = (ENV['YAML_PATH'] || File.join(RAILS_ROOT, "config/locales/#{locale}.yml"))
+      print "updating #{path}..."
+      begin
+        db = YAML::Store.new(path)
+        db.transaction do
+          locale = db[locale] ||= {}
+          activerecord = locale['activerecord'] ||= {}
+          activerecord['models'] = ActiveRecord::Base.export_i18n_models
+          activerecord['attributes'] = ActiveRecord::Base.export_i18n_attributes
+        end
+        puts "Complete!"
+      rescue Exception
+        puts "Failure!!!"
+        puts $!.to_s
+        puts "  " << $!.backtrace.join("\n  ")
+        raise
+      end
     end
   end
 end
