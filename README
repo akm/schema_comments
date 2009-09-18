@@ -1,6 +1,11 @@
 SchemaComments 
 ==========
 
+== Install ==
+ruby script/plugin install git://github.com/akm/schema_comments.git
+
+
+== overview ==
 schema_commentsプラグインを使うと、テーブルとカラムにコメントを記述することができます。
 
  class CreateProducts < ActiveRecord::Migration
@@ -58,6 +63,32 @@ I18n.default_locale = 'ja'
 
 また出力先のYAMLのPATHを指定したい場合、YAML_PATHで指定が可能です。
 rake i18n:schema_comments:update_config_locale LOCALE=ja YAML_PATH=/path/to/yaml
+
+=== コメント内コメント ===
+コメント中の ((( から ))) は反映されませんので、モデル名／属性名に含めたくない箇所は ((( と ))) で括ってください。
+((( ))) と同様に[[[ ]]]も使用できます。
+例えば以下のようにdb/schema.rbに出力されている場合、
+ActiveRecord::Schema.define(:version => 0) do
+  create_table "products", :force => true, :comment => '商品' do |t|
+    t.string   "product_type_cd", :comment => '種別コード(((01:書籍, 02:靴, 03:パソコン)))'
+    t.integer  "price", :comment => "価格"
+    t.string   "name", :comment => "商品名"
+    t.datetime "created_at", :comment => "登録日時"
+    t.datetime "updated_at", :comment => "更新日時"
+  end
+end
+
+rake i18n:schema_comments:update_config_locale LOCALE=ja
+とすると、以下のように出力されます。
+ja:
+  activerecord:
+    attributes:
+      product: 
+        product_type_cd: "種別コード"
+        price: "価格"
+        name: "商品名"
+        created_at: "登録日時"
+        updated_at: "更新日時"
 
 
 

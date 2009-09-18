@@ -71,7 +71,7 @@ end
 
 class ActiveRecord::Base
   class << self
-    attr_accessor_with_default :ignore_pattern_to_export_i18n, /\(\(.*\)\)/
+    attr_accessor_with_default :ignore_pattern_to_export_i18n, /\(\(\(.*\)\)\)/
     
     def export_i18n_models
       subclasses = ActiveRecord::Base.send(:subclasses).select do |klass|
@@ -79,10 +79,12 @@ class ActiveRecord::Base
           klass.respond_to?(:table_exists?) and klass.table_exists?
       end
       result = subclasses.inject({}) do |d, m|
-        if comment = m.table_comment
-          comment.gsub!(ignore_pattern_to_export_i18n, '') if ignore_pattern_to_export_i18n
-          d[m.name.underscore] = comment
-        end
+        comment = (m.table_comment || '').dup
+        comment.gsub!(ignore_pattern_to_export_i18n, '') if ignore_pattern_to_export_i18n
+        # テーブル名(複数形)をモデル名(単数形)に
+        model_name = (comment.scan(/\[\[\[(?:model|class)(?:_name)?:\s*?([^\s]+?)\s*?\]\]\]/).flatten.first || m.name).underscore
+        comment.gsub!(/\[\[\[.*?\]\]\]/)
+        d[model_name] = comment
         d
       end
 			result.instance_eval do
@@ -108,7 +110,11 @@ class ActiveRecord::Base
           next if col.name == 'id'
           comment = (col.comment || '').dup
           comment.gsub!(ignore_pattern_to_export_i18n, '') if ignore_pattern_to_export_i18n
-          attrs[col.name] = comment
+
+          # カラム名を属性名に
+          attr_name = (comment.scan(/\[\[\[(?:attr|attribute)(?:_name)?:\s*?([^\s]+?)\s*?\]\]\]/).flatten.first || col.name)
+          comment.gsub!(/\[\[\[.*?\]\]\]/)
+          attrs[attr_name] = comment
         end
         
         column_names = m.columns.map(&:name) - ['id']
@@ -129,7 +135,9 @@ class ActiveRecord::Base
         attrs.instance_variable_set(:@column_names, column_names)
         attrs.extend(column_order_modeule)
         
-        d[m.name.underscore] = attrs
+        # テーブル名(複数形)をモデル名(単数形)に
+        model_name = ((m.table_comment || '').scan(/\[\[\[(?:model|class)(?:_name)?:\s*?([^\s]+?)\s*?\]\]\]/).flatten.first || m.name).underscore
+        d[model_name] = attrs
         d
       end
       
@@ -175,6 +183,7 @@ namespace :i18n do
       locale = (ENV['LOCALE'] || I18n.locale).to_s
       path = (ENV['YAML_PATH'] || File.join(RAILS_ROOT, "config/locales/#{locale}.yml"))
       print "updating #{path}..."
+      
       begin
         db = YAML::Store.new(path)
         db.transaction do
