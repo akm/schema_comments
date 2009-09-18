@@ -47,6 +47,20 @@ db/schema_comments.yml にYAML形式で保存されます。
 を直接編集した後、rake db:schema:dumpやマイグレーションを実行すると、db/schema.rbのコメントに反映されます。
 
 
+== I18nへの対応 ==
+rake i18n:schema_comments:update_config_localeタスクを実行すると、i18n用のYAMLを更新できます。
+
+rake i18n:schema_comments:update_config_locale LOCALE=ja でデフォルトではconfig/locales/ja.ymlを更新します。
+
+毎回LOCALEを指定するのが面倒な場合は、config/initializers/locale.rb に
+I18n.default_locale = 'ja'
+という記述を追加しておくと良いでしょう。
+
+また出力先のYAMLのPATHを指定したい場合、YAML_PATHで指定が可能です。
+rake i18n:schema_comments:update_config_locale LOCALE=ja YAML_PATH=/path/to/yaml
+
+
+
 == MySQLのビュー ==
 MySQLのビューを使用した場合、元々MySQLではSHOW TABLES でビューも表示してしまうため、
 ビューはテーブルとしてSchemaDumperに認識され、development環境ではMySQLのビューとして作成されているのに、
