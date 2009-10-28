@@ -3,7 +3,7 @@ sqlite:
   :dbfile: schema_comments_test.sqlite.db
 sqlite3:
   :adapter: sqlite3
-  :dbfile: schema_comments_test.sqlite3.db
+  :database: schema_comments_test.sqlite3.db
 mysql:
   adapter: mysql
   encoding: utf8
