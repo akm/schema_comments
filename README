@@ -2,7 +2,26 @@ SchemaComments
 ==========
 
 == Install ==
-ruby script/plugin install git://github.com/akm/schema_comments.git
+
+=== as a plugin
+ ruby script/plugin install git://github.com/akm/schema_comments.git
+
+=== as a gem
+insert following line to config/environment.rb
+  config.gem 'schema_comments', :version => '0.1.0'
+and 
+ $ sudo rake gems:install
+
+Or install gem manually
+
+ $ sudo gem install gemcutter
+ $ sudo gem tumble
+ $ sudo gem install schema_comments
+
+== Configuration
+If you install schema_comments as a gem, must create config/initializers/schema_comments.rb like this:
+ require 'schema_comments'
+ SchemaComments.setup
 
 
 == overview ==
