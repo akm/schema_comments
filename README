@@ -8,7 +8,7 @@ SchemaComments
 
 === as a gem
 insert following line to config/environment.rb
-  config.gem 'schema_comments', :version => '0.1.0'
+  config.gem 'schema_comments', :version => '0.1.1'
 and 
  $ sudo rake gems:install
 
@@ -17,6 +17,10 @@ Or install gem manually
  $ sudo gem install gemcutter
  $ sudo gem tumble
  $ sudo gem install schema_comments
+
+And make lib/tasks/schema_comments.rake
+ require 'schema_comments/task'
+
 
 == Configuration
 If you install schema_comments as a gem, must create config/initializers/schema_comments.rb like this:
