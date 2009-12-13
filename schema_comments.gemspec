@@ -33,6 +33,8 @@ Gem::Specification.new do |s|
      "lib/schema_comments/schema.rb",
      "lib/schema_comments/schema_comment.rb",
      "lib/schema_comments/schema_dumper.rb",
+     "lib/schema_comments/task.rb",
+     "schema_comments.gemspec",
      "spec/.gitignore",
      "spec/annotate_models_spec.rb",
      "spec/database.yml",
