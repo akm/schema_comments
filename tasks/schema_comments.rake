@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 require 'yaml'
 require 'yaml_waml'
-require 'activerecord'
+require 'active_record'
 
 # テストを実行する際はschema_commentsのschema_comments.ymlへの出力を抑制します。
 namespace :db do
