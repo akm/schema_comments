@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 require 'yaml/store'
+require 'hash_key_orderable'
 
 module SchemaComments
   # 現在はActiveRecord::Baseを継承していますが、将来移行が完全に終了した
@@ -120,14 +121,6 @@ module SchemaComments
     end
 
     class SortedStore < YAML::Store
-      module ColumnNamedHash
-        def each
-          @column_names.each do |column_name|
-            yield(column_name, self[column_name])
-          end
-        end
-      end
-
       def dump(table)
         root = nil
         StringIO.open do |io|
@@ -135,7 +128,6 @@ module SchemaComments
           io.rewind
           root = YAML.load(io)
         end
-
         table_comments = root['table_comments']
         column_comments = root['column_comments']
         # 大元は
@@ -146,34 +138,15 @@ module SchemaComments
         # その他
         #   ...
         # の順番です。
-        root.instance_eval do
-          def each
-            yield('table_comments', self['table_comments'])
-            yield('column_comments', self['column_comments'])
-            (self.keys - ['table_comments', 'column_comments']).each do |key|
-              yield(key, self[key])
-            end
-          end
-        end
+        root.extend(HashKeyOrderable)
+        root.key_order = %w(table_comments column_comments)
         # table_comments はテーブル名のアルファベット順
         table_names = ActiveRecord::Base.connection.tables.sort - ['schema_migrations']
-        table_comments.instance_variable_set(:@table_names, table_names)
-        table_comments.instance_eval do
-          def each
-            @table_names.each do |key|
-              yield(key, self[key])
-            end
-          end
-        end
+        table_comments.extend(HashKeyOrderable)
+        table_comments.key_order = table_names
         # column_comments もテーブル名のアルファベット順
-        column_comments.instance_variable_set(:@table_names, table_names)
-        column_comments.instance_eval do
-          def each
-            @table_names.each do |key|
-              yield(key, self[key])
-            end
-          end
-        end
+        column_comments.extend(HashKeyOrderable)
+        column_comments.key_order = table_names
         # column_comments の各値はテーブルのカラム順
         column_comments.each do |table_name, column_hash|
           column_names = nil
@@ -184,8 +157,8 @@ module SchemaComments
             column_names = column_hash.keys.sort
           end
           column_names.delete('id')
-          column_hash.instance_variable_set(:@column_names, column_names)
-          column_hash.extend(ColumnNamedHash)
+          column_hash.extend(HashKeyOrderable)
+          column_hash.key_order = column_names
         end
         root.to_yaml(@opt)
       end
