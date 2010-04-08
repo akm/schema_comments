@@ -21,7 +21,7 @@ unless defined?(RAILS_ENV)
   begin
     require 'yaml_waml'
   rescue
-    $stderr.puts "yaml_waml not found. You should [sudo] gem install kakutani-yaml_waml"
+    $stderr.puts "yaml_waml not found. You should [sudo] gem install yaml_waml"
   end
 
   config = YAML.load(IO.read(File.join(File.dirname(__FILE__), 'database.yml')))
