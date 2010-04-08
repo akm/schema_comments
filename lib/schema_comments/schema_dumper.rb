@@ -77,7 +77,7 @@ module SchemaComments
           spec[:scale]     = column.scale.inspect if !column.scale.nil?
           spec[:null]      = 'false' if !column.null
           spec[:default]   = default_string(column.default) if !column.default.nil?
-          spec[:comment]   = (column.comment || '').inspect
+          spec[:comment]   = '"' << (column.comment || '').gsub(/\"/, '\"') << '"' # ここでinspectを使うと最後の文字だけ文字化け(UTF-8のコード)になっちゃう
           (spec.keys - [:name, :type]).each{ |k| spec[k].insert(0, "#{k.inspect} => ")}
           spec
         end.compact
@@ -86,10 +86,12 @@ module SchemaComments
         keys = [:name, :limit, :precision, :scale, :default, :null, :comment] & column_specs.map(&:keys).flatten
 
         # figure out the lengths for each column based on above keys
-        lengths = keys.map{ |key| column_specs.map{ |spec| spec[key] ? spec[key].length + 2 : 0 }.max }
+        lengths = keys.map{ |key|
+          column_specs.map{ |spec| spec[key] ? spec[key].length + 2 : 0 }.max
+        }
 
         # the string we're going to sprintf our values against, with standardized column widths
-        format_string = lengths.map{ |len| "%-#{len}s" }
+        format_string = lengths.map{|len| len ? "%-#{len}s" : "%s" }
 
         # find the max length for the 'type' column, which is special
         type_length = column_specs.map{ |column| column[:type].length }.max
