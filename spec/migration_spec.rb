@@ -92,10 +92,17 @@ describe ActiveRecord::Migrator do
     Product.reset_column_comments
     Product.columns.detect{|c| c.name == 'name'}.comment.should == '名称'
 
+    # schema_commentsのcolumn_commentsがうまく動かないみたいです。
+    # カラムを定義するついでにコメントを付加するのは動くのですが、
+    # コメントだけあとから付けようとすると、カラムへのコメントが付きません。
+    #
+    # column_comments(:table_name => {:column_name => "name"})
+    # 上記のようにメソッドを呼び出しても、なぜか引数がHashではなくStringで取れてしまうみたいです。
     ActiveRecord::Migrator.up(migration_path, 7)
     ActiveRecord::Migrator.current_version.should == 7
     Product.reset_column_comments
     Product.columns.detect{|c| c.name == 'name'}.comment.should == '商品名称'
+    Product.columns.detect{|c| c.name == 'product_type_cd'}.comment.should == 'カテゴリコード'
   end
   
 end
