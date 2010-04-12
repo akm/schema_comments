@@ -91,6 +91,11 @@ describe ActiveRecord::Migrator do
     ActiveRecord::Migrator.current_version.should == 6
     Product.reset_column_comments
     Product.columns.detect{|c| c.name == 'name'}.comment.should == '名称'
+
+    ActiveRecord::Migrator.up(migration_path, 7)
+    ActiveRecord::Migrator.current_version.should == 7
+    Product.reset_column_comments
+    Product.columns.detect{|c| c.name == 'name'}.comment.should == '商品名称'
   end
   
 end
