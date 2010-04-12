@@ -92,6 +92,7 @@ describe ActiveRecord::Migrator do
     Product.reset_column_comments
     Product.columns.detect{|c| c.name == 'name'}.comment.should == '名称'
 
+    # Bug report from Ishikawa, Thanks!
     # schema_commentsのcolumn_commentsがうまく動かないみたいです。
     # カラムを定義するついでにコメントを付加するのは動くのですが、
     # コメントだけあとから付けようとすると、カラムへのコメントが付きません。

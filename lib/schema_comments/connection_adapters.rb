@@ -5,14 +5,14 @@ module SchemaComments
     module Column
       attr_accessor :comment
     end
-    
+
     module ColumnDefinition
       attr_accessor :comment
     end
-    
+
     module TableDefinition
       def self.included(mod)
-        mod.module_eval do 
+        mod.module_eval do
           alias_method_chain(:column, :schema_comments)
         end
       end
@@ -25,7 +25,7 @@ module SchemaComments
         self
       end
     end
-    
+
     module Adapter
       def column_comment(table_name, column_name, comment = nil) #:nodoc:
         if comment
@@ -35,23 +35,23 @@ module SchemaComments
           SchemaComment.column_comment(table_name, column_name)
         end
       end
-      
+
       # Mass assignment of comments in the form of a hash.  Example:
-      #   column_comments {
-      #     :users => {:first_name => "User's given name", :last_name => "Family name"},
-      #     :tags  => {:id => "Tag IDentifier"}}
-      def column_comments(contents)
-        if contents.is_a?(Hash)
-          contents.each_pair do |table, cols|
-            cols.each_pair do |col, comment|
-              column_comment(table, col, comment) unless SchemaComments.quiet
-            end
+      #   column_comments(:users, {:first_name => "User's given name", :last_name => "Family name"})
+      #   column_comments(:tags , {:id => "Tag IDentifier"})
+      def column_comments(*args)
+        if (args.length == 2) && args.last.is_a?(Hash)
+          # マイグレーションからActiveRecord関係を経由して呼び出されます。
+          table_name = args.first.to_s
+          args.last.each do |col, comment|
+            column_comment(table_name, col, comment) unless SchemaComments.quiet
           end
         else
-          SchemaComment.column_comments(contents)
+          # こっちはSchemaComments::Base::ClassMethods#columns_with_schema_commentsから呼び出されます。
+          SchemaComment.column_comments(args)
         end
       end
-      
+
       def table_comment(table_name, comment = nil) #:nodoc:
         if comment
           comment = (comment[:comment] || comment['comment']) if comment.is_a?(Hash)
@@ -61,23 +61,23 @@ module SchemaComments
           SchemaComment.table_comment(table_name)
         end
       end
-      
+
       def delete_schema_comments(table_name, column_name = nil)
         SchemaComment.destroy_of(table_name, column_name) unless SchemaComments.quiet
       end
-      
+
       def update_schema_comments_table_name(table_name, new_name)
         SchemaComment.update_table_name(table_name, new_name) unless SchemaComments.quiet
       end
-      
+
       def update_schema_comments_column_name(table_name, column_name, new_name)
         SchemaComment.update_column_name(table_name, column_name, new_name) unless SchemaComments.quiet
       end
     end
-    
+
     module ConcreteAdapter
       def self.included(mod)
-        mod.module_eval do 
+        mod.module_eval do
           alias_method_chain :columns, :schema_comments
           alias_method_chain :create_table, :schema_comments
           alias_method_chain :drop_table, :schema_comments
@@ -88,7 +88,7 @@ module SchemaComments
           alias_method_chain :rename_column, :schema_comments
         end
       end
-      
+
       def columns_with_schema_comments(table_name, name = nil, &block)
         result = columns_without_schema_comments(table_name, name, &block)
         column_comment_hash = column_comments(table_name)
@@ -97,7 +97,7 @@ module SchemaComments
         end
         result
       end
-      
+
       def create_table_with_schema_comments(table_name, options = {}, &block)
         table_def = nil
         result = create_table_without_schema_comments(table_name, options) do |t|
@@ -110,19 +110,19 @@ module SchemaComments
         end
         result
       end
-      
+
       def drop_table_with_schema_comments(table_name, options = {}, &block)
         result = drop_table_without_schema_comments(table_name, options)
         delete_schema_comments(table_name) unless @ignore_drop_table
         result
       end
-      
+
       def rename_table_with_schema_comments(table_name, new_name)
         result = rename_table_without_schema_comments(table_name, new_name)
         update_schema_comments_table_name(table_name, new_name)
         result
       end
-      
+
       def remove_column_with_schema_comments(table_name, *column_names)
         # sqlite3ではremove_columnがないので、以下のフローでスキーマ更新します。
         # 1. CREATE TEMPORARY TABLE "altered_xxxxxx" (・・・)
@@ -131,7 +131,7 @@ module SchemaComments
         # 4. CREATE TABLE "xxxxxx"
         # 5. PRAGMA index_list("altered_xxxxxx")
         # 6. DROP TABLE "altered_xxxxxx"
-        # 
+        #
         # このdrop tableの際に、schema_commentsを変更しないようにフラグを立てています。
         @ignore_drop_table = true
         remove_column_without_schema_comments(table_name, *column_names)
@@ -141,14 +141,14 @@ module SchemaComments
       ensure
         @ignore_drop_table = false
       end
-      
+
       def add_column_with_schema_comments(table_name, column_name, type, options = {})
         comment = options.delete(:comment)
         result = add_column_without_schema_comments(table_name, column_name, type, options)
         column_comment(table_name, column_name, comment) if comment
         result
       end
-      
+
       def change_column_with_schema_comments(table_name, column_name, type, options = {})
         comment = options.delete(:comment)
         @ignore_drop_table = true
