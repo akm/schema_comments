@@ -15,7 +15,10 @@ module SchemaComments
   self.yaml_path = DEFAULT_YAML_PATH
 
   mattr_accessor :quiet
-  
+
+  class YamlError < StandardError
+  end
+
   class << self
     def setup
       base_names = %w(Base Migration Migrator Schema SchemaDumper) +

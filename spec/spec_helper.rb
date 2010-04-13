@@ -42,5 +42,10 @@ unless defined?(RAILS_ENV)
 
   $LOAD_PATH << File.join(File.dirname(__FILE__), '..', 'lib')
   require File.join(File.dirname(__FILE__), '..', 'init')
+
+
+  MIGRATIONS_ROOT = File.join(File.dirname(__FILE__), 'migrations')
+
+  IGNORED_TABLES = %w(schema_migrations)
 end
 

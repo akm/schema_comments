@@ -21,9 +21,7 @@ describe ActiveRecord::SchemaDumper do
       (ActiveRecord::Base.connection.tables - %w(schema_migrations)).should == []
 
       migration_path = File.join(MIGRATIONS_ROOT, 'valid')
-      Dir.glob('*.rb').each do |file|
-        require(file) if /^\d+?_.*/ =~ file
-      end
+      Dir.glob('*.rb').each{|file| require(file) if /^\d+?_.*/ =~ file}
 
       Product.reset_table_comments
       Product.reset_column_comments

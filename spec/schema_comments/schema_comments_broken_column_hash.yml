@@ -1,0 +1,10 @@
+--- 
+table_comments: 
+  products: "商品"
+column_comments: 
+  products: 
+  - "ここには"
+  - "配列ではなく"
+  - "Hashを期待しています"
+  users:
+    login: "ログインID"

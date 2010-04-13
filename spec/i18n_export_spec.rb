@@ -3,10 +3,6 @@ require File.join(File.dirname(__FILE__), 'spec_helper')
 
 describe SchemaComments::Base do
 
-  MIGRATIONS_ROOT = File.join(File.dirname(__FILE__), 'migrations')
-
-  IGNORED_TABLES = %w(schema_migrations)
-  
   before(:each) do
     SchemaComments.yaml_path = File.expand_path(File.join(File.dirname(__FILE__), 'schema_comments.yml'))
     FileUtils.rm(SchemaComments.yaml_path, :verbose => true) if File.exist?(SchemaComments.yaml_path)

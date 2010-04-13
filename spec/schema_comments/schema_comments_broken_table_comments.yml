@@ -1,0 +1,13 @@
+--- 
+table_comments: 
+- "ここには"
+- "配列ではなく"
+- "Hashを期待しています"
+column_comments: 
+  products: 
+    product_type_cd: "カテゴリコード"
+    name: "商品名称"
+    created_at: "登録日時"
+    updated_at: "更新日時"
+  users:
+    login: "ログインID"

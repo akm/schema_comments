@@ -3,6 +3,7 @@ require 'yaml/store'
 require 'hash_key_orderable'
 
 module SchemaComments
+  
   # 現在はActiveRecord::Baseを継承していますが、将来移行が完全に終了した
   # 時点で、ActiveRecord::Baseの継承をやめます。
   #
@@ -128,8 +129,8 @@ module SchemaComments
           io.rewind
           root = YAML.load(io)
         end
-        table_comments = root['table_comments']
-        column_comments = root['column_comments']
+        table_comments = root['table_comments'] || {}
+        column_comments = root['column_comments'] || {}
         # 大元は
         # table_comments:
         #   ...
@@ -138,17 +139,21 @@ module SchemaComments
         # その他
         #   ...
         # の順番です。
+        raise YamlError, "Broken schame_comments.yml" unless root.is_a?(Hash)
         root.extend(HashKeyOrderable)
         root.key_order = %w(table_comments column_comments)
         # table_comments はテーブル名のアルファベット順
         table_names = ActiveRecord::Base.connection.tables.sort - ['schema_migrations']
+        raise YamlError, "Broken schame_comments.yml" unless table_comments.is_a?(Hash)
         table_comments.extend(HashKeyOrderable)
         table_comments.key_order = table_names
         # column_comments もテーブル名のアルファベット順
+        raise YamlError, "Broken schame_comments.yml" unless column_comments.is_a?(Hash)
         column_comments.extend(HashKeyOrderable)
         column_comments.key_order = table_names
         # column_comments の各値はテーブルのカラム順
         column_comments.each do |table_name, column_hash|
+          column_hash ||= {}
           column_names = nil
           begin
             columns = ActiveRecord::Base.connection.columns_without_schema_comments(table_name, "#{table_name.classify} Columns")
@@ -157,6 +162,7 @@ module SchemaComments
             column_names = column_hash.keys.sort
           end
           column_names.delete('id')
+          raise YamlError, "Broken schame_comments.yml" unless column_hash.is_a?(Hash)
           column_hash.extend(HashKeyOrderable)
           column_hash.key_order = column_names
         end
