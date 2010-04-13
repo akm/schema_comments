@@ -8,7 +8,7 @@ SchemaComments
 
 === as a gem
 insert following line to config/environment.rb
-  config.gem 'schema_comments', :version => '0.1.3'
+  config.gem 'schema_comments', :version => '0.1.4'
 and 
  $ sudo rake gems:install
 

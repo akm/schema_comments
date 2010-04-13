@@ -12,6 +12,7 @@ begin
     gem.authors = ["akimatter"]
     gem.add_development_dependency "rspec", ">= 1.2.9"
     # gem is a Gem::Specification... see http://www.rubygems.org/read/chapter/20 for additional settings
+    gem.test_files = Dir.glob('spec/**/*.rb') + Dir.glob('spec/**/*.yml')
   end
   Jeweler::GemcutterTasks.new
 rescue LoadError
