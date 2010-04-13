@@ -5,26 +5,27 @@
 
 Gem::Specification.new do |s|
   s.name = %q{schema_comments}
-  s.version = "0.1.1"
+  s.version = "0.1.3"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["akimatter"]
-  s.date = %q{2009-12-13}
+  s.date = %q{2010-04-13}
   s.description = %q{schema_comments generates extra methods dynamically for attribute which has options}
   s.email = %q{akm2000@gmail.com}
   s.extra_rdoc_files = [
     "LICENSE.txt",
-     "README"
+     "README.rdoc"
   ]
   s.files = [
     ".gitignore",
      "LICENSE.txt",
-     "README",
+     "README.rdoc",
      "Rakefile",
      "VERSION",
      "autotest/discover.rb",
      "init.rb",
      "lib/annotate_models.rb",
+     "lib/hash_key_orderable.rb",
      "lib/schema_comments.rb",
      "lib/schema_comments/base.rb",
      "lib/schema_comments/connection_adapters.rb",
@@ -39,6 +40,7 @@ Gem::Specification.new do |s|
      "spec/annotate_models_spec.rb",
      "spec/database.yml",
      "spec/fixtures/.gitignore",
+     "spec/hash_key_orderable_spec.rb",
      "spec/i18n_export_spec.rb",
      "spec/migration_spec.rb",
      "spec/migrations/valid/001_create_products.rb",
@@ -47,10 +49,14 @@ Gem::Specification.new do |s|
      "spec/migrations/valid/004_remove_price.rb",
      "spec/migrations/valid/005_change_products_name.rb",
      "spec/migrations/valid/006_change_products_name_with_comment.rb",
+     "spec/migrations/valid/007_change_comments.rb",
+     "spec/rcov.opts",
      "spec/resources/models/product.rb",
      "spec/resources/models/product_name.rb",
      "spec/schema.rb",
-     "spec/schema_dumper_spec.rb",
+     "spec/schema_comments/.gitignore",
+     "spec/schema_comments/connection_adapters_spec.rb",
+     "spec/schema_comments/schema_dumper_spec.rb",
      "spec/spec.opts",
      "spec/spec_helper.rb",
      "spec/yaml_export_spec.rb",
@@ -60,10 +66,11 @@ Gem::Specification.new do |s|
   s.homepage = %q{http://github.com/akm/schema_comments}
   s.rdoc_options = ["--charset=UTF-8"]
   s.require_paths = ["lib"]
-  s.rubygems_version = %q{1.3.5}
+  s.rubygems_version = %q{1.3.6}
   s.summary = %q{schema_comments generates extra methods dynamically}
   s.test_files = [
     "spec/annotate_models_spec.rb",
+     "spec/hash_key_orderable_spec.rb",
      "spec/i18n_export_spec.rb",
      "spec/migration_spec.rb",
      "spec/migrations/valid/001_create_products.rb",
@@ -72,10 +79,12 @@ Gem::Specification.new do |s|
      "spec/migrations/valid/004_remove_price.rb",
      "spec/migrations/valid/005_change_products_name.rb",
      "spec/migrations/valid/006_change_products_name_with_comment.rb",
+     "spec/migrations/valid/007_change_comments.rb",
      "spec/resources/models/product.rb",
      "spec/resources/models/product_name.rb",
      "spec/schema.rb",
-     "spec/schema_dumper_spec.rb",
+     "spec/schema_comments/connection_adapters_spec.rb",
+     "spec/schema_comments/schema_dumper_spec.rb",
      "spec/spec_helper.rb",
      "spec/yaml_export_spec.rb"
   ]
