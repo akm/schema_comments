@@ -1,51 +1,12 @@
-$KCODE='u'
+$LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
+$LOAD_PATH.unshift(File.dirname(__FILE__))
+require 'rspec'
+require 'schema_comments'
 
-ENV['RAILS_ENV'] ||= 'test'
-unless defined?(RAILS_ENV)
-  FIXTURES_ROOT = File.join(File.dirname(__FILE__), 'fixtures') unless defined?(FIXTURES_ROOT)
+# Requires supporting files with custom matchers and macros, etc,
+# in ./support/ and its subdirectories.
+Dir["#{File.dirname(__FILE__)}/support/**/*.rb"].each {|f| require f}
 
-  RAILS_ENV = 'test' 
-  RAILS_ROOT = File.dirname(__FILE__) unless defined?(RAILS_ROOT)
-
-  require 'rubygems'
-  require 'spec'
-
-  require 'active_support'
-  require 'active_record'
-  # require 'action_mailer'
-  require 'action_controller'
-  require 'action_view'
-  require 'initializer'
-
-  require 'yaml'
-  begin
-    require 'yaml_waml'
-  rescue
-    $stderr.puts "yaml_waml not found. You should [sudo] gem install yaml_waml"
-  end
-
-  config = YAML.load(IO.read(File.join(File.dirname(__FILE__), 'database.yml')))
-  ActiveRecord::Base.logger = Logger.new(File.join(File.dirname(__FILE__), 'debug.log'))
-  ActionController::Base.logger = ActiveRecord::Base.logger
-  ActiveRecord::Base.establish_connection(config[ENV['DB'] || 'sqlite3'])
-
-
-  load(File.join(File.dirname(__FILE__), 'schema.rb'))
-
-  %w(resources/models).each do |path|
-    $LOAD_PATH.unshift File.join(File.dirname(__FILE__), path)
-    ActiveSupport::Dependencies.load_paths << File.join(File.dirname(__FILE__), path)
-  end
-  Dir.glob("resources/**/*.rb") do |filename|
-    require filename
-  end
-
-  $LOAD_PATH << File.join(File.dirname(__FILE__), '..', 'lib')
-  require File.join(File.dirname(__FILE__), '..', 'init')
-
-
-  MIGRATIONS_ROOT = File.join(File.dirname(__FILE__), 'migrations')
-
-  IGNORED_TABLES = %w(schema_migrations)
+RSpec.configure do |config|
+  
 end
-
