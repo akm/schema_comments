@@ -40,16 +40,21 @@ module SchemaComments
       #   column_comments(:users, {:first_name => "User's given name", :last_name => "Family name"})
       #   column_comments(:tags , {:id => "Tag IDentifier"})
       def column_comments(*args)
-        if (args.length == 2) && args.last.is_a?(Hash)
-          # マイグレーションからActiveRecord関係を経由して呼び出されます。
-          table_name = args.first.to_s
-          args.last.each do |col, comment|
-            column_comment(table_name, col, comment) unless SchemaComments.quiet
+        case args.length
+        when 1 then
+           # こっちはSchemaComments::Base::ClassMethods#columns_with_schema_commentsから呼び出されます。
+          return SchemaComment.column_comments(args.first)
+        when 2 then
+          if args.last.is_a?(Hash)
+            # マイグレーションからActiveRecord関係を経由して呼び出されます。
+            table_name = args.first.to_s
+            args.last.each do |col, comment|
+              column_comment(table_name, col, comment) unless SchemaComments.quiet
+            end
+            return
           end
-        else
-          # こっちはSchemaComments::Base::ClassMethods#columns_with_schema_commentsから呼び出されます。
-          SchemaComment.column_comments(args.first)
         end
+        raise ArgumentError, "#{self.class}#column_comments accepts (tabel_name) or (tabel_name, hash_col_comment)"
       end
 
       def table_comment(table_name, comment = nil) #:nodoc:
