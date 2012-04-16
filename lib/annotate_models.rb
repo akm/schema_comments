@@ -2,13 +2,15 @@
 # fork from
 # http://github.com/rotuka/annotate_models/blob/d2afee82020dbc592b147d92f9beeadbf665a9e0/lib/annotate_models.rb
 
+require 'rails'
+
 require "config/environment" if File.exist?("config/environment")
 
-MODEL_DIR         = File.join(RAILS_ROOT, "app/models" )
-UNIT_TEST_DIR     = File.join(RAILS_ROOT, "test/unit"  )
-SPEC_MODEL_DIR    = File.join(RAILS_ROOT, "spec/models")
-FIXTURES_DIR      = File.join(RAILS_ROOT, "test/fixtures")
-SPEC_FIXTURES_DIR = File.join(RAILS_ROOT, "spec/fixtures")
+MODEL_DIR         = Rails.root.join("app/models" )
+UNIT_TEST_DIR     = Rails.root.join("test/unit"  )
+SPEC_MODEL_DIR    = Rails.root.join("spec/models")
+FIXTURES_DIR      = Rails.root.join("test/fixtures")
+SPEC_FIXTURES_DIR = Rails.root.join("spec/fixtures")
 
 module AnnotateModels
 
@@ -169,8 +171,8 @@ module AnnotateModels
       File.join(FIXTURES_DIR,       fixtures_name),           # fixture
       File.join(SPEC_MODEL_DIR,     "#{model_name}_spec.rb"), # spec
       File.join(SPEC_FIXTURES_DIR,  fixtures_name),           # spec fixture
-      File.join(RAILS_ROOT,         'test', 'factories.rb'),  # factories file
-      File.join(RAILS_ROOT,         'spec', 'factories.rb'),  # factories file
+      Rails.root.join(        'test', 'factories.rb'),  # factories file
+      Rails.root.join(        'spec', 'factories.rb'),  # factories file
     ].each { |file| annotate_one_file(file, info) }
   end
 
