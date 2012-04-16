@@ -36,7 +36,7 @@ module SchemaComments
       return if IGNORED_TABLE == table.downcase
       # MySQLは、ビューもテーブルとして扱うので、一個一個チェックします。
       if adapter_name == 'mysql'
-        config = ActiveRecord::Base.configurations[RAILS_ENV]
+        config = ActiveRecord::Base.configurations[Rails.env]
         match_count = @connection.select_value(
           "select count(*) from information_schema.TABLES where TABLE_TYPE = 'VIEW' AND TABLE_SCHEMA = '%s' AND TABLE_NAME = '%s'" % [
             config["database"], table])
@@ -125,12 +125,12 @@ module SchemaComments
     end
 
     def adapter_name
-      config = ActiveRecord::Base.configurations[RAILS_ENV]
+      config = ActiveRecord::Base.configurations[Rails.env]
       config ? config['adapter'] : ActiveRecord::Base.connection.adapter_name
     end
 
     def mysql_views(stream)
-      config = ActiveRecord::Base.configurations[RAILS_ENV]
+      config = ActiveRecord::Base.configurations[Rails.env]
       view_names = @connection.select_values(
         "select TABLE_NAME from information_schema.TABLES where TABLE_TYPE = 'VIEW' AND TABLE_SCHEMA = '%s'" % config["database"])
       view_names.each do |view_name|
