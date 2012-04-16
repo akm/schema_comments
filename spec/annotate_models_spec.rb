@@ -36,7 +36,7 @@ describe AnnotateModels do
 
 
     AnnotateModels.get_schema_info(Book).should == %{# == Schema Info ==
-#
+# 
 # Schema version: 20090721185959
 #
 # Table name: books # 書籍
@@ -47,9 +47,9 @@ describe AnnotateModels do
 #  price      :decimal(17, 14) not null, default(0.0) # 価格
 #  created_at :datetime                               # 登録日時
 #  updated_at :datetime                               # 更新日時
-#
+# 
 # =================
-#
+# 
 }
   end
 
