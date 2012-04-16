@@ -1,7 +1,6 @@
-SchemaComments 
-==========
+= SchemaComments 
 
-== Install ==
+== Install
 
 === as a plugin
  ruby script/plugin install git://github.com/akm/schema_comments.git
@@ -26,7 +25,7 @@ If you install schema_comments as a gem, must create config/initializers/schema_
  SchemaComments.setup
 
 
-== overview ==
+== overview
 schema_commentsプラグインを使うと、テーブルとカラムにコメントを記述することができます。
 
  class CreateProducts < ActiveRecord::Migration
@@ -67,13 +66,13 @@ columns, create_table, drop_table, rename_table
 remove_column, add_column, change_column
 
 
-== コメントはどこに保存されるのか ==
+== コメントはどこに保存されるのか
 db/schema_comments.yml にYAML形式で保存されます。
 あまり推奨しませんが、もしマイグレーションにコメントを記述するのを忘れてしまった場合、db/schema_comments.yml
 を直接編集した後、rake db:schema:dumpやマイグレーションを実行すると、db/schema.rbのコメントに反映されます。
 
 
-== I18nへの対応 ==
+== I18nへの対応
 rake i18n:schema_comments:update_config_localeタスクを実行すると、i18n用のYAMLを更新できます。
 
 rake i18n:schema_comments:update_config_locale LOCALE=ja でデフォルトではconfig/locales/ja.ymlを更新します。
@@ -85,7 +84,7 @@ I18n.default_locale = 'ja'
 また出力先のYAMLのPATHを指定したい場合、YAML_PATHで指定が可能です。
 rake i18n:schema_comments:update_config_locale LOCALE=ja YAML_PATH=/path/to/yaml
 
-=== コメント内コメント ===
+=== コメント内コメント
 コメント中の ((( から ))) は反映されませんので、モデル名／属性名に含めたくない箇所は ((( と ))) で括ってください。
 ((( ))) と同様に[[[ ]]]も使用できます。
 例えば以下のようにdb/schema.rbに出力されている場合、
@@ -113,17 +112,17 @@ ja:
 
 
 
-== MySQLのビュー ==
+== MySQLのビュー
 MySQLのビューを使用した場合、元々MySQLではSHOW TABLES でビューも表示してしまうため、
 ビューはテーブルとしてSchemaDumperに認識され、development環境ではMySQLのビューとして作成されているのに、
 test環境ではテーブルとして作成されてしまい、テストが正しく動かないことがあります。
 これを避けるため、schema_commentsでは、db/schema.rbを出力する際、テーブルに関する記述の後に、CREATE VIEWを行う記述を追加します。
 
 
-== annotate_models ==
+== annotate_models
 rake db:annotate で以下のようなコメントを、モデル、テスト、フィクスチャといったモデルに関係の強いファイルの
 先頭に追加します。
-  # == Schema Info ==
+  # == Schema Info
   # 
   # Schema version: 20090721185959
   #
