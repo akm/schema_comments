@@ -23,4 +23,17 @@ require 'rspec/rails'
 Dir["#{File.dirname(__FILE__)}/support/**/*.rb"].each {|f| require f}
 
 RSpec.configure do |config|
+
+  %w(resources/models).each do |path|
+    $LOAD_PATH.unshift File.join(File.dirname(__FILE__), path)
+    ActiveSupport::Dependencies.autoload_paths << File.join(File.dirname(__FILE__), path)
+  end
+  Dir.glob("resources/**/*.rb") do |filename|
+    require filename
+  end
+
+  SchemaComments.setup
 end
+
+MIGRATIONS_ROOT = File.join(File.dirname(__FILE__), 'migrations')
+
