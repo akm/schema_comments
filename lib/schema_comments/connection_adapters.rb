@@ -48,7 +48,7 @@ module SchemaComments
           end
         else
           # こっちはSchemaComments::Base::ClassMethods#columns_with_schema_commentsから呼び出されます。
-          SchemaComment.column_comments(args)
+          SchemaComment.column_comments(args.first)
         end
       end
 
