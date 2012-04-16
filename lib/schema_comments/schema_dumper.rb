@@ -3,18 +3,18 @@ module SchemaComments
   module SchemaDumper
     def self.included(mod)
 #       mod.extend(ClassMethods)
-#       mod.instance_eval do 
+#       mod.instance_eval do
 #         alias :ignore_tables_without_schema_comments :ignore_tables
-#         alias :ignore_tables :ignore_tables_with_schema_comments 
+#         alias :ignore_tables :ignore_tables_with_schema_comments
 #       end
-      mod.module_eval do 
+      mod.module_eval do
         alias_method_chain :tables, :schema_comments
         alias_method_chain :table, :schema_comments
       end
     end
-    
+
     IGNORED_TABLE = 'schema_comments'
-    
+
 #     module ClassMethods
 #       def ignore_tables_with_schema_comments
 #         result = ignore_tables_without_schema_comments
@@ -22,7 +22,7 @@ module SchemaComments
 #         result
 #       end
 #     end
-    
+
     private
     def tables_with_schema_comments(stream)
       tables_without_schema_comments(stream)
@@ -60,10 +60,10 @@ module SchemaComments
           tbl.print ", :id => false"
         end
         tbl.print ", :force => true"
-        
+
         table_comment = @connection.table_comment(table)
         tbl.print ", :comment => '#{table_comment}'" unless table_comment.blank?
-        
+
         tbl.puts " do |t|"
 
         column_specs = columns.map do |column|
@@ -110,7 +110,7 @@ module SchemaComments
 
         tbl.puts "  end"
         tbl.puts
-        
+
         indexes(table, tbl)
 
         tbl.rewind
@@ -120,7 +120,7 @@ module SchemaComments
         stream.puts "#   #{e.message}"
         stream.puts
       end
-      
+
       stream
     end
 
@@ -137,7 +137,7 @@ module SchemaComments
         mysql_view(view_name, stream)
       end
     end
-    
+
     def mysql_view(view_name, stream)
       ddl = @connection.select_value("show create view #{view_name}")
       ddl.gsub!(/^CREATE .+? VIEW /i, "CREATE OR REPLACE VIEW ")
@@ -157,6 +157,6 @@ module SchemaComments
       stream.print(ddl.split(/\n/).map{|line| '    ' << line.strip}.join("\n"))
       stream.print("\n  EOS\n")
     end
-    
+
   end
 end

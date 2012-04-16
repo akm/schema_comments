@@ -1,6 +1,6 @@
 module HashKeyOrderable
   attr_accessor :key_order
-  
+
   def each_with_key_order(&block)
     if @key_order.nil? || @key_order.empty?
       each_without_key_order(&block)

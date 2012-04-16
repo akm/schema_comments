@@ -7,7 +7,7 @@ module SchemaComments
         alias :migrate :migrate_with_schema_comments
       end
     end
-    
+
     module ClassMethods
       def migrate_with_schema_comments(*args, &block)
         SchemaComments::SchemaComment.yaml_access do
@@ -15,6 +15,6 @@ module SchemaComments
         end
       end
     end
-    
+
   end
 end

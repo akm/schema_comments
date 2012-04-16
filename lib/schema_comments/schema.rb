@@ -7,7 +7,7 @@ module SchemaComments
         alias :define :define_with_schema_comments
       end
     end
-    
+
     module ClassMethods
       def define_with_schema_comments(*args, &block)
         SchemaComments::SchemaComment.yaml_access do
