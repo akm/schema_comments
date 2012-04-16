@@ -15,7 +15,7 @@ namespace :db do
       Rake::Task["db:schema:dump"].invoke if ActiveRecord::Base.schema_format == :ruby
     end
   end
-  
+
   Rake.application.send(:eval, "@tasks.delete('db:rollback')")
   desc 'Rolls the schema back to the previous version. Specify the number of steps with STEP=n'
   task :rollback => :environment do
@@ -58,7 +58,7 @@ namespace :db do
       SchemaComments::SchemaComment.yaml_access do
         SchemaComments.quiet = true
         if defined?(ActiveRecord) && !ActiveRecord::Base.configurations.blank?
-          Rake::Task[{ :sql  => "db:test:clone_structure", :ruby => "db:test:load" 
+          Rake::Task[{ :sql  => "db:test:clone_structure", :ruby => "db:test:load"
           }[ActiveRecord::Base.schema_format]].invoke
         end
       end
@@ -72,7 +72,7 @@ end
 class ActiveRecord::Base
   class << self
     attr_accessor_with_default :ignore_pattern_to_export_i18n, /\(\(\(.*\)\)\)/
-    
+
     def export_i18n_models
       subclasses = ActiveRecord::Base.send(:subclasses).select do |klass|
         (klass != SchemaComments::SchemaComment) and
@@ -87,18 +87,18 @@ class ActiveRecord::Base
         d[model_name] = comment
         d
       end
-			result.instance_eval do
-				def each_with_order(*args, &block)
-					self.keys.sort.each do |key|
-						yield(key, self[key])
-					end
-				end
-				alias :each_without_order :each
-				alias :each :each_with_order
-			end
-			result			
+      result.instance_eval do
+        def each_with_order(*args, &block)
+          self.keys.sort.each do |key|
+            yield(key, self[key])
+          end
+        end
+        alias :each_without_order :each
+        alias :each :each_with_order
+      end
+      result
     end
-    
+
     def export_i18n_attributes
       subclasses = ActiveRecord::Base.send(:subclasses).select do |klass|
         (klass != SchemaComments::SchemaComment) and
@@ -116,7 +116,7 @@ class ActiveRecord::Base
           comment.gsub!(/\[\[\[.*?\]\]\]/)
           attrs[attr_name] = comment
         end
-        
+
         column_names = m.columns.map(&:name) - ['id']
         column_order_modeule = Module.new do
           def each_with_column_order(*args, &block)
@@ -124,7 +124,7 @@ class ActiveRecord::Base
               yield(column_name, self[column_name])
             end
           end
-          
+
           def self.extended(obj)
             obj.instance_eval do
               alias :each_without_column_order :each
@@ -134,13 +134,13 @@ class ActiveRecord::Base
         end
         attrs.instance_variable_set(:@column_names, column_names)
         attrs.extend(column_order_modeule)
-        
+
         # テーブル名(複数形)をモデル名(単数形)に
         model_name = ((m.table_comment || '').scan(/\[\[\[(?:model|class)(?:_name)?:\s*?([^\s]+?)\s*?\]\]\]/).flatten.first || m.name).underscore
         d[model_name] = attrs
         d
       end
-      
+
       result.instance_eval do
         def each_with_order(*args, &block)
           self.keys.sort.each do |key|
@@ -162,28 +162,28 @@ namespace :i18n do
         require file_name
       end
     end
-    
+
     desc "Export i18n model resources from schema_comments. you can set locale with environment variable LOCALE"
     task :export_models => :"i18n:schema_comments:load_all_models" do
       locale = (ENV['LOCALE'] || I18n.locale).to_s
       obj = {locale => {'activerecord' => {'models' => ActiveRecord::Base.export_i18n_models}}}
       puts YAML.dump(obj)
     end
-    
+
     desc "Export i18n attributes resources from schema_comments. you can set locale with environment variable LOCALE"
     task :export_attributes => :"i18n:schema_comments:load_all_models" do
       locale = (ENV['LOCALE'] || I18n.locale).to_s
       obj = {locale => {'activerecord' => {'attributes' => ActiveRecord::Base.export_i18n_attributes}}}
       puts YAML.dump(obj)
     end
-    
+
     desc "update i18n YAML. you can set locale with environment variable LOCALE"
     task :update_config_locale => :"i18n:schema_comments:load_all_models" do
       require 'yaml/store'
       locale = (ENV['LOCALE'] || I18n.locale).to_s
       path = (ENV['YAML_PATH'] || File.join(RAILS_ROOT, "config/locales/#{locale}.yml"))
       print "updating #{path}..."
-      
+
       begin
         db = YAML::Store.new(path)
         db.transaction do
