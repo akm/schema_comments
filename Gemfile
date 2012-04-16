@@ -1,11 +1,10 @@
 source "http://rubygems.org"
 
-gem "activesupport", "~> 3.1.0"
-gem "activerecord", "~> 3.1.0"
-
+gem "activesupport", ">= 3.0.0"
+gem "activerecord", ">= 3.0.0"
 
 group :test do
-  gem "rails", "~> 3.1.0"
+  gem "rails", ">= 3.0.0"
   gem "sqlite3"
   gem "yaml_waml"
 end
