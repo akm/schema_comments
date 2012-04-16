@@ -13,6 +13,7 @@ require 'schema_comments'
 if RUBY_VERSION >= '1.9.2'
   YAML::ENGINE.yamler = 'syck'
 end
+require 'yaml_waml'
 
 require 'fake_app'
 
