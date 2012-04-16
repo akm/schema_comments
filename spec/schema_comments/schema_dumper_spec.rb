@@ -8,14 +8,14 @@ describe ActiveRecord::SchemaDumper do
   before(:each) do
     SchemaComments.yaml_path = File.expand_path(File.join(File.dirname(__FILE__), 'schema_comments.yml'))
     FileUtils.rm(SchemaComments.yaml_path, :verbose => true) if File.exist?(SchemaComments.yaml_path)
-    
+
     (ActiveRecord::Base.connection.tables - IGNORED_TABLES).each do |t|
       ActiveRecord::Base.connection.drop_table(t) rescue nil
     end
     ActiveRecord::Base.connection.initialize_schema_migrations_table
     ActiveRecord::Base.connection.execute "DELETE FROM #{ActiveRecord::Migrator.schema_migrations_table_name}"
   end
-  
+
   describe :dump do
     it "products" do
       (ActiveRecord::Base.connection.tables - %w(schema_migrations)).should == []
@@ -34,7 +34,7 @@ describe ActiveRecord::SchemaDumper do
 
       ActiveRecord::Base.export_i18n_attributes.keys.include?('product').should == true
       ActiveRecord::Base.export_i18n_attributes['product'].should == {
-        'product_type_cd' => '種別コード', 
+        'product_type_cd' => '種別コード',
         "price" => "価格",
         "name" => "商品名",
         "created_at" => "登録日時",

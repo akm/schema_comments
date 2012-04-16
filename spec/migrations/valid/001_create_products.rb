@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 class CreateProducts < ActiveRecord::Migration
-  
+
   def self.up
     create_table "products", :comment => '商品' do |t|
       t.string   "product_type_cd", :comment => '種別コード'

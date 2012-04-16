@@ -2,7 +2,7 @@
 require File.join(File.dirname(__FILE__), 'spec_helper')
 
 describe SchemaComments::SchemaComment do
-  
+
   before(:each) do
     SchemaComments.yaml_path = File.join(File.dirname(__FILE__), 'human_readable_schema_comments.yml')
     FileUtils.rm(SchemaComments.yaml_path, :verbose => true) if File.exist?(SchemaComments.yaml_path)
@@ -19,7 +19,7 @@ describe SchemaComments::SchemaComment do
       create_table(:person, :comment => '人') do |t|
         t.string :name, :comment => '名前'
       end
-      
+
       create_table(:addresses, :comment => '住所') do |t|
         t.integer :person_id, :comment => '人'
         t.text :descriptions, :comment => '記述'
@@ -30,23 +30,23 @@ describe SchemaComments::SchemaComment do
         t.string :address, :comment => 'アドレス'
       end
     end
-    
+
     File.read(SchemaComments.yaml_path).split(/$/).map(&:strip).should == %{
---- 
-table_comments: 
+---
+table_comments:
   addresses: "住所"
   emails: "メール"
   person: "人"
-column_comments: 
-  addresses: 
+column_comments:
+  addresses:
     person_id: "人"
     descriptions: "記述"
-  emails: 
+  emails:
     person_id: "人"
     address: "アドレス"
-  person: 
+  person:
     name: "名前"
 }.split(/$/).map(&:strip)
   end
-  
+
 end

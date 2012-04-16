@@ -8,7 +8,7 @@ describe SchemaComments::SchemaComment do
   before(:each) do
     SchemaComments.yaml_path = File.expand_path(File.join(File.dirname(__FILE__), 'schema_comments.yml'))
     FileUtils.rm(SchemaComments.yaml_path, :verbose => true) if File.exist?(SchemaComments.yaml_path)
-    
+
     (ActiveRecord::Base.connection.tables - IGNORED_TABLES).each do |t|
       ActiveRecord::Base.connection.drop_table(t) rescue nil
     end
@@ -45,7 +45,7 @@ describe SchemaComments::SchemaComment do
       ActiveRecord::Migrator.up(migration_path, 8)
       ActiveRecord::Migrator.current_version.should == 8
 
-      SchemaComments.yaml_path = 
+      SchemaComments.yaml_path =
         File.expand_path(File.join(
           File.dirname(__FILE__), "schema_comments_users_without_column_hash.yml"))
       SchemaComments::SchemaComment.yaml_access do |db|
@@ -64,7 +64,7 @@ describe SchemaComments::SchemaComment do
         ActiveRecord::Migrator.up(migration_path, 8)
         ActiveRecord::Migrator.current_version.should == 8
 
-        SchemaComments.yaml_path = 
+        SchemaComments.yaml_path =
           File.expand_path(File.join(
             File.dirname(__FILE__), "schema_comments_broken_#{broken_type}.yml"))
         lambda{
@@ -72,7 +72,7 @@ describe SchemaComments::SchemaComment do
         }.should raise_error(SchemaComments::YamlError)
       end
     end
-    
+
   end
 
 end

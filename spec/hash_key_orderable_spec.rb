@@ -47,4 +47,4 @@ describe HashKeyOrderable do
     end
 
   end
-end   
+end
