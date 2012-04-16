@@ -71,7 +71,8 @@ end
 
 class ActiveRecord::Base
   class << self
-    attr_accessor_with_default :ignore_pattern_to_export_i18n, /\(\(\(.*\)\)\)/
+    attr_accessor :ignore_pattern_to_export_i18n
+    self.ignore_pattern_to_export_i18n = /\(\(\(.*\)\)\)/
 
     def export_i18n_models
       subclasses = ActiveRecord::Base.send(:subclasses).select do |klass|
