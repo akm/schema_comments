@@ -6,6 +6,7 @@ module SchemaComments
         alias :columns_without_schema_comments :columns
         alias :columns :columns_with_schema_comments
       end
+      mod.ignore_pattern_to_export_i18n = /\[.*\]/
     end
 
     module ClassMethods
@@ -33,7 +34,7 @@ module SchemaComments
         @table_comment = nil
       end
 
-      attr_accessor_with_default :ignore_pattern_to_export_i18n, /\[.*\]/
+      attr_accessor :ignore_pattern_to_export_i18n
 
       def export_i18n_models
         subclasses = ActiveRecord::Base.send(:subclasses).select do |klass|
