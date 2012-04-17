@@ -2,6 +2,8 @@
 require 'yaml'
 require 'yaml_waml'
 require 'active_record'
+require 'schema_comments'
+SchemaComments.setup
 
 # テストを実行する際はschema_commentsのschema_comments.ymlへの出力を抑制します。
 namespace :db do
@@ -162,7 +164,7 @@ end
 namespace :i18n do
   namespace :schema_comments do
     task :load_all_models => :environment do
-      Dir.glob(File.join(RAILS_ROOT, 'app', 'models', '**', '*.rb')) do |file_name|
+      Dir.glob(Rails.root.join('app/models/**/*.rb')) do |file_name|
         require file_name
       end
     end
@@ -185,7 +187,7 @@ namespace :i18n do
     task :update_config_locale => :"i18n:schema_comments:load_all_models" do
       require 'yaml/store'
       locale = (ENV['LOCALE'] || I18n.locale).to_s
-      path = (ENV['YAML_PATH'] || File.join(RAILS_ROOT, "config/locales/#{locale}.yml"))
+      path = (ENV['YAML_PATH'] || Rails.root.join("config/locales/#{locale}.yml"))
       print "updating #{path}..."
 
       begin
