@@ -1,55 +1,38 @@
 # -*- coding: utf-8 -*-
 module SchemaComments
-  module SchemaDumper
-    def self.included(mod)
-#       mod.extend(ClassMethods)
-#       mod.instance_eval do
-#         alias :ignore_tables_without_schema_comments :ignore_tables
-#         alias :ignore_tables :ignore_tables_with_schema_comments
-#       end
-      mod.module_eval do
-        alias_method_chain :tables, :schema_comments
-        alias_method_chain :table, :schema_comments
-      end
-    end
-
-    IGNORED_TABLE = 'schema_comments'
-
-#     module ClassMethods
-#       def ignore_tables_with_schema_comments
-#         result = ignore_tables_without_schema_comments
-#         result << IGNORED_TABLE unless result.include?(IGNORED_TABLE)
-#         result
-#       end
-#     end
+  class SchemaDumper < ActiveRecord::SchemaDumper
 
     private
-    def tables_with_schema_comments(stream)
-      tables_without_schema_comments(stream)
-      if adapter_name == "mysql"
-        # ビューはtableの後に実行するようにしないと rake db:schema:load で失敗します。
-        mysql_views(stream)
-      end
+    def tables(stream)
+      result = super(stream)
+      # ビューはtableの後に実行するようにしないと rake db:schema:load で失敗します。
+      mysql_views(stream) if adapter_name == "mysql"
+      result
     end
 
-    def table_with_schema_comments(table, stream)
-      return if IGNORED_TABLE == table.downcase
+    def mysql_view?(table)
+      return false unless adapter_name == 'mysql'
+      config = ActiveRecord::Base.configurations[Rails.env]
+      match_count = @connection.select_value(
+        "select count(*) from information_schema.TABLES where TABLE_TYPE = 'VIEW' AND TABLE_SCHEMA = '%s' AND TABLE_NAME = '%s'" % [
+          config["database"], table])
+      match_count.to_i > 0
+    end
+
+    def table(table, stream)
       # MySQLは、ビューもテーブルとして扱うので、一個一個チェックします。
-      if adapter_name == 'mysql'
-        config = ActiveRecord::Base.configurations[Rails.env]
-        match_count = @connection.select_value(
-          "select count(*) from information_schema.TABLES where TABLE_TYPE = 'VIEW' AND TABLE_SCHEMA = '%s' AND TABLE_NAME = '%s'" % [
-            config["database"], table])
-        return if match_count.to_i > 0
-      end
+      return if mysql_view?(table)
+
       columns = @connection.columns(table)
       begin
         tbl = StringIO.new
 
+        # first dump primary key column
         if @connection.respond_to?(:pk_and_sequence_for)
-          pk, pk_seq = @connection.pk_and_sequence_for(table)
+          pk, _ = @connection.pk_and_sequence_for(table)
+        elsif @connection.respond_to?(:primary_key)
+          pk = @connection.primary_key(table)
         end
-        pk ||= 'id'
 
         tbl.print "  create_table #{table.inspect}"
         if columns.detect { |c| c.name == pk }
@@ -60,38 +43,39 @@ module SchemaComments
           tbl.print ", :id => false"
         end
         tbl.print ", :force => true"
-
-        table_comment = @connection.table_comment(table)
-        tbl.print ", :comment => '#{table_comment}'" unless table_comment.blank?
-
         tbl.puts " do |t|"
 
+        # then dump all non-primary key columns
         column_specs = columns.map do |column|
           raise StandardError, "Unknown type '#{column.sql_type}' for column '#{column.name}'" if @types[column.type].nil?
           next if column.name == pk
           spec = {}
           spec[:name]      = column.name.inspect
-          spec[:type]      = column.type.to_s
-          spec[:limit]     = column.limit.inspect if column.limit != @types[column.type][:limit] && column.type != :decimal
-          spec[:precision] = column.precision.inspect if !column.precision.nil?
-          spec[:scale]     = column.scale.inspect if !column.scale.nil?
-          spec[:null]      = 'false' if !column.null
-          spec[:default]   = default_string(column.default) if !column.default.nil?
-          spec[:comment]   = '"' << (column.comment || '').gsub(/\"/, '\"') << '"' # ここでinspectを使うと最後の文字だけ文字化け(UTF-8のコード)になっちゃう
+
+          # AR has an optimization which handles zero-scale decimals as integers. This
+          # code ensures that the dumper still dumps the column as a decimal.
+          spec[:type]      = if column.type == :integer && [/^numeric/, /^decimal/].any? { |e| e.match(column.sql_type) }
+                               'decimal'
+                             else
+                               column.type.to_s
+                             end
+          spec[:limit]     = column.limit.inspect if column.limit != @types[column.type][:limit] && spec[:type] != 'decimal'
+          spec[:precision] = column.precision.inspect if column.precision
+          spec[:scale]     = column.scale.inspect if column.scale
+          spec[:null]      = 'false' unless column.null
+          spec[:default]   = default_string(column.default) if column.has_default?
           (spec.keys - [:name, :type]).each{ |k| spec[k].insert(0, "#{k.inspect} => ")}
           spec
         end.compact
 
         # find all migration keys used in this table
-        keys = [:name, :limit, :precision, :scale, :default, :null, :comment] & column_specs.map(&:keys).flatten
+        keys = [:name, :limit, :precision, :scale, :default, :null] & column_specs.map{ |k| k.keys }.flatten
 
         # figure out the lengths for each column based on above keys
-        lengths = keys.map{ |key|
-          column_specs.map{ |spec| spec[key] ? spec[key].length + 2 : 0 }.max
-        }
+        lengths = keys.map{ |key| column_specs.map{ |spec| spec[key] ? spec[key].length + 2 : 0 }.max }
 
         # the string we're going to sprintf our values against, with standardized column widths
-        format_string = lengths.map{|len| len ? "%-#{len}s" : "%s" }
+        format_string = lengths.map{ |len| "%-#{len}s" }
 
         # find the max length for the 'type' column, which is special
         type_length = column_specs.map{ |column| column[:type].length }.max
