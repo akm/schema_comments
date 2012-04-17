@@ -11,10 +11,8 @@ module SchemaComments
   autoload :SchemaComment, 'schema_comments/schema_comment'
   autoload :SchemaDumper, 'schema_comments/schema_dumper'
 
-  # DEFAULT_YAML_PATH = File.expand_path(File.join(RAILS_ROOT, 'db/schema_comments.yml'))
-
   mattr_accessor :yaml_path
-  # self.yaml_path = DEFAULT_YAML_PATH
+  self.yaml_path = Rails.root.join("db/schema_comments.yml").to_s if defined?(Rails)
 
   mattr_accessor :quiet
 
@@ -23,7 +21,6 @@ module SchemaComments
 
   class << self
     def setup
-puts "*" * 100
       base_names = %w(Base Migration Migrator Schema) +
         %w(Column ColumnDefinition TableDefinition).map{|name| "ConnectionAdapters::#{name}"}
 
