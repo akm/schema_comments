@@ -3,7 +3,6 @@ require 'yaml'
 require 'yaml_waml'
 require 'active_record'
 require 'schema_comments'
-SchemaComments.setup
 
 # テストを実行する際はschema_commentsのschema_comments.ymlへの出力を抑制します。
 namespace :db do
