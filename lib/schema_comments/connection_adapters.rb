@@ -28,7 +28,6 @@ module SchemaComments
 
     module Adapter
       def column_comment(table_name, column_name, comment = nil) #:nodoc:
-puts "#{__FILE__}##{__LINE__}"
         if comment
           SchemaComment.save_column_comment(table_name, column_name, comment) unless SchemaComments.quiet
           return comment
@@ -41,15 +40,10 @@ puts "#{__FILE__}##{__LINE__}"
       #   column_comments(:users, {:first_name => "User's given name", :last_name => "Family name"})
       #   column_comments(:tags , {:id => "Tag IDentifier"})
       def column_comments(*args)
-puts "#{__FILE__}##{__LINE__}"
         case args.length
         when 1 then
-puts "#{__FILE__}##{__LINE__}"
            # こっちはSchemaComments::Base::ClassMethods#columns_with_schema_commentsから呼び出されます。
-          r = SchemaComment.column_comments(args.first)
-
-puts "#{__FILE__}##{__LINE__}"
-          return r
+          return SchemaComment.column_comments(args.first)
         when 2 then
           if args.last.is_a?(Hash)
             # マイグレーションからActiveRecord関係を経由して呼び出されます。
@@ -89,12 +83,12 @@ puts "#{__FILE__}##{__LINE__}"
     module ConcreteAdapter
       def self.included(mod)
         mod.module_eval do
-          alias_method_chain :columns, :schema_comments
-          alias_method_chain :create_table, :schema_comments
-          alias_method_chain :drop_table, :schema_comments
-          alias_method_chain :rename_table, :schema_comments
+          alias_method_chain :columns      , :schema_comments
+          alias_method_chain :create_table , :schema_comments
+          alias_method_chain :drop_table   , :schema_comments
+          alias_method_chain :rename_table , :schema_comments
           alias_method_chain :remove_column, :schema_comments
-          alias_method_chain :add_column, :schema_comments
+          alias_method_chain :add_column   , :schema_comments
           alias_method_chain :change_column, :schema_comments
           alias_method_chain :rename_column, :schema_comments
         end
