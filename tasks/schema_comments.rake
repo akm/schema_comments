@@ -3,7 +3,7 @@ require 'yaml'
 # require 'yaml_waml'
 require 'active_record'
 require 'schema_comments'
-require 'schema_comments/schema_comment'
+SchemaComments.setup
 
 db_namespace = namespace :db do
   namespace :schema do
@@ -12,7 +12,6 @@ db_namespace = namespace :db do
     desc 'Create a db/schema.rb file that can be portably used against any DB supported by AR'
     task :dump => [:environment, :load_config] do
       begin
-        SchemaComments.setup
         require 'active_record/schema_dumper'
         filename = ENV['SCHEMA'] || "#{Rails.root}/db/schema.rb"
         File.open(filename, "w:utf-8") do |file|
