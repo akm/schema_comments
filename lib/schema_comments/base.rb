@@ -42,7 +42,7 @@ module SchemaComments
             klass.respond_to?(:table_exists?) and klass.table_exists?
         end
         subclasses.inject({}) do |d, m|
-          comment = m.table_comment
+          comment = m.table_comment || ''
           comment.gsub!(ignore_pattern_to_export_i18n, '') if ignore_pattern_to_export_i18n
           d[m.name.underscore] = comment
           d
