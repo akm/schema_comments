@@ -4,32 +4,24 @@ require 'hash_key_orderable'
 
 module SchemaComments
 
-  # 現在はActiveRecord::Baseを継承していますが、将来移行が完全に終了した
-  # 時点で、ActiveRecord::Baseの継承をやめます。
-  #
-  # それまではDBからのロードは可能ですが、YAMLにのみ保存します。
-  class SchemaComment < ActiveRecord::Base
-    set_table_name('schema_comments')
+  class SchemaComment
 
     TABLE_KEY = 'table_comments'
     COLUMN_KEY = 'column_comments'
 
     class << self
       def table_comment(table_name)
-puts "#{__FILE__}##{__LINE__}"
         @table_names ||= yaml_access{|db| db[TABLE_KEY]}.dup
         @table_names[table_name.to_s]
       end
 
       def column_comment(table_name, column_name)
-puts "#{__FILE__}##{__LINE__}"
         @column_names ||= yaml_access{|db| db[COLUMN_KEY] }.dup
         column_hash = @column_names[table_name.to_s] || {}
         column_hash[column_name.to_s]
       end
 
       def column_comments(table_name)
-puts "#{__FILE__}##{__LINE__}"
         result = nil
         @column_names ||= yaml_access{|db| db[COLUMN_KEY] }.dup
         result = @column_names[table_name.to_s]
@@ -37,7 +29,6 @@ puts "#{__FILE__}##{__LINE__}"
       end
 
       def save_table_comment(table_name, comment)
-puts "#{__FILE__}##{__LINE__}"
         yaml_access do |db|
           db[TABLE_KEY][table_name.to_s] = comment
         end
@@ -45,7 +36,6 @@ puts "#{__FILE__}##{__LINE__}"
       end
 
       def save_column_comment(table_name, column_name, comment)
-puts "#{__FILE__}##{__LINE__}"
         yaml_access do |db|
           db[COLUMN_KEY][table_name.to_s] ||= {}
           db[COLUMN_KEY][table_name.to_s][column_name.to_s] = comment
@@ -54,7 +44,6 @@ puts "#{__FILE__}##{__LINE__}"
       end
 
       def destroy_of(table_name, column_name)
-puts "#{__FILE__}##{__LINE__}"
         yaml_access do |db|
           column_hash = db[COLUMN_KEY][table_name.to_s]
           column_hash.delete(column_name) if column_hash
@@ -63,7 +52,6 @@ puts "#{__FILE__}##{__LINE__}"
       end
 
       def update_table_name(table_name, new_name)
-puts "#{__FILE__}##{__LINE__}"
         yaml_access do |db|
           db[TABLE_KEY][new_name.to_s] = db[TABLE_KEY].delete(table_name.to_s)
           db[COLUMN_KEY][new_name.to_s] = db[COLUMN_KEY].delete(table_name.to_s)
@@ -73,7 +61,6 @@ puts "#{__FILE__}##{__LINE__}"
       end
 
       def update_column_name(table_name, column_name, new_name)
-puts "#{__FILE__}##{__LINE__}"
         yaml_access do |db|
           table_cols = db[COLUMN_KEY][table_name.to_s]
           if table_cols
@@ -89,7 +76,6 @@ puts "#{__FILE__}##{__LINE__}"
       end
 
       def yaml_access(&block)
-puts "#{__FILE__}##{__LINE__}"
         if @yaml_transaction
           yield(@yaml_transaction) if block_given?
         else
@@ -110,7 +96,6 @@ puts "#{__FILE__}##{__LINE__}"
           result
         end
       end
-
     end
 
     class SortedStore < YAML::Store
