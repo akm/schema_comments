@@ -43,6 +43,10 @@ module SchemaComments
           tbl.print ", :id => false"
         end
         tbl.print ", :force => true"
+
+        table_comment = @connection.table_comment(table)
+        tbl.print ", :comment => '#{table_comment}'" unless table_comment.blank?
+
         tbl.puts " do |t|"
 
         # then dump all non-primary key columns
@@ -64,12 +68,13 @@ module SchemaComments
           spec[:scale]     = column.scale.inspect if column.scale
           spec[:null]      = 'false' unless column.null
           spec[:default]   = default_string(column.default) if column.has_default?
+          spec[:comment]   = '"' << (column.comment || '').gsub(/\"/, '\"') << '"' # ここでinspectを使うと最後の文字だけ文字化け(UTF-8のコード)になっちゃう
           (spec.keys - [:name, :type]).each{ |k| spec[k].insert(0, "#{k.inspect} => ")}
           spec
         end.compact
 
         # find all migration keys used in this table
-        keys = [:name, :limit, :precision, :scale, :default, :null] & column_specs.map{ |k| k.keys }.flatten
+        keys = [:name, :limit, :precision, :scale, :default, :null, :comment] & column_specs.map{ |k| k.keys }.flatten
 
         # figure out the lengths for each column based on above keys
         lengths = keys.map{ |key| column_specs.map{ |spec| spec[key] ? spec[key].length + 2 : 0 }.max }
