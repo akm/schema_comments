@@ -23,7 +23,8 @@ module SchemaComments
 
   class << self
     def setup
-      base_names = %w(Base Migration Migrator Schema SchemaDumper) +
+puts "*" * 100
+      base_names = %w(Base Migration Migrator Schema) +
         %w(Column ColumnDefinition TableDefinition).map{|name| "ConnectionAdapters::#{name}"}
 
       base_names.each do |base_name|
@@ -41,7 +42,7 @@ module SchemaComments
       end
 
       # %w(Mysql PostgreSQL SQLite3 SQLite Firebird DB2 Oracle Sybase Openbase Frontbase)
-      %w(Mysql PostgreSQL SQLite3 SQLite).each do |adapter|
+      %w(Mysql Mysql2 PostgreSQL SQLite3 SQLite).each do |adapter|
         begin
           require("active_record/connection_adapters/#{adapter.downcase}_adapter")
           adapter_class = ('ActiveRecord::ConnectionAdapters::' << "#{adapter}Adapter").constantize

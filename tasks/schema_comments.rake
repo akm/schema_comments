@@ -4,71 +4,39 @@ require 'yaml_waml'
 require 'active_record'
 require 'schema_comments'
 
-# テストを実行する際はschema_commentsのschema_comments.ymlへの出力を抑制します。
-namespace :db do
-  Rake.application.send(:eval, "@tasks.delete('db:migrate')")
-  desc "Migrate the database through scripts in db/migrate and update db/schema.rb by invoking db:schema:dump. Target specific version with VERSION=x. Turn off output with VERBOSE=false."
-  task :migrate => :environment do
-    SchemaComments::SchemaComment.yaml_access do
-      ActiveRecord::Migration.verbose = ENV["VERBOSE"] ? ENV["VERBOSE"] == "true" : true
-      ActiveRecord::Migrator.migrate("db/migrate/", ENV["VERSION"] ? ENV["VERSION"].to_i : nil)
-      SchemaComments.quiet = true
-      Rake::Task["db:schema:dump"].invoke if ActiveRecord::Base.schema_format == :ruby
-    end
-  end
+db_namespace = namespace :db do
+  namespace :schema do
 
-  Rake.application.send(:eval, "@tasks.delete('db:rollback')")
-  desc 'Rolls the schema back to the previous version. Specify the number of steps with STEP=n'
-  task :rollback => :environment do
-    SchemaComments::SchemaComment.yaml_access do
-      step = ENV['STEP'] ? ENV['STEP'].to_i : 1
-      ActiveRecord::Migrator.rollback('db/migrate/', step)
-      SchemaComments.quiet = true
-      Rake::Task["db:schema:dump"].invoke if ActiveRecord::Base.schema_format == :ruby
-    end
-  end
-
-  namespace :migrate do
-    desc 'Runs the "up" for a given migration VERSION.'
-    task :up => :environment do
-      SchemaComments::SchemaComment.yaml_access do
-        version = ENV["VERSION"] ? ENV["VERSION"].to_i : nil
-        raise "VERSION is required" unless version
-        ActiveRecord::Migrator.run(:up, "db/migrate/", version)
-        SchemaComments.quiet = true
-        Rake::Task["db:schema:dump"].invoke if ActiveRecord::Base.schema_format == :ruby
-      end
-    end
-
-    desc 'Runs the "down" for a given migration VERSION.'
-    task :down => :environment do
-      SchemaComments::SchemaComment.yaml_access do
-        version = ENV["VERSION"] ? ENV["VERSION"].to_i : nil
-        raise "VERSION is required" unless version
-        ActiveRecord::Migrator.run(:down, "db/migrate/", version)
-        SchemaComments.quiet = true
-        Rake::Task["db:schema:dump"].invoke if ActiveRecord::Base.schema_format == :ruby
-      end
-    end
-  end
-
-  namespace :test do
-    Rake.application.send(:eval, "@tasks.delete('db:test:prepare')")
-    desc 'Check for pending migrations and load the test schema'
-    task :prepare => 'db:abort_if_pending_migrations' do
-      SchemaComments::SchemaComment.yaml_access do
-        SchemaComments.quiet = true
-        if defined?(ActiveRecord) && !ActiveRecord::Base.configurations.blank?
-          Rake::Task[{ :sql  => "db:test:clone_structure", :ruby => "db:test:load"
-          }[ActiveRecord::Base.schema_format]].invoke
+    Rake.application.send(:eval, "@tasks.delete('db:schema:dump')")
+    desc 'Create a db/schema.rb file that can be portably used against any DB supported by AR'
+    task :dump => [:environment, :load_config] do
+      begin
+puts "#{__FILE__}##{__LINE__}"
+SchemaComments.setup
+puts "#{__FILE__}##{__LINE__}"
+        require 'active_record/schema_dumper'
+puts "#{__FILE__}##{__LINE__}"
+        filename = ENV['SCHEMA'] || "#{Rails.root}/db/schema.rb"
+puts "#{__FILE__}##{__LINE__}"
+        File.open(filename, "w:utf-8") do |file|
+puts "#{__FILE__}##{__LINE__}"
+          ActiveRecord::Base.establish_connection(Rails.env)
+puts "#{__FILE__}##{__LINE__}"
+          ActiveRecord::SchemaDumper.dump(ActiveRecord::Base.connection, file)
+          # SchemaComments::SchemaDumper.dump(ActiveRecord::Base.connection, file)
         end
+puts "#{__FILE__}##{__LINE__}"
+        db_namespace['schema:dump'].reenable
+      rescue Exception => e
+puts "#{__FILE__}##{__LINE__}"
+        puts "[#{e.class}] #{e.message}:\n  " << e.backtrace.join("\n  ")
+puts "#{__FILE__}##{__LINE__}"
+        raise e
       end
     end
+
   end
-
 end
-
-
 
 class ActiveRecord::Base
   class << self
@@ -207,3 +175,6 @@ namespace :i18n do
     end
   end
 end
+
+
+puts "#{__FILE__}##{__LINE__}"
