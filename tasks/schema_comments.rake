@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 require 'yaml'
-require 'yaml_waml'
+# require 'yaml_waml'
 require 'active_record'
 require 'schema_comments'
+require 'schema_comments/schema_comment'
 
 db_namespace = namespace :db do
   namespace :schema do
@@ -11,26 +12,17 @@ db_namespace = namespace :db do
     desc 'Create a db/schema.rb file that can be portably used against any DB supported by AR'
     task :dump => [:environment, :load_config] do
       begin
-puts "#{__FILE__}##{__LINE__}"
-SchemaComments.setup
-puts "#{__FILE__}##{__LINE__}"
+        SchemaComments.setup
         require 'active_record/schema_dumper'
-puts "#{__FILE__}##{__LINE__}"
         filename = ENV['SCHEMA'] || "#{Rails.root}/db/schema.rb"
-puts "#{__FILE__}##{__LINE__}"
         File.open(filename, "w:utf-8") do |file|
-puts "#{__FILE__}##{__LINE__}"
           ActiveRecord::Base.establish_connection(Rails.env)
-puts "#{__FILE__}##{__LINE__}"
-          ActiveRecord::SchemaDumper.dump(ActiveRecord::Base.connection, file)
-          # SchemaComments::SchemaDumper.dump(ActiveRecord::Base.connection, file)
+          # ActiveRecord::SchemaDumper.dump(ActiveRecord::Base.connection, file)
+          SchemaComments::SchemaDumper.dump(ActiveRecord::Base.connection, file)
         end
-puts "#{__FILE__}##{__LINE__}"
         db_namespace['schema:dump'].reenable
       rescue Exception => e
-puts "#{__FILE__}##{__LINE__}"
         puts "[#{e.class}] #{e.message}:\n  " << e.backtrace.join("\n  ")
-puts "#{__FILE__}##{__LINE__}"
         raise e
       end
     end
@@ -175,6 +167,3 @@ namespace :i18n do
     end
   end
 end
-
-
-puts "#{__FILE__}##{__LINE__}"
