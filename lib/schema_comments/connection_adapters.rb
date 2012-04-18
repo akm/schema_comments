@@ -116,8 +116,8 @@ module SchemaComments
         result
       end
 
-      def drop_table_with_schema_comments(table_name, options = {}, &block)
-        result = drop_table_without_schema_comments(table_name, options)
+      def drop_table_with_schema_comments(table_name, *args, &block)
+        result = drop_table_without_schema_comments(table_name, *args)
         delete_schema_comments(table_name) unless @ignore_drop_table
         result
       end
