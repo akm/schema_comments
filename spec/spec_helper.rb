@@ -4,6 +4,7 @@ $LOAD_PATH.unshift(File.dirname(__FILE__))
 require 'rails'
 require 'schema_comments'
 # require 'database_cleaner'
+SchemaComments.yaml_path = File.expand_path("schema_comments.yml", File.dirname(__FILE__))
 
 # Ensure we use 'syck' instead of 'psych' in 1.9.2
 # RubyGems >= 1.5.0 uses 'psych' on 1.9.2, but
@@ -22,6 +23,7 @@ require 'rspec/rails'
 # Requires supporting files with custom matchers and macros, etc,
 # in ./support/ and its subdirectories.
 Dir["#{File.dirname(__FILE__)}/support/**/*.rb"].each {|f| require f}
+
 
 RSpec.configure do |config|
 

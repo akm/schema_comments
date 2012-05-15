@@ -42,7 +42,8 @@ describe ActiveRecord::SchemaDumper do
       }
 
       dest = StringIO.new
-      ActiveRecord::SchemaDumper.dump(ActiveRecord::Base.connection, dest)
+      # ActiveRecord::SchemaDumper.dump(ActiveRecord::Base.connection, dest)
+      SchemaComments::SchemaDumper.dump(ActiveRecord::Base.connection, dest)
       dest.rewind
       dest.read.should == <<EOS
 # encoding: UTF-8
