@@ -29,7 +29,10 @@ end
 ActiveRecord::Base.configurations = configs
 ActiveRecord::Base.establish_connection( db_name )
 
-
+if RUBY_VERSION =~ /^1\.9\.2/
+  Encoding.default_external = Encoding::UTF_8
+  Encoding.default_internal = Encoding::UTF_8
+end
 
 # config
 app = Class.new(Rails::Application)
