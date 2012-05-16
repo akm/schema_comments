@@ -13,7 +13,8 @@ SchemaComments.yaml_path = File.expand_path("schema_comments.yml", File.dirname(
 # Psych does not yet support YAML 1.1 merge keys.
 # Merge keys is often used in mongoid.yml
 # See: http://redmine.ruby-lang.org/issues/show/4300
-if RUBY_VERSION >= '1.9.2'
+# if RUBY_VERSION >= '1.9.2'
+if YAML::ENGINE.respond_to?(:yamler=)
   YAML::ENGINE.yamler = 'syck'
 end
 require 'yaml_waml'
