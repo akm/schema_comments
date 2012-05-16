@@ -41,3 +41,5 @@ RSpec.configure do |config|
 end
 
 MIGRATIONS_ROOT = File.join(File.dirname(__FILE__), 'migrations')
+
+IGNORED_TABLES = %w(schema_migrations)

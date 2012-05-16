@@ -3,6 +3,13 @@ source "http://rubygems.org"
 gem "activesupport", "= 3.2.3"
 gem "activerecord", "= 3.2.3"
 
+group :test do
+  gem "sqlite3"
+  gem "mysql"
+  gem "mysql2"
+  gem "yaml_waml"
+end
+
 group :development do
   gem "rspec", "~> 2.10.0"
   gem "rspec-rails", "~> 2.10.1"
