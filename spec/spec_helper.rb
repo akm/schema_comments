@@ -1,3 +1,5 @@
+ENV['DB'] ||= 'sqlite3'
+
 $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 $LOAD_PATH.unshift(File.dirname(__FILE__))
 
@@ -39,4 +41,3 @@ RSpec.configure do |config|
 end
 
 MIGRATIONS_ROOT = File.join(File.dirname(__FILE__), 'migrations')
-

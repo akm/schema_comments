@@ -1,13 +1,15 @@
-sqlite:
-  :adapter: sqlite
-  :dbfile: schema_comments_test.sqlite.db
 sqlite3:
   :adapter: sqlite3
-  :database: schema_comments_test.sqlite3.db
+  :database: ":memory:"
 mysql:
   adapter: mysql
   encoding: utf8
   username: root
   password:
-  socket: /opt/local/var/run/mysql5/mysqld.sock
-  database: schema_comments_test
+  database: schema_comments_mysql_test
+mysql2:
+  adapter: mysql2
+  encoding: utf8
+  username: root
+  password:
+  database: schema_comments_mysql2_test

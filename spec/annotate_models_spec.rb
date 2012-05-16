@@ -5,6 +5,8 @@ require File.join(File.dirname(__FILE__), '../lib/annotate_models.rb')
 
 describe AnnotateModels do
 
+  IGNORED_TABLES = %w(schema_migrations)
+
   before(:each) do
     SchemaComments.yaml_path = File.expand_path(File.join(File.dirname(__FILE__), 'schema_comments.yml'))
     FileUtils.rm(SchemaComments.yaml_path, :verbose => true) if File.exist?(SchemaComments.yaml_path)
@@ -34,6 +36,13 @@ describe AnnotateModels do
     class Book < ActiveRecord::Base
     end
 
+puts "ActiveRecord::Base.connection.adapter_name: #{ActiveRecord::Base.connection.adapter_name.inspect}"
+
+    int_expr =
+      case ActiveRecord::Base.connection.adapter_name
+      when /mysql/i then ":integer(4)"
+      else               ":integer   "
+      end
 
     AnnotateModels.get_schema_info(Book).should == %{# == Schema Info ==
 # 
@@ -41,9 +50,9 @@ describe AnnotateModels do
 #
 # Table name: books # 書籍
 #
-#  id         :integer         not null, primary key
+#  id         #{int_expr}      not null, primary key
 #  title      :string(100)     not null               # タイトル
-#  size       :integer         not null, default(1)   # 判型
+#  size       #{int_expr}      not null, default(1)   # 判型
 #  price      :decimal(17, 14) not null, default(0.0) # 価格
 #  created_at :datetime                               # 登録日時
 #  updated_at :datetime                               # 更新日時

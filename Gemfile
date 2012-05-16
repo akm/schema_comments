@@ -6,6 +6,8 @@ gem "activerecord", ">= 3.0.0"
 group :test do
   gem "rails", ">= 3.0.0"
   gem "sqlite3"
+  gem "mysql"
+  gem "mysql2"
   gem "yaml_waml"
 end
 

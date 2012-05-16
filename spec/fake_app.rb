@@ -6,8 +6,30 @@ require 'action_controller/railtie'
 require 'action_view/railtie'
 
 # database
-ActiveRecord::Base.configurations = {'test' => {:adapter => 'sqlite3', :database => ':memory:'}}
-ActiveRecord::Base.establish_connection('test')
+db_name = ENV['DB'] || 'sqlite3'
+configs = YAML.load_file(File.expand_path("../database.yml", __FILE__))
+config = configs[db_name]
+
+def mysql_creation_options(config)
+  @charset   = ENV['CHARSET']   || 'utf8'
+  @collation = ENV['COLLATION'] || 'utf8_unicode_ci'
+  {:charset => (config['charset'] || @charset), :collation => (config['collation'] || @collation)}
+end
+
+case db_name
+when /mysql/ then
+  ActiveRecord::Base.establish_connection(config.merge('database' => nil))
+  begin
+    ActiveRecord::Base.connection.create_database(config['database'], mysql_creation_options(config))
+  rescue ActiveRecord::StatementInvalid => e
+    raise e unless e.message =~ /^Mysql2?::Error: Can't create database/
+  end
+end
+
+ActiveRecord::Base.configurations = configs
+ActiveRecord::Base.establish_connection( db_name )
+
+
 
 # config
 app = Class.new(Rails::Application)
