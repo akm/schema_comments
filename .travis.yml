@@ -5,7 +5,7 @@ rvm:
   - ruby-head
   - ree
 gemfile:
-  - gemfiles/Gemfile.rails-3.0.10
+#   - gemfiles/Gemfile.rails-3.0.10
   - gemfiles/Gemfile.rails-3.1.1
   - gemfiles/Gemfile.rails-3.2.3
 env:
