@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 
 # see https://github.com/amatsuda/kaminari/blob/master/spec/fake_app.rb
 
@@ -30,8 +31,13 @@ ActiveRecord::Base.configurations = configs
 ActiveRecord::Base.establish_connection( db_name )
 
 if RUBY_VERSION =~ /^1\.9\.2/
-  Encoding.default_external = Encoding::UTF_8
-  Encoding.default_internal = Encoding::UTF_8
+  # これは効かなかった
+  # # http://rorguide.blogspot.jp/2011/06/incompatible-character-encodings-ascii.html
+  # Encoding.default_external = Encoding::UTF_8
+  # Encoding.default_internal = Encoding::UTF_8
+
+  # http://koexuka.blogspot.jp/2010/03/rubyascii-8bit.html
+  String.force_encoding("UTF-8")
 end
 
 # config
