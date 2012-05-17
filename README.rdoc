@@ -1,4 +1,4 @@
-= SchemaComments 
+= SchemaComments {<img src="https://secure.travis-ci.org/akm/schema_comments.png" />}[http://travis-ci.org/akm/schema_comments]
 
 == Install
 
