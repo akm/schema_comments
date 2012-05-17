@@ -2,6 +2,7 @@ rvm:
   - 1.9.2
   - 1.9.3
   - ruby-head
+#  - jruby-19mode
 gemfile:
 #   - gemfiles/Gemfile.rails-3.0.10
   - gemfiles/Gemfile.rails-3.1.1
@@ -10,3 +11,9 @@ env:
   - DB=sqlite3
   - DB=mysql
   - DB=mysql2
+matrix:
+  exclude:
+    - rvm: 1.9.3
+      env: DB=mysql
+    - rvm: ruby-head
+      env: DB=mysql
