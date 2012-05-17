@@ -4,10 +4,12 @@ gem "activesupport", "= 3.2.3"
 gem "activerecord", "= 3.2.3"
 
 group :test do
-  gem "sqlite3"
-  gem "mysql"
-  gem "mysql2"
-  gem "yaml_waml"
+  gem "sqlite3", :platform => :ruby
+  gem "mysql"  , :platform => :ruby
+  gem "mysql2" , :platform => :ruby
+
+  # gem "activerecord-jdbcsqlite3-adapter", :platform => :jruby
+  # gem "activerecord-jdbcmysql-adapter"  , :platform => :jruby
 end
 
 group :development do

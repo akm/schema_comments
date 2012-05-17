@@ -23,7 +23,7 @@ when /mysql/ then
   begin
     ActiveRecord::Base.connection.create_database(config['database'], mysql_creation_options(config))
   rescue ActiveRecord::StatementInvalid => e
-    raise e unless e.message =~ /^Mysql2?::Error: Can't create database/
+    raise e unless e.message =~ /^Mysql2?::Error: Can't create database|^ActiveRecord::JDBCError: Can't create database/
   end
 end
 
