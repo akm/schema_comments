@@ -15,5 +15,13 @@ matrix:
   exclude:
     - rvm: 1.9.3
       env: DB=mysql
+      gemfile: gemfiles/Gemfile.rails-3.1.1
+    - rvm: 1.9.3
+      env: DB=mysql
+      gemfile: gemfiles/Gemfile.rails-3.2.3
     - rvm: ruby-head
       env: DB=mysql
+      gemfile: gemfiles/Gemfile.rails-3.1.1
+    - rvm: ruby-head
+      env: DB=mysql
+      gemfile: gemfiles/Gemfile.rails-3.2.3
