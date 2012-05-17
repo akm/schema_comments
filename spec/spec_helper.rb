@@ -14,10 +14,12 @@ SchemaComments.yaml_path = File.expand_path("schema_comments.yml", File.dirname(
 # Merge keys is often used in mongoid.yml
 # See: http://redmine.ruby-lang.org/issues/show/4300
 # if RUBY_VERSION >= '1.9.2'
-if defined?(YAML::ENGINE) && YAML::ENGINE.respond_to?(:yamler=)
-  YAML::ENGINE.yamler = 'syck'
-end
-require 'yaml_waml'
+
+# if defined?(YAML::ENGINE) && YAML::ENGINE.respond_to?(:yamler=)
+#   YAML::ENGINE.yamler = 'syck'
+# end
+
+# require 'yaml_waml'
 
 require 'fake_app'
 

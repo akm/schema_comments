@@ -84,7 +84,6 @@ GEM
     thor (0.14.6)
     tilt (1.3.3)
     tzinfo (0.3.33)
-    yaml_waml (0.3.0)
     yard (0.8.1)
 
 PLATFORMS
@@ -102,5 +101,4 @@ DEPENDENCIES
   rspec-rails (~> 2.10.1)
   simplecov (~> 0.6.4)
   sqlite3
-  yaml_waml
   yard

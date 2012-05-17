@@ -34,18 +34,18 @@ describe SchemaComments::SchemaComment do
     File.read(SchemaComments.yaml_path).split(/$/).map(&:strip).should == %{
 ---
 table_comments:
-  addresses: "住所"
-  emails: "メール"
-  person: "人"
+  addresses: 住所
+  emails: メール
+  person: 人
 column_comments:
   addresses:
-    person_id: "人"
-    descriptions: "記述"
+    person_id: 人
+    descriptions: 記述
   emails:
-    person_id: "人"
-    address: "アドレス"
+    person_id: 人
+    address: アドレス
   person:
-    name: "名前"
+    name: 名前
 }.split(/$/).map(&:strip)
   end
 

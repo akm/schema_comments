@@ -7,7 +7,6 @@ group :test do
   gem "sqlite3"
   gem "mysql"
   gem "mysql2"
-  gem "yaml_waml"
 end
 
 group :development do
