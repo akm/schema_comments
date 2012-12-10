@@ -25,3 +25,9 @@ matrix:
     - rvm: ruby-head
       env: DB=mysql
       gemfile: gemfiles/Gemfile.rails-3.2.9
+    - rvm: ruby-head
+      env: DB=sqlite3
+      gemfile: gemfiles/Gemfile.rails-3.1.8
+    - rvm: ruby-head
+      env: DB=sqlite3
+      gemfile: gemfiles/Gemfile.rails-3.2.9
