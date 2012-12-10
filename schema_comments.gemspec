@@ -28,7 +28,7 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency('activesupport', ">= 3.0.0")
   s.add_runtime_dependency('activerecord', ">= 3.0.0")
 
-  s.add_development_dependency('bundler', "~> 1.1.3")
+  s.add_development_dependency('bundler')
   s.add_development_dependency('rake', "~> 0.9.2.2")
   s.add_development_dependency('rspec', "~> 2.10.0")
   s.add_development_dependency('rspec-rails', "~> 2.10.1")
