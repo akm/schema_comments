@@ -12,4 +12,4 @@ group :test do
   # gem "activerecord-jdbcmysql-adapter"  , :platform => :jruby
 end
 
-gemspec
+gemspec :path => '..'
