@@ -92,6 +92,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  ZenTest (= 4.8.3)
   autotest
   bundler
   mysql

@@ -35,4 +35,5 @@ Gem::Specification.new do |s|
   s.add_development_dependency('yard')
   s.add_development_dependency('simplecov')
   s.add_development_dependency('autotest')
+  s.add_development_dependency('ZenTest', "4.8.3") # for except 4.8.4
 end
