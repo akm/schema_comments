@@ -13,7 +13,7 @@ Gem::Specification.new do |s|
   s.email = "akm2000@gmail.com"
   s.extra_rdoc_files = [
     "LICENSE.txt",
-    "README.rdoc"
+    "README.md"
   ]
   s.files = Dir[".rspec", "Gemfile", "Gemfile.lock", "LICENSE.txt", "README.rdoc",
     "VERSION", "init.rb", "lib/**/*", "tasks/**/*" ]
