@@ -43,7 +43,7 @@ describe ActiveRecord::SchemaDumper do
       # ActiveRecord::SchemaDumper.dump(ActiveRecord::Base.connection, dest)
       SchemaComments::SchemaDumper.dump(ActiveRecord::Base.connection, dest)
       dest.rewind
-      dest.read.should == <<EOS
+      s = <<EOS
 # encoding: UTF-8
 # This file is auto-generated from the current state of the database. Instead
 # of editing this file, please use the migrations feature of Active Record to
@@ -60,15 +60,32 @@ describe ActiveRecord::SchemaDumper do
 ActiveRecord::Schema.define(:version => 1) do
 
   create_table "products", :force => true, :comment => '商品' do |t|
+EOS
+
+      if ENV['DB'] =~ /mysql/i
+        s << <<EOS
+    #t.column "id",              "int(11)",      :null => false, :comment => "AUTO_INCREMENT PRIMARY KEY by rails"
+    t.column "product_type_cd", "varchar(255)",                 :comment => "種別コード"
+    t.column "price",           "int(11)",                      :comment => "価格"
+    t.column "name",            "varchar(255)",                 :comment => "商品名"
+    t.column "created_at",      "datetime",                     :comment => "登録日時"
+    t.column "updated_at",      "datetime",                     :comment => "更新日時"
+EOS
+      else
+        s << <<EOS
     t.string   "product_type_cd", :comment => "種別コード"
     t.integer  "price",           :comment => "価格"
     t.string   "name",            :comment => "商品名"
     t.datetime "created_at",      :comment => "登録日時"
     t.datetime "updated_at",      :comment => "更新日時"
+EOS
+      end
+      s << <<EOS
   end
 
 end
 EOS
+      dest.read.should == s
     end
 
   end

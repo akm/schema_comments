@@ -19,16 +19,19 @@ module SchemaComments
 
     def mysql_view?(table)
       return false unless adapter_name == 'mysql'
-      config = ActiveRecord::Base.configurations[Rails.env]
       match_count = @connection.select_value(
         "select count(*) from information_schema.TABLES where TABLE_TYPE = 'VIEW' AND TABLE_SCHEMA = '%s' AND TABLE_NAME = '%s'" % [
           config["database"], table])
       match_count.to_i > 0
     end
 
+    def config
+      ActiveRecord::Base.configurations[Rails.env] || ActiveRecord::Base.configurations[ ENV['DB'] ]
+    end
+
     def adapter_name
-      config = ActiveRecord::Base.configurations[Rails.env]
-      config ? config['adapter'] : ActiveRecord::Base.connection.adapter_name
+      c = ActiveRecord::Base.configurations[Rails.env]
+      c ? c['adapter'] : ActiveRecord::Base.connection.adapter_name
     end
 
       def header(stream)
@@ -167,7 +170,8 @@ HEADER
     end
 
     def mysql_views(stream)
-      config = ActiveRecord::Base.configurations[Rails.env]
+      puts "Rails.env: #{Rails.env.inspect}"
+      puts "ActiveRecord::Base.configurations: #{ActiveRecord::Base.configurations.inspect}"
       view_names = @connection.select_values(
         "select TABLE_NAME from information_schema.TABLES where TABLE_TYPE = 'VIEW' AND TABLE_SCHEMA = '%s'" % config["database"])
       view_names.each do |view_name|
