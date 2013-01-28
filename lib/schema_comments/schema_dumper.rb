@@ -2,6 +2,20 @@
 module SchemaComments
   class SchemaDumper < ActiveRecord::SchemaDumper
 
+    autoload :Mysql, 'schema_comments/schema_dumper/mysql'
+
+    def self.dump(connection=ActiveRecord::Base.connection, stream=STDOUT)
+      dumper =
+        case connection.adapter_name
+        when /mysql/i then
+          SchemaComments::SchemaDumper::Mysql.new(connection)
+        else
+          new(connection)
+        end
+      dumper.dump(stream)
+      stream
+    end
+
     private
     def tables(stream)
       result = super(stream)
