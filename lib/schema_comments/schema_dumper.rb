@@ -16,27 +16,17 @@ module SchemaComments
       stream
     end
 
-    private
-    def tables(stream)
-      result = super(stream)
-      # ビューはtableの後に実行するようにしないと rake db:schema:load で失敗します。
-      mysql_views(stream) if adapter_name == "mysql"
-      result
+    def dump(stream)
+      header(stream)
+      tables(stream)
+      selectable_attrs(stream)
+      trailer(stream)
+      stream
     end
 
-    def mysql_view?(table)
-      return false unless adapter_name == 'mysql'
-      config = ActiveRecord::Base.configurations[Rails.env]
-      match_count = @connection.select_value(
-        "select count(*) from information_schema.TABLES where TABLE_TYPE = 'VIEW' AND TABLE_SCHEMA = '%s' AND TABLE_NAME = '%s'" % [
-          config["database"], table])
-      match_count.to_i > 0
-    end
+    private
 
     def table(table, stream)
-      # MySQLは、ビューもテーブルとして扱うので、一個一個チェックします。
-      return if mysql_view?(table)
-
       columns = @connection.columns(table)
       begin
         tbl = StringIO.new
@@ -132,33 +122,90 @@ module SchemaComments
       config ? config['adapter'] : ActiveRecord::Base.connection.adapter_name
     end
 
-    def mysql_views(stream)
-      config = ActiveRecord::Base.configurations[Rails.env]
-      view_names = @connection.select_values(
-        "select TABLE_NAME from information_schema.TABLES where TABLE_TYPE = 'VIEW' AND TABLE_SCHEMA = '%s'" % config["database"])
-      view_names.each do |view_name|
-        mysql_view(view_name, stream)
+    def selectable_attrs(stream)
+      return unless defined?(SelectableAttr)
+      enum_defs = []
+      classes = Dir["app/models/*.rb"].map{|f| File.basename(f, ".*").camelize.constantize}.select{|k| k.respond_to?(:single_selectable_attrs)}
+      classes.each do |klass|
+        (klass.single_selectable_attrs + klass.multi_selectable_attrs).each do |enum_name|
+          enum = klass.send(klass.enum_base_name(enum_name) + "_enum")
+          enum_def = enum_defs.detect{|enum_def| enum_def[:enum] === enum && enum_def[:enum_name] == enum_name}
+          unless enum_def
+            enum_def = {:enum => enum, :enum_name => enum_name, :usages => []}
+            enum_defs << enum_def
+          end
+          enum_def[:usages] << {:class => klass, :enum_name => enum_name}
+        end
+      end
+
+      stream.puts
+
+      enum_defs.each do |enum_def|
+        selectable_attr(enum_def[:enum], enum_def[:usages], stream)
       end
     end
 
-    def mysql_view(view_name, stream)
-      ddl = @connection.select_value("show create view #{view_name}")
-      ddl.gsub!(/^CREATE .+? VIEW /i, "CREATE OR REPLACE VIEW ")
-      ddl.gsub!(/AS select/, "AS \n select\n")
-      ddl.gsub!(/( AS \`.+?\`\,)/){ "#{$1}\n" }
-      ddl.gsub!(/ from /i         , "\n from \n")
-      ddl.gsub!(/ where /i        , "\n where \n")
-      ddl.gsub!(/ order by /i     , "\n order by \n")
-      ddl.gsub!(/ having /i       , "\n having \n")
-      ddl.gsub!(/ union /i        , "\n union \n")
-      ddl.gsub!(/ and /i          , "\n and ")
-      ddl.gsub!(/ or /i           , "\n or ")
-      ddl.gsub!(/inner join/i     , "\n inner join")
-      ddl.gsub!(/left join/i      , "\n left join")
-      ddl.gsub!(/left outer join/i, "\n left outer join")
-      stream.print("  ActiveRecord::Base.connection.execute(<<-EOS)\n")
-      stream.print(ddl.split(/\n/).map{|line| '    ' << line.strip}.join("\n"))
-      stream.print("\n  EOS\n")
+    def selectable_attr(enum, usages, stream)
+      buf = StringIO.new
+
+      specs = []
+      usages.each do |usage|
+        klass = usage[:class]
+        method_caption = nil
+        if col = usage[:class].columns.detect{|c| c.name == usage[:enum_name]}
+          method_caption = col.comment
+        end
+        method_caption ||= usage[:enum_name]
+        spec = {
+          :class_name => klass.name,
+          :methos_name => usage[:enum_name],
+          :class_caption => klass.table_comment,
+          :method_caption => method_caption
+        }
+        specs << spec
+      end
+      keys = [:class_name, :methos_name, :class_caption, :method_caption]
+      lengths = keys.map{ |key| specs.map{ |spec| spec[key] ? spec[key].length + 2 : 0 }.max }
+      format_string = lengths.map{ |len| "%-#{len}s" }
+      format_string *= ''
+      specs.each do |spec|
+        values = keys.zip(lengths).map{ |key, len| spec.key?(key) ? spec[key] + " " : " " * len }
+        buf.print('  # ')
+        buf.print((format_string % values).gsub(/,\s*$/, '').strip)
+        buf.puts
+      end
+      buf.puts "  #"
+
+      selectable_attr_with_default(enum, usages, buf)
+
+      buf.puts "  #"
+      buf.puts
+
+      buf.rewind
+      stream.print buf.read
+    end
+
+    def selectable_attr_with_default(enum, usages, buf)
+      entry_specs = enum.entries.map do |e|
+        {:id => "#{e.id.inspect} |", :name => e.name.inspect, :options => e.options ? e.options.inspect : ''}
+      end
+      entry_specs.unshift({
+          :id => "val |", :name => "name and options", :options => ""})
+      keys = [:id, :name, :options] & entry_specs.map{ |k| k.keys }.flatten
+      lengths = keys.map{ |key| entry_specs.map{ |spec| spec[key] ? spec[key].length + 2 : 0 }.max }
+      format_string = ["%#{lengths[0]}s" ] + lengths[1..-1].map{ |len| "%-#{len}s" }
+      format_string *= ''
+      entry_specs.each_with_index do |enum_spec, idx|
+        values = keys.zip(lengths).map{ |key, len| enum_spec.key?(key) ? enum_spec[key] + " " : " " * len }
+        line = (format_string % values).gsub(/\s+\Z/, '')
+        buf.print('  # ')
+        buf.print(line)
+        buf.puts
+        if idx == 0
+          buf.print('  # ')
+          buf.puts("-" * line.length)
+        end
+      end
     end
 
   end
