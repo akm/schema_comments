@@ -4,20 +4,26 @@
 
 ### With Bundler
 add this line into Gemfile
+
     gem "schema_comments"
 
 And do bundle install
+
     bundle install
 
 ## Install(old)
 
 ### as a plugin
+
     ruby script/plugin install git://github.com/akm/schema_comments.git
 
 ### as a gem
 insert following line to config/environment.rb
+
      config.gem 'schema_comments', :version => '0.2.0'
+
 and 
+
     $ sudo rake gems:install
 
 Or install gem manually
@@ -25,17 +31,20 @@ Or install gem manually
     $ sudo gem install schema_comments
 
 And make lib/tasks/schema_comments.rake
+
     require 'schema_comments/task'
 
 ## Configuration for Rails App
 1. make lib/tasks/schema_comments.rake
 2. edit the file like following
+
     require 'schema_comments/task'
     SchemaComments.yaml_path = File.expand_path("../../../db/schema_comments.yml", __FILE__)
 
 
 ## Configuration (old)
 If you install schema_comments as a gem, must create config/initializers/schema_comments.rb like this:
+
     require 'schema_comments'
     SchemaComments.setup
 
@@ -88,23 +97,30 @@ db/schema_comments.yml にYAML形式で保存されます。
 
 
 ## I18nへの対応
+
     rake i18n:schema_comments:update_config_locale
+
 このタスクを実行すると、i18n用のYAMLを更新できます。
 
     rake i18n:schema_comments:update_config_locale LOCALE=ja
+
 でデフォルトではconfig/locales/ja.ymlを更新します。
 
 毎回LOCALEを指定するのが面倒な場合は、config/initializers/locale.rb に
+
     I18n.default_locale = 'ja'
+
 という記述を追加しておくと良いでしょう。
 
 また出力先のYAMLのPATHを指定したい場合、YAML_PATHで指定が可能です。
+
     rake i18n:schema_comments:update_config_locale LOCALE=ja YAML_PATH=/path/to/yaml
 
 ### コメント内コメント
 コメント中の ((( から ))) は反映されませんので、モデル名／属性名に含めたくない箇所は ((( と ))) で括ってください。
 ((( ))) と同様に[[[ ]]]も使用できます。
 例えば以下のようにdb/schema.rbに出力されている場合、
+
     ActiveRecord::Schema.define(:version => 0) do
       create_table "products", :force => true, :comment => '商品' do |t|
         t.string   "product_type_cd", :comment => '種別コード(((01:書籍, 02:靴, 03:パソコン)))'
@@ -115,8 +131,11 @@ db/schema_comments.yml にYAML形式で保存されます。
       end
     end
 
+
     rake i18n:schema_comments:update_config_locale LOCALE=ja
+
 とすると、以下のように出力されます。
+
     ja:
       activerecord:
         attributes:
@@ -139,6 +158,7 @@ test環境ではテーブルとして作成されてしまい、テストが正�
 ## annotate_models
 rake db:annotate で以下のようなコメントを、モデル、テスト、フィクスチャといったモデルに関係の強いファイルの
 先頭に追加します。
+
       # == Schema Info
       # 
       # Schema version: 20090721185959
