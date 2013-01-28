@@ -29,12 +29,10 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency('activerecord', ">= 3.0.0")
 
   s.add_development_dependency('bundler')
-  s.add_development_dependency('rake', "~> 0.9.2.2")
+  s.add_development_dependency('rake')
   s.add_development_dependency('rspec', "~> 2.10.0")
   s.add_development_dependency('rspec-rails', "~> 2.10.1")
   s.add_development_dependency('yard')
-  s.add_development_dependency('rdoc', "~> 3.12")
-  s.add_development_dependency('simplecov', "~> 0.6.4")
+  s.add_development_dependency('simplecov')
   s.add_development_dependency('autotest')
 end
-

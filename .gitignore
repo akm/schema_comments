@@ -1,6 +1,8 @@
 *.log
 *~
 /.rvmrc
+/.yardoc
 /coverage
+/doc
 /pkg
 /selectable_attr_test.sqlite3.db

@@ -1,3 +1,8 @@
+if ENV["COVERAGE"] and not(ENV["COVERAGE"].empty?)
+  require "simplecov"
+  SimpleCov.start
+end
+
 ENV['DB'] ||= 'sqlite3'
 
 $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
