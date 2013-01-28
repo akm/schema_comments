@@ -1,15 +1,15 @@
 require 'active_support/core_ext/module'
 
 module SchemaComments
-  VERSION = '0.1.0'
+  VERSION = File.read(File.expand_path("../../VERSION", __FILE__))
 
-  autoload :Base, 'schema_comments/base'
+  autoload :Base              , 'schema_comments/base'
   autoload :ConnectionAdapters, 'schema_comments/connection_adapters'
-  autoload :Migration, 'schema_comments/migration'
-  autoload :Migrator, 'schema_comments/migrator'
-  autoload :Schema, 'schema_comments/schema'
-  autoload :SchemaComment, 'schema_comments/schema_comment'
-  autoload :SchemaDumper, 'schema_comments/schema_dumper'
+  autoload :Migration         , 'schema_comments/migration'
+  autoload :Migrator          , 'schema_comments/migrator'
+  autoload :Schema            , 'schema_comments/schema'
+  autoload :SchemaComment     , 'schema_comments/schema_comment'
+  autoload :SchemaDumper      , 'schema_comments/schema_dumper'
 
   mattr_accessor :yaml_path
   self.yaml_path = Rails.root.join("db/schema_comments.yml").to_s if defined?(Rails) && Rails.root

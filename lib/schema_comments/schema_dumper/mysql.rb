@@ -170,8 +170,6 @@ HEADER
     end
 
     def mysql_views(stream)
-      puts "Rails.env: #{Rails.env.inspect}"
-      puts "ActiveRecord::Base.configurations: #{ActiveRecord::Base.configurations.inspect}"
       view_names = @connection.select_values(
         "select TABLE_NAME from information_schema.TABLES where TABLE_TYPE = 'VIEW' AND TABLE_SCHEMA = '%s'" % config["database"])
       view_names.each do |view_name|
