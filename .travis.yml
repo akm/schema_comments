@@ -1,3 +1,4 @@
+script: "bundle exec rake spec"
 rvm:
   - 1.9.2
   - 1.9.3
@@ -5,8 +6,8 @@ rvm:
 #  - jruby-19mode
 gemfile:
 #   - gemfiles/Gemfile.rails-3.0.10
-  - gemfiles/Gemfile.rails-3.1.8
-  - gemfiles/Gemfile.rails-3.2.9
+  - gemfiles/Gemfile.rails-3.1.10
+  - gemfiles/Gemfile.rails-3.2.11
 env:
   - DB=sqlite3
   - DB=mysql
