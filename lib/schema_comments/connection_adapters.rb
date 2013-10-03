@@ -94,8 +94,9 @@ module SchemaComments
         end
       end
 
+      #TODO: columnsメソッドに第二引数移行がないので本来は消すべき？
       def columns_with_schema_comments(table_name, name = nil, &block)
-        result = columns_without_schema_comments(table_name, name, &block)
+        result = columns_without_schema_comments(table_name)
         column_comment_hash = column_comments(table_name)
         result.each do |column|
           column.comment = column_comment_hash[column.name]
