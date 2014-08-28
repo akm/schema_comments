@@ -5,6 +5,7 @@
 require 'active_record'
 require 'action_controller/railtie'
 require 'action_view/railtie'
+require 'yaml'
 
 # database
 db_name = ENV['DB'] || 'sqlite3'
