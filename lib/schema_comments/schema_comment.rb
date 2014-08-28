@@ -133,7 +133,7 @@ module SchemaComments
           column_hash ||= {}
           column_names = nil
           begin
-            columns = ActiveRecord::Base.connection.columns_without_schema_comments(table_name, "#{table_name.classify} Columns")
+            columns = ActiveRecord::Base.connection.columns_without_schema_comments(table_name)
             column_names = columns.map(&:name)
           rescue ActiveRecord::ActiveRecordError
             column_names = column_hash.keys.sort
