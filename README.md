@@ -20,7 +20,7 @@ And do bundle install
 ### as a gem
 insert following line to config/environment.rb
 
-     config.gem 'schema_comments', :version => '0.2.0'
+     config.gem 'schema_comments', :version => '0.3.0'
 
 and 
 
