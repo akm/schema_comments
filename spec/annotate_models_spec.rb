@@ -48,7 +48,7 @@ puts "ActiveRecord::Base.connection.adapter_name: #{ActiveRecord::Base.connectio
 #
 # Table name: books # 書籍
 #
-#  id         #{int_expr}      not null, primary key
+#  id         #{int_expr}      not null, primary key  # 書籍
 #  title      :string(100)     not null               # タイトル
 #  size       #{int_expr}      not null, default(1)   # 判型
 #  price      :decimal(17, 14) not null, default(0.0) # 価格
