@@ -1,0 +1,11 @@
+source "http://rubygems.org"
+
+gem "activesupport", "~> 4.2.0"
+gem "activerecord" , "~> 4.2.0"
+
+group :test do
+  gem "sqlite3", :platform => :ruby
+  gem "mysql2" , :platform => :ruby
+end
+
+gemspec :path => '..'
