@@ -1,5 +1,7 @@
 require 'active_support/core_ext/module'
 
+require 'schema_comments/railtie'
+
 module SchemaComments
   VERSION = File.read(File.expand_path("../../VERSION", __FILE__))
 
