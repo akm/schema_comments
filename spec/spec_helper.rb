@@ -28,7 +28,7 @@ SchemaComments.yaml_path = File.expand_path("schema_comments.yml", File.dirname(
 
 require 'fake_app'
 
-require 'rspec/rails'
+# require 'rspec/rails'
 
 # Requires supporting files with custom matchers and macros, etc,
 # in ./support/ and its subdirectories.
