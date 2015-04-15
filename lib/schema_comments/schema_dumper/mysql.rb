@@ -35,7 +35,7 @@ module SchemaComments
     end
 
       def header(stream)
-        define_params = @version ? ":version => #{@version}" : ""
+        define_params = @version ? "version: #{@version}" : ""
 
         if stream.respond_to?(:external_encoding)
           stream.puts "# encoding: #{stream.external_encoding.name}"
@@ -52,7 +52,7 @@ module SchemaComments
 # from scratch. The latter is a flawed and unsustainable approach (the more migrations
 # you'll amass, the slower it'll run and the greater likelihood for issues).
 #
-# It's strongly recommended to check this file into your version control system.
+# It's strongly recommended that you check this file into your version control system.
 
 ActiveRecord::Schema.define(#{define_params}) do
 
