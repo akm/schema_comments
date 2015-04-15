@@ -2,6 +2,8 @@
 
 # see https://github.com/amatsuda/kaminari/blob/master/spec/fake_app.rb
 
+require 'yaml'
+
 require 'active_record'
 require 'action_controller/railtie'
 require 'action_view/railtie'

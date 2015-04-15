@@ -1,22 +1,13 @@
 script: "bundle exec rake spec"
 rvm:
-  - 1.9.2
-  - 1.9.3
-#  - ruby-head
-#  - jruby-19mode
+#  - 2.0.0 # it can work but spec fails
+  - 2.1.6
+  - 2.2.2
 gemfile:
-#  - gemfiles/Gemfile.rails-3.0.10
-  - gemfiles/Gemfile.rails-3.1.10
-  - gemfiles/Gemfile.rails-3.2.11
+  - gemfiles/Gemfile.rails-4.0
+  - gemfiles/Gemfile.rails-4.1
+  - gemfiles/Gemfile.rails-4.2
 env:
   - DB=sqlite3
-  - DB=mysql
   - DB=mysql2
-matrix:
-  exclude:
-    - rvm: 1.9.3
-      env: DB=mysql
-      gemfile: gemfiles/Gemfile.rails-3.1.10
-    - rvm: 1.9.3
-      env: DB=mysql
-      gemfile: gemfiles/Gemfile.rails-3.2.11
+before_install: gem install bundler --version '>= 1.9.0'

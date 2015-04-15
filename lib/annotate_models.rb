@@ -56,7 +56,7 @@ module AnnotateModels
     when NilClass                 then "NULL"
     when TrueClass                then "TRUE"
     when FalseClass               then "FALSE"
-    when Float, Fixnum, Bignum    then value.to_s
+    when Float, Fixnum, Bignum    then value.to_s.inspect
       # BigDecimals need to be output in a non-normalized form and quoted.
     when BigDecimal               then value.to_s('F')
     else
@@ -98,13 +98,21 @@ module AnnotateModels
   end
 
   def self.annotate_column(col, klass, max_size)
+    col_type = col.type.to_s
     attrs = []
     attrs << "not null" unless col.null
-    attrs << "default(#{quote(col.default)})" if col.default
+    if col.default
+      default_value =
+        case col_type
+        when "decimal" then col.default.to_s.sub(/\.0+\z/, '.0')
+        else col.default
+        end
+      attrs << "default(#{quote(default_value)})"
+    end
     attrs << "primary key" if col.name == klass.primary_key
 
-    col_type = col.type.to_s
-    if col_type == "decimal"
+    case col_type
+    when "decimal" then
       col_type << "(#{col.precision}, #{col.scale})"
     else
       col_type << "(#{col.limit})" if col.limit
