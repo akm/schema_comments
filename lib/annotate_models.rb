@@ -56,7 +56,7 @@ module AnnotateModels
     when NilClass                 then "NULL"
     when TrueClass                then "TRUE"
     when FalseClass               then "FALSE"
-    when Float, Fixnum, Bignum    then value.to_s
+    when Float, Fixnum, Bignum    then value.to_s.inspect
       # BigDecimals need to be output in a non-normalized form and quoted.
     when BigDecimal               then value.to_s('F')
     else
