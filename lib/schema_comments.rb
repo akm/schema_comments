@@ -1,9 +1,9 @@
 require 'active_support/core_ext/module'
 
+require 'schema_comments/version'
 require 'schema_comments/railtie'
 
 module SchemaComments
-  VERSION = File.read(File.expand_path("../../VERSION", __FILE__))
 
   autoload :Base              , 'schema_comments/base'
   autoload :ConnectionAdapters, 'schema_comments/connection_adapters'
