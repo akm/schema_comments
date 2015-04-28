@@ -1,1 +1,1 @@
-Dir.glob(File.join(File.dirname(__FILE__), '../../tasks/*.rake')){|f| load(f)}
+Dir.glob(File.expand_path('../../tasks/*.rake', __FILE__)){|f| load(f)}
