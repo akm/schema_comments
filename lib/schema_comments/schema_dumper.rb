@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 module SchemaComments
   class SchemaDumper < ActiveRecord::SchemaDumper
+    include ActiveRecord::ConnectionAdapters::ColumnDumper # for schema_default
 
     autoload :Mysql, 'schema_comments/schema_dumper/mysql'
 
@@ -71,7 +72,8 @@ module SchemaComments
           spec[:precision] = column.precision.inspect if column.precision
           spec[:scale]     = column.scale.inspect if column.scale
           spec[:null]      = 'false' unless column.null
-          spec[:default]   = default_string(column.default) if column.has_default?
+          default = schema_default(column) if column.has_default?
+          spec[:default]   = schema_default(column) unless default.nil?
           spec[:comment]   = '"' << (column.comment || '').gsub(/\"/, '\"') << '"' # ここでinspectを使うと最後の文字だけ文字化け(UTF-8のコード)になっちゃう
           (spec.keys - [:name, :type]).each{ |k| spec[k].insert(0, "#{k.inspect} => ")}
           spec

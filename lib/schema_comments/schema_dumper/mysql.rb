@@ -4,6 +4,7 @@ require 'schema_comments/schema_dumper'
 module SchemaComments
 
   class SchemaDumper::Mysql < SchemaComments::SchemaDumper
+    include ActiveRecord::ConnectionAdapters::ColumnDumper # for schema_default
 
     class << self
       public :new
@@ -109,7 +110,8 @@ HEADER
           spec[:precision] = column.precision.inspect if column.precision
           spec[:scale]     = column.scale.inspect if column.scale
           spec[:null]      = 'false' unless column.null
-          spec[:default]   = default_string(column.default) if column.has_default?
+          default = schema_default(column) if column.has_default?
+          spec[:default]   = schema_default(column) unless default.nil?
           if column.name == pk
             spec[:comment]   = '"AUTO_INCREMENT PRIMARY KEY by rails"'
           else
