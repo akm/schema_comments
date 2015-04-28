@@ -72,8 +72,8 @@ module SchemaComments
           spec[:precision] = column.precision.inspect if column.precision
           spec[:scale]     = column.scale.inspect if column.scale
           spec[:null]      = 'false' unless column.null
-          default = schema_default(column) if column.has_default?
-          spec[:default]   = schema_default(column) unless default.nil?
+          default = (!respond_to?(:schema_default) ? default_string(column.default) : schema_default(column)) if column.has_default?
+          spec[:default]   = default unless default.nil?
           spec[:comment]   = '"' << (column.comment || '').gsub(/\"/, '\"') << '"' # ここでinspectを使うと最後の文字だけ文字化け(UTF-8のコード)になっちゃう
           (spec.keys - [:name, :type]).each{ |k| spec[k].insert(0, "#{k.inspect} => ")}
           spec
