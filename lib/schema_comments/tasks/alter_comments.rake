@@ -6,10 +6,11 @@ namespace :db do
       task :dump => :environment do
         conn = ActiveRecord::Base.connection
         db_table_comments = conn.select_all("SHOW TABLE STATUS").each_with_object({}){|row, d| d[row["Name"]] = row["Comment"]}
+        column_comments = {}
         db_table_comments.keys.each do |t|
-          db_column_comments = conn.select_all("SHOW FULL COLUMNS FROM #{t}").each_with_object({}){|row, d| d[row["Field"]] = row["Comment"]}
+          column_comments[t] = conn.select_all("SHOW FULL COLUMNS FROM #{t}").each_with_object({}){|row, d| d[row["Field"]] = row["Comment"]}
         end
-        root = {"table_comments" => db_table_comments, "column_comments" => db_column_comments}
+        root = {"table_comments" => db_table_comments, "column_comments" => column_comments}
         SchemaComments::SchemaComment::SortedStore.sort_yaml_content!(root)
         open(SchemaComments.yaml_path, "w"){|f| f.puts root.to_yaml }
       end
@@ -39,7 +40,7 @@ namespace :db do
             unless c_comment == db_column_comments[t]
               if col = column_hash[c]
                 opts = col.sql_type.dup
-                creation.send(:add_column_options!, opts, null: col.null, default: col.default, auto_increment: (col.extra == "auto_increment"))
+                creation.send(:add_column_options!, opts, column: col, null: col.null, default: col.default, auto_increment: (col.extra == "auto_increment"))
                 conn.execute("ALTER TABLE #{t} MODIFY #{c} #{opts} COMMENT '#{c_comment}'")
               end
             end
