@@ -64,20 +64,20 @@ EOS
 
       if ENV['DB'] =~ /mysql/i
         s << <<EOS
-    #t.column "id",              "int(11)",      :null => false, :comment => "AUTO_INCREMENT PRIMARY KEY by rails"
-    t.column "product_type_cd", "varchar(255)",                 :comment => "種別コード"
-    t.column "price",           "int(11)",                      :comment => "価格"
-    t.column "name",            "varchar(255)",                 :comment => "商品名"
-    t.column "created_at",      "datetime",                     :comment => "登録日時"
-    t.column "updated_at",      "datetime",                     :comment => "更新日時"
+    #t.column "id",              "int(11)",                     :null => false, :comment => "AUTO_INCREMENT PRIMARY KEY by rails"
+    t.column "product_type_cd", "varchar(255)",                                :comment => "種別コード"
+    t.column "price",           "int(11)",      :default => 0,                 :comment => "価格"
+    t.column "name",            "varchar(255)",                                :comment => "商品名"
+    t.column "created_at",      "datetime",                                    :comment => "登録日時"
+    t.column "updated_at",      "datetime",                                    :comment => "更新日時"
 EOS
       else
         s << <<EOS
-    t.string   "product_type_cd", :comment => "種別コード"
-    t.integer  "price",           :comment => "価格"
-    t.string   "name",            :comment => "商品名"
-    t.datetime "created_at",      :comment => "登録日時"
-    t.datetime "updated_at",      :comment => "更新日時"
+    t.string   "product_type_cd",                :comment => "種別コード"
+    t.integer  "price",           :default => 0, :comment => "価格"
+    t.string   "name",                           :comment => "商品名"
+    t.datetime "created_at",                     :comment => "登録日時"
+    t.datetime "updated_at",                     :comment => "更新日時"
 EOS
       end
       s << <<EOS
