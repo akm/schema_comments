@@ -14,8 +14,6 @@ module SchemaComments
   autoload :SchemaDumper      , 'schema_comments/schema_dumper'
 
   mattr_accessor :yaml_path
-  self.yaml_path = Rails.root.join("db/schema_comments.yml").to_s if defined?(Rails) && Rails.root
-
   mattr_accessor :quiet
 
   class YamlError < StandardError
