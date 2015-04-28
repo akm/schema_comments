@@ -106,8 +106,13 @@ module SchemaComments
           io.rewind
           root = YAML.load(io)
         end
-        table_comments = root['table_comments'] || {}
-        column_comments = root['column_comments'] || {}
+        SortedStore.sort_yaml_content!(root)
+        root.to_yaml(@opt)
+      end
+
+      def self.sort_yaml_content!(root)
+        table_comments = (root['table_comments'] ||= {})
+        column_comments = (root['column_comments'] ||= {})
         # 大元は
         # table_comments:
         #   ...
@@ -129,11 +134,13 @@ module SchemaComments
         column_comments.extend(HashKeyOrderable)
         column_comments.key_order = table_names
         # column_comments の各値はテーブルのカラム順
+        conn = ActiveRecord::Base.connection
+        columns_method = conn.respond_to?(:columns_without_schema_comments) ? :columns_without_schema_comments : :columns
         column_comments.each do |table_name, column_hash|
           column_hash ||= {}
           column_names = nil
           begin
-            columns = ActiveRecord::Base.connection.columns_without_schema_comments(table_name)
+            columns = conn.send(columns_method, table_name)
             column_names = columns.map(&:name)
           rescue ActiveRecord::ActiveRecordError
             column_names = column_hash.keys.sort
@@ -143,7 +150,6 @@ module SchemaComments
           column_hash.extend(HashKeyOrderable)
           column_hash.key_order = column_names
         end
-        root.to_yaml(@opt)
       end
     end
 
