@@ -1,9 +1,9 @@
 require 'active_support/core_ext/module'
 
+require 'schema_comments/version'
 require 'schema_comments/railtie'
 
 module SchemaComments
-  VERSION = File.read(File.expand_path("../../VERSION", __FILE__))
 
   autoload :Base              , 'schema_comments/base'
   autoload :ConnectionAdapters, 'schema_comments/connection_adapters'
@@ -14,8 +14,6 @@ module SchemaComments
   autoload :SchemaDumper      , 'schema_comments/schema_dumper'
 
   mattr_accessor :yaml_path
-  self.yaml_path = Rails.root.join("db/schema_comments.yml").to_s if defined?(Rails) && Rails.root
-
   mattr_accessor :quiet
 
   class YamlError < StandardError
