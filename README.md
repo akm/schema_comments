@@ -173,8 +173,8 @@ rake db:annotate で以下のようなコメントを、モデル、テスト、
 annotate_modelsは、達人プログラマーのDave Thomasさんが公開しているプラグインです。
 http://repo.pragprog.com/svn/Public/plugins/annotate_models/
 
-本プラグインでは、それを更に拡張したDave Boltonさんのプラグイン(
-http://github.com/rotuka/annotate_models )をベースに拡張を加えています。
+本プラグインでは、それを更に拡張したDave Boltonさんのプラグインannotate_models
+( リポジトリは削除された様子・・・ )をベースに拡張を加えています。
 
 ## License
 Copyright (c) 2008 Takeshi AKIMA, released under the Ruby License
