@@ -14,10 +14,10 @@ module SchemaComments
       attr_accessor :comment
 
       def column(name, type, options = {})
-        super(name, type, options)
+        result = super(name, type, options)
         column = self[name]
         column.comment = options[:comment]
-        self
+        result
       end
     end
 
@@ -76,22 +76,9 @@ module SchemaComments
     end
 
     module ConcreteAdapter
-      def self.included(mod)
-        mod.module_eval do
-          alias_method_chain :columns      , :schema_comments
-          alias_method_chain :create_table , :schema_comments
-          alias_method_chain :drop_table   , :schema_comments
-          alias_method_chain :rename_table , :schema_comments
-          alias_method_chain :remove_column, :schema_comments
-          alias_method_chain :add_column   , :schema_comments
-          alias_method_chain :change_column, :schema_comments
-          alias_method_chain :rename_column, :schema_comments
-        end
-      end
-
       #TODO: columnsメソッドに第二引数移行がないので本来は消すべき？
-      def columns_with_schema_comments(table_name, name = nil, &block)
-        result = columns_without_schema_comments(table_name)
+      def columns(table_name, name = nil, &block)
+        result = super(table_name)
         column_comment_hash = column_comments(table_name)
         result.each do |column|
           column.comment = column_comment_hash[column.name]
@@ -99,9 +86,9 @@ module SchemaComments
         result
       end
 
-      def create_table_with_schema_comments(table_name, options = {}, &block)
+      def create_table(table_name, options = {}, &block)
         table_def = nil
-        result = create_table_without_schema_comments(table_name, options) do |t|
+        result = super(table_name, options) do |t|
           table_def = t
           yield(t)
         end
@@ -112,19 +99,19 @@ module SchemaComments
         result
       end
 
-      def drop_table_with_schema_comments(table_name, *args, &block)
-        result = drop_table_without_schema_comments(table_name, *args)
+      def drop_table(table_name, *args, &block)
+        result = super(table_name, *args)
         delete_schema_comments(table_name) unless @ignore_drop_table
         result
       end
 
-      def rename_table_with_schema_comments(table_name, new_name)
-        result = rename_table_without_schema_comments(table_name, new_name)
+      def rename_table(table_name, new_name)
+        result = super(table_name, new_name)
         update_schema_comments_table_name(table_name, new_name)
         result
       end
 
-      def remove_column_with_schema_comments(table_name, *column_names)
+      def remove_column(table_name, *column_names)
         # sqlite3ではremove_columnがないので、以下のフローでスキーマ更新します。
         # 1. CREATE TEMPORARY TABLE "altered_xxxxxx" (・・・)
         # 2. PRAGMA index_list("xxxxxx")
@@ -135,7 +122,7 @@ module SchemaComments
         #
         # このdrop tableの際に、schema_commentsを変更しないようにフラグを立てています。
         @ignore_drop_table = true
-        remove_column_without_schema_comments(table_name, *column_names)
+        super(table_name, *column_names)
         column_names.each do |column_name|
           delete_schema_comments(table_name, column_name)
         end
@@ -143,25 +130,25 @@ module SchemaComments
         @ignore_drop_table = false
       end
 
-      def add_column_with_schema_comments(table_name, column_name, type, options = {})
+      def add_column(table_name, column_name, type, options = {})
         comment = options.delete(:comment)
-        result = add_column_without_schema_comments(table_name, column_name, type, options)
+        result = super(table_name, column_name, type, options)
         column_comment(table_name, column_name, comment) if comment
         result
       end
 
-      def change_column_with_schema_comments(table_name, column_name, type, options = {})
+      def change_column(table_name, column_name, type, options = {})
         comment = options.delete(:comment)
         @ignore_drop_table = true
-        result = change_column_without_schema_comments(table_name, column_name, type, options)
+        result = super(table_name, column_name, type, options)
         column_comment(table_name, column_name, comment) if comment
         result
       ensure
         @ignore_drop_table = false
       end
 
-      def rename_column_with_schema_comments(table_name, column_name, new_column_name)
-        result = rename_column_without_schema_comments(table_name, column_name, new_column_name)
+      def rename_column(table_name, column_name, new_column_name)
+        result = super(table_name, column_name, new_column_name)
         comment = update_schema_comments_column_name(table_name, column_name, new_column_name)
         result
       end
