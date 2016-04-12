@@ -1,17 +1,13 @@
 module SchemaComments
   module Migration
-    def self.included(mod)
+    def self.prepended(mod)
       mod.extend(ClassMethods)
-      mod.instance_eval do
-        alias :migrate_without_schema_comments :migrate
-        alias :migrate :migrate_with_schema_comments
-      end
     end
 
     module ClassMethods
-      def migrate_with_schema_comments(*args, &block)
+      def migrate(*args, &block)
         SchemaComments::SchemaComment.yaml_access do
-          migrate_without_schema_comments(*args, &block)
+          super(*args, &block)
         end
       end
     end

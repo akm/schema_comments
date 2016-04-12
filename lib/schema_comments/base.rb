@@ -1,11 +1,7 @@
 module SchemaComments
   module Base
-    def self.included(mod)
+    def self.prepended(mod)
       mod.extend ClassMethods
-      mod.instance_eval do
-        alias :columns_without_schema_comments :columns
-        alias :columns :columns_with_schema_comments
-      end
       mod.ignore_pattern_to_export_i18n = /\[.*\]/
     end
 
@@ -14,8 +10,8 @@ module SchemaComments
         @table_comment ||= connection.table_comment(table_name)
       end
 
-      def columns_with_schema_comments
-        result = columns_without_schema_comments
+      def columns
+        result = super
         unless @column_comments_loaded
           column_comment_hash = connection.column_comments(table_name)
           result.each do |column|

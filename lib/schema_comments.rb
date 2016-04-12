@@ -28,7 +28,7 @@ module SchemaComments
         ar_class = "ActiveRecord::#{base_name}".constantize
         sc_class = "SchemaComments::#{base_name}".constantize
         unless ar_class.ancestors.include?(sc_class)
-          ar_class.__send__(:include, sc_class)
+          ar_class.__send__(:prepend, sc_class)
         end
       end
 

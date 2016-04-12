@@ -11,15 +11,10 @@ module SchemaComments
     end
 
     module TableDefinition
-      def self.included(mod)
-        mod.module_eval do
-          alias_method_chain(:column, :schema_comments)
-        end
-      end
       attr_accessor :comment
 
-      def column_with_schema_comments(name, type, options = {})
-        column_without_schema_comments(name, type, options)
+      def column(name, type, options = {})
+        super(name, type, options)
         column = self[name]
         column.comment = options[:comment]
         self
