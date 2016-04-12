@@ -82,15 +82,16 @@ module SchemaComments
           db = SortedStore.new(SchemaComments.yaml_path)
           result = nil
           # t = Time.now.to_f
-          db.transaction do
-            @yaml_transaction = db
-            begin
+          @yaml_transaction = db
+          begin
+            db.transaction do
               db[TABLE_KEY] ||= {}
               db[COLUMN_KEY] ||= {}
+              SortedStore.validate_yaml!(db)
               result = yield(db) if block_given?
-            ensure
-              @yaml_transaction = nil
             end
+          ensure
+            @yaml_transaction = nil
           end
           # puts("SchemaComment#yaml_access %fms from %s" % [Time.now.to_f - t, caller[0].gsub(/^.+:in /, '')])
           result
@@ -110,7 +111,20 @@ module SchemaComments
         root.to_yaml(@opt)
       end
 
+      def self.validate_yaml!(root)
+        table_comments = (root['table_comments'] ||= {})
+        column_comments = (root['column_comments'] ||= {})
+        # raise YamlError, "Broken schame_comments.yml by invalid root: #{root.inspect}" unless root.is_a?(Hash)
+        raise YamlError, "Broken schame_comments.yml by invalid table_comments" unless table_comments.is_a?(Hash)
+        raise YamlError, "Broken schame_comments.yml by invalid_column_comments" unless column_comments.is_a?(Hash)
+        column_comments.each do |table_name, value|
+          next if value.nil?
+          raise YamlError, "Broken schame_comments.yml by invalid column_comments for #{table_name}" unless value.is_a?(Hash)
+        end
+      end
+
       def self.sort_yaml_content!(root)
+        self.validate_yaml!(root)
         table_comments = (root['table_comments'] ||= {})
         column_comments = (root['column_comments'] ||= {})
         # 大元は
@@ -121,16 +135,13 @@ module SchemaComments
         # その他
         #   ...
         # の順番です。
-        raise YamlError, "Broken schame_comments.yml" unless root.is_a?(Hash)
         root.extend(HashKeyOrderable)
         root.key_order = %w(table_comments column_comments)
         # table_comments はテーブル名のアルファベット順
         table_names = ActiveRecord::Base.connection.tables.sort - ['schema_migrations']
-        raise YamlError, "Broken schame_comments.yml" unless table_comments.is_a?(Hash)
         table_comments.extend(HashKeyOrderable)
         table_comments.key_order = table_names
         # column_comments もテーブル名のアルファベット順
-        raise YamlError, "Broken schame_comments.yml" unless column_comments.is_a?(Hash)
         column_comments.extend(HashKeyOrderable)
         column_comments.key_order = table_names
         # column_comments の各値はテーブルのカラム順

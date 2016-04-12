@@ -28,13 +28,13 @@ module SchemaComments
         ar_class = "ActiveRecord::#{base_name}".constantize
         sc_class = "SchemaComments::#{base_name}".constantize
         unless ar_class.ancestors.include?(sc_class)
-          ar_class.__send__(:include, sc_class)
+          ar_class.__send__(:prepend, sc_class)
         end
       end
 
       unless ActiveRecord::ConnectionAdapters::AbstractAdapter.ancestors.include?(SchemaComments::ConnectionAdapters::Adapter)
         ActiveRecord::ConnectionAdapters::AbstractAdapter.module_eval do
-          include SchemaComments::ConnectionAdapters::Adapter
+          prepend SchemaComments::ConnectionAdapters::Adapter
         end
       end
 
@@ -44,7 +44,7 @@ module SchemaComments
           require("active_record/connection_adapters/#{adapter.downcase}_adapter")
           adapter_class = ('ActiveRecord::ConnectionAdapters::' << "#{adapter}Adapter").constantize
           adapter_class.module_eval do
-            include SchemaComments::ConnectionAdapters::ConcreteAdapter
+            prepend SchemaComments::ConnectionAdapters::ConcreteAdapter
           end
         rescue Exception => e
         end

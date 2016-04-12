@@ -43,13 +43,19 @@ describe SchemaComments::SchemaComment do
       ActiveRecord::Migrator.up(migration_path, 8)
       expect(ActiveRecord::Migrator.current_version).to eq 8
 
-      SchemaComments.yaml_path =
-        File.expand_path(File.join(
-          File.dirname(__FILE__), "schema_comments_users_without_column_hash.yml"))
+      tmp_dir = File.expand_path("../../tmp", __FILE__)
+      FileUtils.mkdir_p(tmp_dir)
+      db_path = File.join(tmp_dir, "schema_comments_users_without_column_hash.yml")
+      src_path = File.expand_path("../schema_comments_users_without_column_hash.yml", __FILE__)
+      FileUtils.cp(src_path, db_path)
+
+      SchemaComments.yaml_path = db_path
       SchemaComments::SchemaComment.yaml_access do |db|
+        expect(db['column_comments']['products']['name']).to eq "商品名"
         db['column_comments']['products']['name'] = "商品名"
       end
     end
+
     {
       "table_comments" => lambda{|db| db['column_comments']['users']['login'] = "ログイン"},
       "column_comments" => lambda{|db| db['table_comments']['users'] = "物品"},

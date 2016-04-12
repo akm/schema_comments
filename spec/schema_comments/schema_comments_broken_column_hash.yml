@@ -7,4 +7,6 @@ column_comments:
   - "配列ではなく"
   - "Hashを期待しています"
   users:
-    login: "ログインID"
+  - "ここには"
+  - "配列ではなく"
+  - "Hashを期待しています"
