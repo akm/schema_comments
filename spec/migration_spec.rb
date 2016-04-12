@@ -15,7 +15,7 @@ describe ActiveRecord::Migrator do
   end
 
   it "test_valid_migration" do
-    (ActiveRecord::Base.connection.tables - %w(schema_migrations)).should == []
+    expect(ActiveRecord::Base.connection.tables - %w(schema_migrations)).to eq []
 
     migration_path = File.join(MIGRATIONS_ROOT, 'valid')
     Dir.glob('*.rb').each do |file|
@@ -27,8 +27,8 @@ describe ActiveRecord::Migrator do
 
     ActiveRecord::Migrator.up(migration_path, 1)
 
-    ActiveRecord::Migrator.current_version.should == 1
-    Product.table_comment.should == '商品'
+    expect(ActiveRecord::Migrator.current_version).to eq 1
+    expect(Product.table_comment).to eq '商品'
     {
       'product_type_cd' => '種別コード',
       "price" => "価格",
@@ -36,17 +36,17 @@ describe ActiveRecord::Migrator do
       "created_at" => "登録日時",
       "updated_at" => "更新日時"
     }.each do |col_name, comment|
-      Product.columns.detect{|c| c.name.to_s == col_name}.comment.should == comment
+      expect(Product.columns.detect{|c| c.name.to_s == col_name}.comment).to eq comment
     end
 
     ActiveRecord::Migrator.down(migration_path, 0)
-    # SchemaComments::SchemaComment.count.should == 0
+    # expect(SchemaComments::SchemaComment.count).to eq 0
 
     ActiveRecord::Migrator.up(migration_path, 1)
     ActiveRecord::Migrator.up(migration_path, 2)
-    ActiveRecord::Migrator.current_version.should == 2
+    expect(ActiveRecord::Migrator.current_version).to eq 2
 
-    ProductName.table_comment.should == '商品'
+    expect(ProductName.table_comment).to eq '商品'
     {
       'product_type_cd' => '種別コード',
       "price" => "価格",
@@ -54,13 +54,13 @@ describe ActiveRecord::Migrator do
       "created_at" => "登録日時",
       "updated_at" => "更新日時"
     }.each do |col_name, comment|
-      ProductName.columns.detect{|c| c.name == col_name}.comment.should == comment
+      expect(ProductName.columns.detect{|c| c.name == col_name}.comment).to eq comment
     end
 
     ActiveRecord::Migrator.down(migration_path, 1)
-    ActiveRecord::Migrator.current_version.should == 1
+    expect(ActiveRecord::Migrator.current_version).to eq 1
 
-    Product.table_comment.should == '商品'
+    expect(Product.table_comment).to eq '商品'
     {
       'product_type_cd' => '種別コード',
       "price" => "価格",
@@ -68,25 +68,25 @@ describe ActiveRecord::Migrator do
       "created_at" => "登録日時",
       "updated_at" => "更新日時"
     }.each do |col_name, comment|
-      Product.columns.detect{|c| c.name == col_name}.comment.should == comment
+      expect(Product.columns.detect{|c| c.name == col_name}.comment).to eq comment
     end
 
     ActiveRecord::Migrator.up(migration_path, 4)
-    ActiveRecord::Migrator.current_version.should == 4
-    # SchemaComments::SchemaComment.count.should == 5
+    expect(ActiveRecord::Migrator.current_version).to eq 4
+    # expect(SchemaComments::SchemaComment.count).to eq 5
 
     ActiveRecord::Migrator.down(migration_path, 3)
-    ActiveRecord::Migrator.current_version.should == 3
-    # SchemaComments::SchemaComment.count.should == 6
+    expect(ActiveRecord::Migrator.current_version).to eq 3
+    # expect(SchemaComments::SchemaComment.count).to eq 6
 
     ActiveRecord::Migrator.up(migration_path, 5)
-    ActiveRecord::Migrator.current_version.should == 5
-    Product.columns.detect{|c| c.name == 'name'}.comment.should == '商品名'
+    expect(ActiveRecord::Migrator.current_version).to eq 5
+    expect(Product.columns.detect{|c| c.name == 'name'}.comment).to eq '商品名'
 
     ActiveRecord::Migrator.up(migration_path, 6)
-    ActiveRecord::Migrator.current_version.should == 6
+    expect(ActiveRecord::Migrator.current_version).to eq 6
     Product.reset_column_comments
-    Product.columns.detect{|c| c.name == 'name'}.comment.should == '名称'
+    expect(Product.columns.detect{|c| c.name == 'name'}.comment).to eq '名称'
 
     # Bug report from Ishikawa, Thanks!
     # schema_commentsのcolumn_commentsがうまく動かないみたいです。
@@ -96,13 +96,13 @@ describe ActiveRecord::Migrator do
     # column_comments(:table_name => {:column_name => "name"})
     # 上記のようにメソッドを呼び出しても、なぜか引数がHashではなくStringで取れてしまうみたいです。
     ActiveRecord::Migrator.up(migration_path, 7)
-    ActiveRecord::Migrator.current_version.should == 7
+    expect(ActiveRecord::Migrator.current_version).to eq 7
     Product.reset_column_comments
-    Product.columns.detect{|c| c.name == 'name'}.comment.should == '商品名称'
-    Product.columns.detect{|c| c.name == 'product_type_cd'}.comment.should == 'カテゴリコード'
+    expect(Product.columns.detect{|c| c.name == 'name'}.comment).to eq '商品名称'
+    expect(Product.columns.detect{|c| c.name == 'product_type_cd'}.comment).to eq 'カテゴリコード'
 
     ActiveRecord::Migrator.up(migration_path, 8)
-    ActiveRecord::Migrator.current_version.should == 8
+    expect(ActiveRecord::Migrator.current_version).to eq 8
   end
 
 end

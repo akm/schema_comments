@@ -16,7 +16,7 @@ describe ActiveRecord::SchemaDumper do
 
   describe :dump do
     it "products" do
-      (ActiveRecord::Base.connection.tables - %w(schema_migrations)).should == []
+      expect(ActiveRecord::Base.connection.tables - %w(schema_migrations)).to eq []
 
       migration_path = File.join(MIGRATIONS_ROOT, 'valid')
       Dir.glob('*.rb').each{|file| require(file) if /^\d+?_.*/ =~ file}
@@ -25,19 +25,19 @@ describe ActiveRecord::SchemaDumper do
       Product.reset_column_comments
 
       ActiveRecord::Migrator.up(migration_path, 1)
-      ActiveRecord::Migrator.current_version.should == 1
+      expect(ActiveRecord::Migrator.current_version).to eq 1
 
-      ActiveRecord::Base.export_i18n_models.keys.include?('product').should == true
-      ActiveRecord::Base.export_i18n_models['product'].should == '商品'
+      expect(ActiveRecord::Base.export_i18n_models.keys.include?('product')).to eq true
+      expect(ActiveRecord::Base.export_i18n_models['product']).to eq '商品'
 
-      ActiveRecord::Base.export_i18n_attributes.keys.include?('product').should == true
-      ActiveRecord::Base.export_i18n_attributes['product'].should == {
+      expect(ActiveRecord::Base.export_i18n_attributes.keys.include?('product')).to eq true
+      expect(ActiveRecord::Base.export_i18n_attributes['product']).to eq({
         'product_type_cd' => '種別コード',
         "price" => "価格",
         "name" => "商品名",
         "created_at" => "登録日時",
         "updated_at" => "更新日時"
-      }
+      })
 
       dest = StringIO.new
       # ActiveRecord::SchemaDumper.dump(ActiveRecord::Base.connection, dest)
@@ -85,7 +85,7 @@ EOS
 
 end
 EOS
-      dest.read.should == s
+      expect(dest.read).to eq s
     end
 
   end
