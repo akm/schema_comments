@@ -82,15 +82,15 @@ module SchemaComments
           db = SortedStore.new(SchemaComments.yaml_path)
           result = nil
           # t = Time.now.to_f
-          db.transaction do
-            @yaml_transaction = db
-            begin
+          @yaml_transaction = db
+          begin
+            db.transaction do
               db[TABLE_KEY] ||= {}
               db[COLUMN_KEY] ||= {}
               result = yield(db) if block_given?
-            ensure
-              @yaml_transaction = nil
             end
+          ensure
+            @yaml_transaction = nil
           end
           # puts("SchemaComment#yaml_access %fms from %s" % [Time.now.to_f - t, caller[0].gsub(/^.+:in /, '')])
           result
