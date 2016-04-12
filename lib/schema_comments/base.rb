@@ -1,7 +1,7 @@
 module SchemaComments
   module Base
     def self.prepended(mod)
-      mod.extend ClassMethods
+      mod.singleton_class.prepend ClassMethods
       mod.ignore_pattern_to_export_i18n = /\[.*\]/
     end
 

@@ -1,7 +1,7 @@
 module SchemaComments
   module Migrator
     def self.prepend(mod)
-      mod.extend(ClassMethods)
+      mod.singleton_class.prepend(ClassMethods)
     end
 
     module ClassMethods
