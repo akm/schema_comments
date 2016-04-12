@@ -12,13 +12,13 @@ describe HashKeyOrderable do
       hash.each do |key, value|
         actuals << key
       end
-      actuals.should == hash.key_order
+      expect(actuals).to eq hash.key_order
     end
 
     it "should use original each without key_order" do
       hash = {'a' => 1, 'b' => 2, 'c' => 3, 'd' => 4}
       hash.extend(HashKeyOrderable)
-      hash.should_receive(:each_without_key_order) # original each method
+      expect(hash).to receive(:each_without_key_order) # original each method
       hash.each{ }
     end
 
@@ -30,8 +30,8 @@ describe HashKeyOrderable do
       hash.each do |key, value|
         actuals << key
       end
-      actuals[0..2].should == hash.key_order
-      actuals[3..4].sort.should == %w(a c)
+      expect(actuals[0..2]).to eq hash.key_order
+      expect(actuals[3..4].sort).to eq %w(a c)
     end
 
     it "should ignore unexist key in key_order" do
@@ -42,8 +42,8 @@ describe HashKeyOrderable do
       hash.each do |key, value|
         actuals << key
       end
-      actuals[0..1].should == %w(b d)
-      actuals[2..4].sort.should == %w(a c e)
+      expect(actuals[0..1]).to eq %w(b d)
+      expect(actuals[2..4].sort).to eq %w(a c e)
     end
 
   end

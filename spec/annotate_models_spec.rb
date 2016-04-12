@@ -17,7 +17,7 @@ describe AnnotateModels do
   end
 
   it "get_schema_info" do
-    (ActiveRecord::Base.connection.tables - %w(schema_migrations)).should == []
+    expect(ActiveRecord::Base.connection.tables - %w(schema_migrations)).to eq []
 
     ActiveRecord::Schema.define(:version => "20090721185959") do
       drop_table("books") rescue nil
@@ -42,7 +42,8 @@ puts "ActiveRecord::Base.connection.adapter_name: #{ActiveRecord::Base.connectio
       else               ":integer   "
       end
 
-    AnnotateModels.get_schema_info(Book).should == %{# == Schema Info ==
+    expect(AnnotateModels.get_schema_info(Book)).to eq <<EOS
+# == Schema Info ==
 # 
 # Schema version: 20090721185959
 #
@@ -57,7 +58,8 @@ puts "ActiveRecord::Base.connection.adapter_name: #{ActiveRecord::Base.connectio
 # 
 # =================
 # 
-}
+EOS
+
   end
 
 end

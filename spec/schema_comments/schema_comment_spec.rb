@@ -41,7 +41,7 @@ describe SchemaComments::SchemaComment do
       Dir.glob('*.rb').each{|file| require(file) if /^\d+?_.*/ =~ file}
 
       ActiveRecord::Migrator.up(migration_path, 8)
-      ActiveRecord::Migrator.current_version.should == 8
+      expect(ActiveRecord::Migrator.current_version).to eq 8
 
       SchemaComments.yaml_path =
         File.expand_path(File.join(
@@ -60,14 +60,14 @@ describe SchemaComments::SchemaComment do
         Dir.glob('*.rb').each{|file| require(file) if /^\d+?_.*/ =~ file}
 
         ActiveRecord::Migrator.up(migration_path, 8)
-        ActiveRecord::Migrator.current_version.should == 8
+        expect(ActiveRecord::Migrator.current_version).to eq 8
 
         SchemaComments.yaml_path =
           File.expand_path(File.join(
             File.dirname(__FILE__), "schema_comments_broken_#{broken_type}.yml"))
-        lambda{
+        expect{
           SchemaComments::SchemaComment.yaml_access(&proc)
-        }.should raise_error(SchemaComments::YamlError)
+        }.to raise_error(SchemaComments::YamlError)
       end
     end
 
