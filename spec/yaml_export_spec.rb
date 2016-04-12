@@ -31,7 +31,7 @@ describe SchemaComments::SchemaComment do
       end
     end
 
-    File.read(SchemaComments.yaml_path).split(/$/).map(&:strip).should == %{
+    expected = <<EOS
 ---
 table_comments:
   addresses: "住所"
@@ -49,7 +49,9 @@ column_comments:
   person:
     name: "名前"
     id: "人"
-}.split(/$/).map(&:strip)
+EOS
+    expected.gsub!('"', '') if Gem::Version.new(YAML::VERSION) >= Gem::Version.new("2.0.17")
+    expect(File.read(SchemaComments.yaml_path)).to eq expected
   end
 
 end
