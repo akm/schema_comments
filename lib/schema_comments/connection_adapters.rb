@@ -147,9 +147,11 @@ module SchemaComments
         @ignore_drop_table = false
       end
 
-      def rename_column(table_name, column_name, new_column_name)
+      def rename_column(table_name, column_name, new_column_name, options = {})
+        comment = options.delete(:comment)
         result = super(table_name, column_name, new_column_name)
-        comment = update_schema_comments_column_name(table_name, column_name, new_column_name)
+        update_schema_comments_column_name(table_name, column_name, new_column_name)
+        column_comment(table_name, new_column_name, comment) if comment
         result
       end
 
