@@ -4,6 +4,8 @@ require File.join(File.dirname(__FILE__), '../spec_helper')
 describe SchemaComments::ConnectionAdapters do
 
   before(:each) do
+    Product.reset_column_information
+
     SchemaComments.yaml_path = File.expand_path(File.join(File.dirname(__FILE__), 'schema_comments.yml'))
     FileUtils.rm(SchemaComments.yaml_path, :verbose => true) if File.exist?(SchemaComments.yaml_path)
 
@@ -20,11 +22,15 @@ describe SchemaComments::ConnectionAdapters do
       require(file) if /^\d+?_.*/ =~ file
     end
 
+    expect(ActiveRecord::Base.connection.tables).to eq ['schema_migrations']
+
     Product.reset_table_comments
     Product.reset_column_comments
 
     ActiveRecord::Migrator.up(migration_path, 1)
     expect(ActiveRecord::Migrator.current_version).to eq 1
+
+    expect(ActiveRecord::Base.connection.tables).to match_array ['schema_migrations', 'products']
 
     expect(ActiveRecord::Base.export_i18n_models.keys.include?('product')).to eq true
     expect(ActiveRecord::Base.export_i18n_models['product']).to eq '商品'
