@@ -103,6 +103,11 @@ describe ActiveRecord::Migrator do
 
     ActiveRecord::Migrator.up(migration_path, 8)
     expect(ActiveRecord::Migrator.current_version).to eq 8
+
+    ActiveRecord::Migrator.up(migration_path, 9)
+    expect(ActiveRecord::Migrator.current_version).to eq 9
+    Product.reset_column_information
+    expect(Product.columns.detect{|c| c.name == 'category_cd'}.comment).to eq 'カテゴリーコード'
   end
 
 end
