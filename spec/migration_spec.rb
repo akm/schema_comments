@@ -73,6 +73,8 @@ describe ActiveRecord::Migrator do
 
     ActiveRecord::Migrator.up(migration_path, 4)
     expect(ActiveRecord::Migrator.current_version).to eq 4
+    expect(SchemaComments::SchemaComment.column_comment('products', 'name')).to eq '商品名'
+    expect(SchemaComments::SchemaComment.column_comment('products', 'price')).to be_nil
     # expect(SchemaComments::SchemaComment.count).to eq 5
 
     ActiveRecord::Migrator.down(migration_path, 3)
