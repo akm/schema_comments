@@ -46,7 +46,7 @@ module SchemaComments
       def destroy_of(table_name, column_name)
         yaml_access do |db|
           column_hash = db[COLUMN_KEY][table_name.to_s]
-          column_hash.delete(column_name) if column_hash
+          column_hash.delete(column_name.to_s) if column_hash
         end
         @column_names = nil
       end
