@@ -2,7 +2,7 @@
 require 'spec_helper'
 
 describe ActiveRecord::Migrator do
-  let(:migrations_root){ File.expand_path('../migrations', __FILE__) }
+  let(:migration_path){ File.expand_path('../migrations', __FILE__) }
   let(:ignored_tables){ %w(schema_migrations) }
 
   before(:each) do
@@ -19,7 +19,6 @@ describe ActiveRecord::Migrator do
   it "test_valid_migration" do
     expect(ActiveRecord::Base.connection.tables - %w(schema_migrations)).to eq []
 
-    migration_path = File.join(migrations_root, 'valid')
     Dir.glob('*.rb').each do |file|
       require(file) if /^\d+?_.*/ =~ file
     end
