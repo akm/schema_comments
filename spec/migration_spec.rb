@@ -1,13 +1,15 @@
 # -*- coding: utf-8 -*-
-require File.join(File.dirname(__FILE__), 'spec_helper')
+require 'spec_helper'
 
 describe ActiveRecord::Migrator do
+  let(:migrations_root){ File.expand_path('../migrations', __FILE__) }
+  let(:ignored_tables){ %w(schema_migrations) }
 
   before(:each) do
     SchemaComments.yaml_path = File.expand_path(File.join(File.dirname(__FILE__), 'schema_comments.yml'))
     FileUtils.rm(SchemaComments.yaml_path, :verbose => true) if File.exist?(SchemaComments.yaml_path)
 
-    (ActiveRecord::Base.connection.tables - IGNORED_TABLES).each do |t|
+    (ActiveRecord::Base.connection.tables - ignored_tables).each do |t|
       ActiveRecord::Base.connection.drop_table(t) rescue nil
     end
     ActiveRecord::Base.connection.initialize_schema_migrations_table
@@ -17,7 +19,7 @@ describe ActiveRecord::Migrator do
   it "test_valid_migration" do
     expect(ActiveRecord::Base.connection.tables - %w(schema_migrations)).to eq []
 
-    migration_path = File.join(MIGRATIONS_ROOT, 'valid')
+    migration_path = File.join(migrations_root, 'valid')
     Dir.glob('*.rb').each do |file|
       require(file) if /^\d+?_.*/ =~ file
     end
