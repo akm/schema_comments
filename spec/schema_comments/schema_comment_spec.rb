@@ -7,7 +7,7 @@ describe SchemaComments::SchemaComment do
   
   before(:each) do
     SchemaComments.yaml_path = File.expand_path(File.join(File.dirname(__FILE__), 'schema_comments.yml'))
-    FileUtils.rm(SchemaComments.yaml_path, :verbose => true) if File.exist?(SchemaComments.yaml_path)
+    FileUtils.rm(SchemaComments.yaml_path) if File.exist?(SchemaComments.yaml_path)
 
     (ActiveRecord::Base.connection.tables - ignored_tables).each do |t|
       ActiveRecord::Base.connection.drop_table(t) rescue nil
@@ -41,7 +41,7 @@ describe SchemaComments::SchemaComment do
     it "dump without column comment" do
       Dir.glob('*.rb').each{|file| require(file) if /^\d+?_.*/ =~ file}
 
-      ActiveRecord::Migrator.up(migration_path, 8)
+      SwapOutput.stdout{ ActiveRecord::Migrator.up(migration_path, 8) }
       expect(ActiveRecord::Migrator.current_version).to eq 8
 
       tmp_dir = File.expand_path("../../tmp", __FILE__)
@@ -65,7 +65,7 @@ describe SchemaComments::SchemaComment do
       it "raise SchemaComments::YamlError with broken #{broken_type}" do
         Dir.glob('*.rb').each{|file| require(file) if /^\d+?_.*/ =~ file}
 
-        ActiveRecord::Migrator.up(migration_path, 8)
+        SwapOutput.stdout{ ActiveRecord::Migrator.up(migration_path, 8) }
         expect(ActiveRecord::Migrator.current_version).to eq 8
 
         SchemaComments.yaml_path =

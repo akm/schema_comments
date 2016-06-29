@@ -6,7 +6,7 @@ describe SchemaComments::SchemaComment do
 
   before(:each) do
     SchemaComments.yaml_path = File.expand_path('../tmp/human_readable_schema_comments.yml', __FILE__)
-    FileUtils.rm(SchemaComments.yaml_path, :verbose => true) if File.exist?(SchemaComments.yaml_path)
+    FileUtils.rm(SchemaComments.yaml_path) if File.exist?(SchemaComments.yaml_path)
 
     (ActiveRecord::Base.connection.tables - ignored_tables).each do |t|
       ActiveRecord::Base.connection.drop_table(t) rescue nil
@@ -16,6 +16,7 @@ describe SchemaComments::SchemaComment do
   end
 
   it "should export human readable yaml" do
+    SwapOutput.stdout do
     ActiveRecord::Schema.define(:version => 0) do
       create_table(:person, :comment => '人') do |t|
         t.string :name, :comment => '名前'
@@ -30,6 +31,7 @@ describe SchemaComments::SchemaComment do
         t.integer :person_id, :comment => '人'
         t.string :address, :comment => 'アドレス'
       end
+    end
     end
 
     expected = <<EOS
