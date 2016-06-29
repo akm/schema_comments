@@ -23,22 +23,19 @@ describe ActiveRecord::Migrator do
       require(file) if /^\d+?_.*/ =~ file
     end
 
-    Product.reset_table_comments
-    Product.reset_column_comments
-
     ActiveRecord::Migrator.up(migration_path, 1)
 
     expect(ActiveRecord::Migrator.current_version).to eq 1
-    expect(Product.table_comment).to eq '商品'
-    {
+    expect(SchemaComments.table_comment('products')).to eq '商品'
+    products_columns = {
+      'id' => '商品',
       'product_type_cd' => '種別コード',
       "price" => "価格",
       "name" => "商品名",
       "created_at" => "登録日時",
       "updated_at" => "更新日時"
-    }.each do |col_name, comment|
-      expect(Product.columns.detect{|c| c.name.to_s == col_name}.comment).to eq comment
-    end
+    }
+    expect(SchemaComments.column_comments('products')).to eq products_columns
 
     ActiveRecord::Migrator.down(migration_path, 0)
     # expect(SchemaComments::SchemaComment.count).to eq 0
@@ -47,35 +44,38 @@ describe ActiveRecord::Migrator do
     ActiveRecord::Migrator.up(migration_path, 2)
     expect(ActiveRecord::Migrator.current_version).to eq 2
 
-    expect(ProductName.table_comment).to eq '商品'
-    {
+    SchemaComments.clear_cache
+    expect(SchemaComments.table_comment('product_names')).to eq '商品'
+    products_columns = {
+      'id' => '商品',
       'product_type_cd' => '種別コード',
       "price" => "価格",
       "name" => "商品名",
       "created_at" => "登録日時",
       "updated_at" => "更新日時"
-    }.each do |col_name, comment|
-      expect(ProductName.columns.detect{|c| c.name == col_name}.comment).to eq comment
-    end
+    }
+    expect(SchemaComments.column_comments('product_names')).to eq products_columns
 
     ActiveRecord::Migrator.down(migration_path, 1)
     expect(ActiveRecord::Migrator.current_version).to eq 1
 
-    expect(Product.table_comment).to eq '商品'
-    {
+    SchemaComments.clear_cache
+    expect(SchemaComments.table_comment('products')).to eq '商品'
+    products_columns = {
+      'id' => '商品',
       'product_type_cd' => '種別コード',
       "price" => "価格",
       "name" => "商品名",
       "created_at" => "登録日時",
       "updated_at" => "更新日時"
-    }.each do |col_name, comment|
-      expect(Product.columns.detect{|c| c.name == col_name}.comment).to eq comment
-    end
+    }
+    expect(SchemaComments.column_comments('products')).to eq products_columns
 
     ActiveRecord::Migrator.up(migration_path, 4)
     expect(ActiveRecord::Migrator.current_version).to eq 4
-    expect(SchemaComments::SchemaComment.column_comment('products', 'name')).to eq '商品名'
-    expect(SchemaComments::SchemaComment.column_comment('products', 'price')).to be_nil
+    SchemaComments.clear_cache
+    expect(SchemaComments.column_comment('products', 'name')).to eq '商品名'
+    expect(SchemaComments.column_comment('products', 'price')).to be_nil
     # expect(SchemaComments::SchemaComment.count).to eq 5
 
     ActiveRecord::Migrator.down(migration_path, 3)
@@ -84,12 +84,13 @@ describe ActiveRecord::Migrator do
 
     ActiveRecord::Migrator.up(migration_path, 5)
     expect(ActiveRecord::Migrator.current_version).to eq 5
-    expect(Product.columns.detect{|c| c.name == 'name'}.comment).to eq '商品名'
+    SchemaComments.clear_cache
+    expect(SchemaComments.column_comment('products', 'name')).to eq '商品名'
 
     ActiveRecord::Migrator.up(migration_path, 6)
     expect(ActiveRecord::Migrator.current_version).to eq 6
-    Product.reset_column_comments
-    expect(Product.columns.detect{|c| c.name == 'name'}.comment).to eq '名称'
+    SchemaComments.clear_cache
+    expect(SchemaComments.column_comment('products', 'name')).to eq '名称'
 
     # Bug report from Ishikawa, Thanks!
     # schema_commentsのcolumn_commentsがうまく動かないみたいです。
@@ -100,17 +101,17 @@ describe ActiveRecord::Migrator do
     # 上記のようにメソッドを呼び出しても、なぜか引数がHashではなくStringで取れてしまうみたいです。
     ActiveRecord::Migrator.up(migration_path, 7)
     expect(ActiveRecord::Migrator.current_version).to eq 7
-    Product.reset_column_comments
-    expect(Product.columns.detect{|c| c.name == 'name'}.comment).to eq '商品名称'
-    expect(Product.columns.detect{|c| c.name == 'product_type_cd'}.comment).to eq 'カテゴリコード'
+    SchemaComments.clear_cache
+    expect(SchemaComments.column_comment('products', 'name')).to eq '商品名称'
+    expect(SchemaComments.column_comment('products', 'product_type_cd')).to eq 'カテゴリコード'
 
     ActiveRecord::Migrator.up(migration_path, 8)
     expect(ActiveRecord::Migrator.current_version).to eq 8
 
     ActiveRecord::Migrator.up(migration_path, 9)
     expect(ActiveRecord::Migrator.current_version).to eq 9
-    Product.reset_column_information
-    expect(Product.columns.detect{|c| c.name == 'category_cd'}.comment).to eq 'カテゴリーコード'
+    SchemaComments.clear_cache
+    expect(SchemaComments.column_comment('products', 'category_cd')).to eq 'カテゴリーコード'
   end
 
 end
