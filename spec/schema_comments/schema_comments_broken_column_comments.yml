@@ -1,0 +1,7 @@
+--- 
+table_comments: 
+  products: "商品"
+column_comments: 
+- "ここには"
+- "配列ではなく"
+- "Hashを期待しています"

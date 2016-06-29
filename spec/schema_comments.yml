@@ -1,0 +1,10 @@
+---
+table_comments:
+  products: 商品
+column_comments:
+  products:
+    category_cd: カテゴリーコード
+    name: 商品名称
+    created_at: 登録日時
+    updated_at: 更新日時
+    id: 商品
