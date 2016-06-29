@@ -1,0 +1,12 @@
+script: "bundle exec rake spec"
+rvm:
+  - 2.2.4
+  - 2.3.0
+gemfile:
+  - gemfiles/Gemfile.rails-4.0
+  - gemfiles/Gemfile.rails-4.1
+  - gemfiles/Gemfile.rails-4.2
+env:
+  - DB=sqlite3
+  - DB=mysql2
+before_install: gem install bundler --version '>= 1.9.0'
