@@ -13,3 +13,14 @@ gemspec
 # To use a debugger
 # gem 'byebug', group: [:development, :test]
 
+group :development, :test do
+  gem "sqlite3"
+  gem "mysql2"
+  gem "rails"
+
+  gem "pry"
+  gem "pry-byebug"
+  gem "pry-stack_explorer"
+  gem "simplecov"
+  gem "fuubar"
+end
