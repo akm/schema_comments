@@ -80,7 +80,8 @@ module SchemaComments
           spec[:null]      = 'false' unless column.null
           default = schema_default(column) if column.has_default?
           spec[:default]   = default unless default.nil?
-          spec[:comment]   = '"' << (column.comment || '').gsub(/\"/, '\"') << '"' # ここでinspectを使うと最後の文字だけ文字化け(UTF-8のコード)になっちゃう
+          column_comment = SchemaComment.column_comment(table, column.name)
+          spec[:comment]   = '"' << (column_comment || '').gsub(/\"/, '\"') << '"' # ここでinspectを使うと最後の文字だけ文字化け(UTF-8のコード)になっちゃう
           (spec.keys - [:name, :type]).each{ |k| spec[k].insert(0, "#{k.inspect} => ")}
           spec
         end.compact
@@ -120,6 +121,10 @@ module SchemaComments
         stream.puts "# Could not dump table #{table.inspect} because of following #{e.class}"
         stream.puts "#   #{e.message}"
         stream.puts
+        if ENV['RAILS_ENV'] == 'test'
+          $stderr.puts "[#{e.class.name}] #{e.message}"
+          $stderr.puts e.backtrace.join("\n  ")
+        end
       end
 
       stream
@@ -161,13 +166,13 @@ module SchemaComments
         klass = usage[:class]
         method_caption = nil
         if col = usage[:class].columns.detect{|c| c.name == usage[:enum_name]}
-          method_caption = col.comment
+          method_caption = SchemaComment.column_comment(klass.table_name, col.name)
         end
         method_caption ||= usage[:enum_name]
         spec = {
           :class_name => klass.name,
           :methos_name => usage[:enum_name],
-          :class_caption => klass.table_comment,
+          :class_caption => SchemaComment.table_comment(klass.table_name),
           :method_caption => method_caption
         }
         specs << spec

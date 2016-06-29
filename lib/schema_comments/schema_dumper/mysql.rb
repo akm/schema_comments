@@ -92,7 +92,7 @@ HEADER
         end
         tbl.print ", :force => true"
 
-        table_comment = @connection.table_comment(table)
+        table_comment = SchemaComment.table_comment(table)
         tbl.print ", :comment => '#{table_comment}'" unless table_comment.blank?
 
         tbl.puts " do |t|"
@@ -121,7 +121,8 @@ HEADER
           if column.name == pk
             spec[:comment]   = '"AUTO_INCREMENT PRIMARY KEY by rails"'
           else
-            spec[:comment]   = '"' << (column.comment || '').gsub(/\"/, '\"') << '"' # ここでinspectを使うと最後の文字だけ文字化け(UTF-8のコード)になっちゃう
+            column_comment = SchemaComment.column_comment(table, column.name)
+            spec[:comment]   = '"' << (column_comment || '').gsub(/\"/, '\"') << '"' # ここでinspectを使うと最後の文字だけ文字化け(UTF-8のコード)になっちゃう
           end
           (spec.keys - [:name, :type]).each{ |k| spec[k].insert(0, "#{k.inspect} => ")}
           spec
@@ -172,6 +173,10 @@ HEADER
         stream.puts "# Could not dump table #{table.inspect} because of following #{e.class}"
         stream.puts "#   #{e.message}"
         stream.puts
+        if ENV['RAILS_ENV'] == 'test'
+          $stderr.puts "[#{e.class.name}] #{e.message}"
+          $stderr.puts e.backtrace.join("\n  ")
+        end
       end
 
       stream
