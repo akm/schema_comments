@@ -9,7 +9,7 @@ class CreateUsersWithoutComment < ActiveRecord::Migration
       t.string :persistence_token
       t.string :single_access_token
       t.string :perishable_token
-      t.timestamps
+      t.timestamps null: false
     end
   end
 
