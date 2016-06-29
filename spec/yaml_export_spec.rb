@@ -5,7 +5,7 @@ describe SchemaComments::SchemaComment do
   let(:ignored_tables){ %w(schema_migrations) }
 
   before(:each) do
-    SchemaComments.yaml_path = File.join(File.dirname(__FILE__), 'human_readable_schema_comments.yml')
+    SchemaComments.yaml_path = File.expand_path('../tmp/human_readable_schema_comments.yml', __FILE__)
     FileUtils.rm(SchemaComments.yaml_path, :verbose => true) if File.exist?(SchemaComments.yaml_path)
 
     (ActiveRecord::Base.connection.tables - ignored_tables).each do |t|
