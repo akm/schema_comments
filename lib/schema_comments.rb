@@ -21,8 +21,8 @@ module SchemaComments
 
   class << self
     def setup
-      base_names = %w(Base Migration Migrator Schema) +
-        %w(Column ColumnDefinition TableDefinition).map{|name| "ConnectionAdapters::#{name}"}
+      base_names = %w(Migration Migrator Schema) +
+        %w(ColumnDefinition TableDefinition).map{|name| "ConnectionAdapters::#{name}"}
 
       base_names.each do |base_name|
         ar_class = "ActiveRecord::#{base_name}".constantize

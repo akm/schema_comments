@@ -2,10 +2,6 @@
 module SchemaComments
   module ConnectionAdapters
 
-    module Column
-      attr_accessor :comment
-    end
-
     module ColumnDefinition
       attr_accessor :comment
     end
@@ -76,16 +72,6 @@ module SchemaComments
     end
 
     module ConcreteAdapter
-      #TODO: columnsメソッドに第二引数移行がないので本来は消すべき？
-      def columns(table_name, name = nil, &block)
-        result = super(table_name)
-        column_comment_hash = column_comments(table_name)
-        result.each do |column|
-          column.comment = column_comment_hash[column.name]
-        end
-        result
-      end
-
       def create_table(table_name, options = {}, &block)
         table_def = nil
         result = super(table_name, options) do |t|
