@@ -51,6 +51,20 @@ module SchemaComments
       end
     end
 
+    [
+      :table_comment,
+      :column_comment,
+      :column_comments,
+      :save_table_comment,
+      :save_column_comment,
+      :destroy_of,
+      :update_table_name,
+      :update_column_name,
+      :clear_cache,
+    ].each do |m|
+      module_eval("def #{m}(*args); SchemaComment.#{m}(*args) end", __FILE__, __LINE__)
+    end
+
   end
 
 end

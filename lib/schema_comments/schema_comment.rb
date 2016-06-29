@@ -32,7 +32,7 @@ module SchemaComments
         yaml_access do |db|
           db[TABLE_KEY][table_name.to_s] = comment
         end
-        @table_names = nil
+        clear_cache
       end
 
       def save_column_comment(table_name, column_name, comment)
@@ -40,7 +40,7 @@ module SchemaComments
           db[COLUMN_KEY][table_name.to_s] ||= {}
           db[COLUMN_KEY][table_name.to_s][column_name.to_s] = comment
         end
-        @column_names = nil
+        clear_cache
       end
 
       def destroy_of(table_name, column_name)
@@ -48,7 +48,7 @@ module SchemaComments
           column_hash = db[COLUMN_KEY][table_name.to_s]
           column_hash.delete(column_name.to_s) if column_hash
         end
-        @column_names = nil
+        clear_cache
       end
 
       def update_table_name(table_name, new_name)
@@ -56,8 +56,7 @@ module SchemaComments
           db[TABLE_KEY][new_name.to_s] = db[TABLE_KEY].delete(table_name.to_s)
           db[COLUMN_KEY][new_name.to_s] = db[COLUMN_KEY].delete(table_name.to_s)
         end
-        @table_names = nil
-        @column_names = nil
+        clear_cache
       end
 
       def update_column_name(table_name, column_name, new_name)
@@ -67,8 +66,13 @@ module SchemaComments
             table_cols[new_name.to_s] = table_cols.delete(column_name.to_s)
           end
         end
+        clear_cache
+      end
+
+      def clear_cache
         @table_names = nil
         @column_names = nil
+        self
       end
 
       def yaml_exist?
