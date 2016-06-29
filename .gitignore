@@ -1,0 +1,6 @@
+*.log
+*~
+/coverage
+/pkg
+/Gemfile.lock
+/tmp
