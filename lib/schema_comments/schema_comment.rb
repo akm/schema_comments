@@ -142,7 +142,7 @@ module SchemaComments
         root.extend(HashKeyOrderable)
         root.key_order = %w(table_comments column_comments)
         # table_comments はテーブル名のアルファベット順
-        table_names = ActiveRecord::Base.connection.tables.sort - ['schema_migrations']
+        table_names = ActiveRecord::Base.connection.data_sources.sort - ['schema_migrations']
         table_comments.extend(HashKeyOrderable)
         table_comments.key_order = table_names
         # column_comments もテーブル名のアルファベット順

@@ -9,7 +9,7 @@ describe SchemaComments::SchemaComment do
     SchemaComments.yaml_path = File.expand_path(File.join(File.dirname(__FILE__), 'schema_comments.yml'))
     FileUtils.rm(SchemaComments.yaml_path) if File.exist?(SchemaComments.yaml_path)
 
-    (ActiveRecord::Base.connection.tables - ignored_tables).each do |t|
+    (ActiveRecord::Base.connection.data_sources - ignored_tables).each do |t|
       ActiveRecord::Base.connection.drop_table(t) rescue nil
     end
     ActiveRecord::Base.connection.initialize_schema_migrations_table
