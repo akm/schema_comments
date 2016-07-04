@@ -14,3 +14,7 @@ ActiveRecord::Migrator.migrations_paths = [File.expand_path("../../spec/dummy/db
 Dir["#{File.dirname(__FILE__)}/support/**/*.rb"].each {|f| require f}
 
 SchemaComments.setup
+
+Dir.chdir(File.expand_path("../../spec/dummy",  __FILE__)) do
+  system('RAILS_ENV=test bin/rake db:create')
+end
