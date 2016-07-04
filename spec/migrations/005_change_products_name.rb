@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-class ChangeProductsName < ActiveRecord::Migration
+class ChangeProductsName < ActiveRecord::Migration[5.0]
   def self.up
     change_column "products", 'name', :string, :limit => 50
   end

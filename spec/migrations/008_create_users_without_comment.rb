@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-class CreateUsersWithoutComment < ActiveRecord::Migration
+class CreateUsersWithoutComment < ActiveRecord::Migration[5.0]
   def self.up
     create_table :users do |t|
       t.string :login

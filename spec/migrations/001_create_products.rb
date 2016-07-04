@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-class CreateProducts < ActiveRecord::Migration
+class CreateProducts < ActiveRecord::Migration[5.0]
 
   def self.up
     create_table "products", :comment => '商品' do |t|

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-class RemovePrice < ActiveRecord::Migration
+class RemovePrice < ActiveRecord::Migration[5.0]
   def self.up
     # remove_column "products", "price"
     remove_column "products", :price
