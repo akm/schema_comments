@@ -75,10 +75,6 @@ module SchemaComments
         self
       end
 
-      def yaml_exist?
-        File.exist?(SchemaComments.yaml_path)
-      end
-
       def yaml_access(&block)
         if @yaml_transaction
           yield(@yaml_transaction) if block_given?
