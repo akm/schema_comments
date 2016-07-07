@@ -1,6 +1,6 @@
 namespace :schema_comments do
   desc 'Dump schema to db/schema.rb'
-  task :dump => [:environment, :load_config] do
+  task :dump => :environment do
     require 'active_record/schema_dumper'
     filename = ENV['SCHEMA'] || Rails.root.join('db/schema.rb').to_s
     File.open(filename, "w:utf-8") do |file|
