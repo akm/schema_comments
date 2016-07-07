@@ -7,8 +7,6 @@ module SchemaComments
 
   autoload :Base              , 'schema_comments/base'
   autoload :ConnectionAdapters, 'schema_comments/connection_adapters'
-  autoload :Migration         , 'schema_comments/migration'
-  autoload :Migrator          , 'schema_comments/migrator'
   autoload :Schema            , 'schema_comments/schema'
   autoload :SchemaComment     , 'schema_comments/schema_comment'
   autoload :SchemaDumper      , 'schema_comments/schema_dumper'
@@ -21,7 +19,7 @@ module SchemaComments
 
   class << self
     def setup
-      base_names = %w(Migration Migrator Schema) +
+      base_names = %w(Schema) +
         %w(ColumnDefinition TableDefinition).map{|name| "ConnectionAdapters::#{name}"}
 
       base_names.each do |base_name|
