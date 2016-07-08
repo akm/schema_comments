@@ -41,4 +41,9 @@ describe SchemaComments::SchemaComment do
     end
     it{ expect(SchemaComments::SchemaComment.attribute_comments).to eq result }
   end
+
+  describe :locale_yaml do
+    let(:result){ File.read(File.expand_path("../locale_spec/ja.yml", __FILE__)) }
+    it{ expect(SchemaComments::SchemaComment.locale_yaml(:ja)).to eq result }
+  end
 end

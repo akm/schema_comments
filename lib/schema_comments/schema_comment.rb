@@ -83,6 +83,19 @@ module SchemaComments
         end
       end
 
+      def activerecord_comments
+        {
+          'activerecord' => {
+            'models' => model_comments,
+            'attributes' => attribute_comments,
+          }
+        }
+      end
+
+      def locale_yaml(locale)
+        YAML.dump({locale.to_s => activerecord_comments})
+      end
+
       def clear_cache
         @table_names = nil
         @column_names = nil
