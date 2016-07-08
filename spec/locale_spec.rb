@@ -4,7 +4,7 @@ require File.join(File.dirname(__FILE__), 'spec_helper')
 describe SchemaComments::SchemaComment do
 
   before(:each) do
-    SchemaComments.yaml_path = File.expand_path('../locale_spec.yml', __FILE__)
+    SchemaComments.yaml_path = File.expand_path('../locale_spec/schema_comments.yml', __FILE__)
   end
 
   describe :model_comments do

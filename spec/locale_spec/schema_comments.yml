@@ -1,9 +1,12 @@
 ---
 table_comments:
+  people: 人
   addresses: 住所
   emails: メール
-  people: 人
 column_comments:
+  people:
+    name: 名前
+    id: 人
   addresses:
     descriptions: 記述
     person_id: 人ID
@@ -12,6 +15,3 @@ column_comments:
     address: アドレス
     person_id: 人ID
     id: メール
-  people:
-    name: 名前
-    id: 人
