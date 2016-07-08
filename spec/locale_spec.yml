@@ -1,0 +1,17 @@
+---
+table_comments:
+  addresses: 住所
+  emails: メール
+  people: 人
+column_comments:
+  addresses:
+    descriptions: 記述
+    person_id: 人ID
+    id: 住所
+  emails:
+    address: アドレス
+    person_id: 人ID
+    id: メール
+  people:
+    name: 名前
+    id: 人

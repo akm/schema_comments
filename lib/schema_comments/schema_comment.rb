@@ -69,6 +69,20 @@ module SchemaComments
         clear_cache
       end
 
+      def model_comments
+        yaml_access{|db| db[TABLE_KEY] }.
+          each_with_object({}){|(k,v),d| d[k.singularize] = v }
+      end
+
+      def attribute_comments
+        yaml_access{|db| db[COLUMN_KEY] }.each_with_object({}) do |(k,v),d|
+          d[k.singularize] = v.each_with_object({}) do |(name, comment), dd|
+            dd[name.sub(/_id\z/, '')] = comment.sub(/id\z/i, '') if name =~ /_id\z/
+            dd[name] = comment
+          end
+        end
+      end
+
       def clear_cache
         @table_names = nil
         @column_names = nil
