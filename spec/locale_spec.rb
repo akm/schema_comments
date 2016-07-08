@@ -10,9 +10,9 @@ describe SchemaComments::SchemaComment do
   describe :model_comments do
     let(:result) do
       {
+        'person'  => '人',
         'address' => '住所',
         'email'   => 'メール',
-        'person'  => '人',
       }
     end
     it{ expect(SchemaComments::SchemaComment.model_comments).to eq result }
@@ -21,6 +21,10 @@ describe SchemaComments::SchemaComment do
   describe :attribute_comments do
     let(:result) do
       {
+        'person' => {
+          'name' => '名前',
+          'id'   => '人',
+        },
         'address' => {
           'person' => '人',
           'person_id' => '人ID',
@@ -33,10 +37,6 @@ describe SchemaComments::SchemaComment do
           'address'   => 'アドレス',
           'id' => 'メール',
         },
-        'person' => {
-          'name' => '名前',
-          'id'   => '人',
-        }
       }
     end
     it{ expect(SchemaComments::SchemaComment.attribute_comments).to eq result }
