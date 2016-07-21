@@ -2,20 +2,20 @@
 ja:
   activerecord:
     models:
-      person: 人
-      address: 住所
-      email: メール
+      person: "人"
+      address: "住所"
+      email: "メール"
     attributes:
       person:
-        name: 名前
-        id: 人
+        name: "名前"
+        id: "人"
       address:
-        descriptions: 記述
-        person: 人
-        person_id: 人ID
-        id: 住所
+        descriptions: "記述"
+        person: "人"
+        person_id: "人ID"
+        id: "住所"
       email:
-        address: アドレス
-        person: 人
-        person_id: 人ID
-        id: メール
+        address: "アドレス"
+        person: "人"
+        person_id: "人ID"
+        id: "メール"

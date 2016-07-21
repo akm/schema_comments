@@ -43,7 +43,11 @@ describe SchemaComments::SchemaComment do
   end
 
   describe :locale_yaml do
-    let(:result){ File.read(File.expand_path("../locale_spec/ja.yml", __FILE__)) }
+    let(:result) do
+      File.read(File.expand_path("../locale_spec/ja.yml", __FILE__)).tap do |r|
+        r.gsub!('"', '') if Gem::Version.new(YAML::VERSION) >= Gem::Version.new("2.0.17")
+      end
+    end
     it{ expect(SchemaComments::SchemaComment.locale_yaml(:ja)).to eq result }
   end
 end
