@@ -9,6 +9,24 @@ namespace :schema_comments do
       SchemaComments::SchemaDumper.dump(ActiveRecord::Base.connection, file)
     end
   end
+
+  namespace :i18n do
+    desc "Show locale YAML"
+    task :show => :environment do
+      locale = (ENV['LOCALE'] || I18n.locale).to_s
+      puts SchemaComments::SchemaComment.locale_yaml(locale)
+    end
+
+    desc "update i18n YAML. you can set locale with environment variable LOCALE"
+    task :update => :environment do
+      locale = (ENV['LOCALE'] || I18n.locale).to_s
+      path = (ENV['YAML_PATH'] || Rails.root.join("config/locales/#{locale}.yml"))
+      open(path, 'w') do |f|
+        f.puts SchemaComments::SchemaComment.locale_yaml(locale)
+      end
+    end
+
+  end
 end
 
 if Rails.env.development?
