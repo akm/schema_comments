@@ -11,19 +11,19 @@ module SchemaComments
 
     class << self
       def table_comment(table_name)
-        @table_names ||= yaml_access{|db| db[TABLE_KEY]}.dup
+        @table_names ||= yaml_read{|db| db[TABLE_KEY]}.dup
         @table_names[table_name.to_s]
       end
 
       def column_comment(table_name, column_name)
-        @column_names ||= yaml_access{|db| db[COLUMN_KEY] }.dup
+        @column_names ||= yaml_read{|db| db[COLUMN_KEY] }.dup
         column_hash = @column_names[table_name.to_s] || {}
         column_hash[column_name.to_s]
       end
 
       def column_comments(table_name)
         result = nil
-        @column_names ||= yaml_access{|db| db[COLUMN_KEY] }.dup
+        @column_names ||= yaml_read{|db| db[COLUMN_KEY] }.dup
         result = @column_names[table_name.to_s]
         result || {}
       end
@@ -70,12 +70,12 @@ module SchemaComments
       end
 
       def model_comments
-        yaml_access{|db| db[TABLE_KEY] }.
+        yaml_read{|db| db[TABLE_KEY] }.
           each_with_object({}){|(k,v),d| d[k.singularize] = v }
       end
 
       def attribute_comments
-        yaml_access{|db| db[COLUMN_KEY] }.each_with_object({}) do |(k,v),d|
+        yaml_read{|db| db[COLUMN_KEY] }.each_with_object({}) do |(k,v),d|
           d[k.singularize] = v.each_with_object({}) do |(name, comment), dd|
             dd[name.sub(/_id\z/, '')] = comment.sub(/id\z/i, '') if name =~ /_id\z/
             dd[name] = comment
@@ -100,6 +100,11 @@ module SchemaComments
         @table_names = nil
         @column_names = nil
         self
+      end
+
+      def yaml_read(&block)
+        db = YAML.load_file(SchemaComments.yaml_path)
+        block_given? ? yield(db) : db
       end
 
       def yaml_access(&block)
