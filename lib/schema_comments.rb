@@ -7,6 +7,7 @@ module SchemaComments
 
   autoload :Base              , 'schema_comments/base'
   autoload :ConnectionAdapters, 'schema_comments/connection_adapters'
+  autoload :DummyMigration    , 'schema_comments/dummy_migration'
   autoload :Schema            , 'schema_comments/schema'
   autoload :SchemaComment     , 'schema_comments/schema_comment'
   autoload :SchemaDumper      , 'schema_comments/schema_dumper'
@@ -19,6 +20,10 @@ module SchemaComments
 
   class << self
     def setup
+      defined?(Rails) && Rails.env.production? ? setup_on_production : setup_on_development
+    end
+
+    def setup_on_development
       base_names = %w(Schema) +
         %w(ColumnDefinition TableDefinition).map{|name| "ConnectionAdapters::#{name}"}
 
@@ -47,6 +52,10 @@ module SchemaComments
         rescue Exception => e
         end
       end
+    end
+
+    def setup_on_production
+      ActiveRecord::Migration.__send__(:prepend, DummyMigration)
     end
 
     [
